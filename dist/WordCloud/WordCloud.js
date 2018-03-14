@@ -12,8 +12,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = require('react-dom');
-
 var _d = require('d3');
 
 var d3 = _interopRequireWildcard(_d);
@@ -52,14 +50,14 @@ var Other = function (_Component) {
           data = _props.data,
           settings = _props.settings;
 
-      var el = (0, _reactDom.findDOMNode)(this);
+      var el = this.refs.el;
       this.Wordcloud = new d3wordcloud(el);
       this.Wordcloud.render(data, settings);
     }
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('svg', null);
+      return _react2.default.createElement('svg', { ref: 'el' });
     }
   }]);
 

@@ -16,8 +16,7 @@
     "d3-cloud": "^1.2.5",
     "d3-selection-multi": "^1.0.1",
     "prop-types": "^15.6.1",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0"
+    "react": "^16.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

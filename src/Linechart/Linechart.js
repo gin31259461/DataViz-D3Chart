@@ -1,5 +1,4 @@
 import React, { Component, } from 'react'
-import { findDOMNode } from 'react-dom'
 import * as d3 from 'd3'
 import "d3-selection-multi";
 import PropTypes from 'prop-types'
@@ -12,12 +11,12 @@ class Linechart extends Component {
     const { data, settings
 
   } = this.props
-    let el = findDOMNode(this),
+    let el = this.refs.el,
       line = new d3line(el)
     line.render(data, settings)
   }
   render() {
-    return <svg />
+    return <svg ref='el'/>
   }
 }
 

@@ -1,5 +1,4 @@
 import React, { Component, } from 'react'
-import { findDOMNode } from 'react-dom'
 import * as d3 from 'd3'
 import cloud from 'd3-cloud'
 import PropTypes from 'prop-types'
@@ -9,13 +8,13 @@ class Other extends Component {
   }
   componentDidMount() {
     const { data, settings } = this.props
-    let el = findDOMNode(this)
+    let el = this.refs.el
     this.Wordcloud = new d3wordcloud(el)
     this.Wordcloud.render(data, settings)
   }
 
   render() {
-    return <svg />
+    return <svg ref='el' />
   }
 }
 
