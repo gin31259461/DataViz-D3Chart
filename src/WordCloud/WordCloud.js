@@ -2,7 +2,7 @@ import React, { Component, } from 'react'
 import * as d3 from 'd3'
 import cloud from 'd3-cloud'
 import PropTypes from 'prop-types'
-class Other extends Component {
+class WordCloud extends Component {
   constructor(props) {
     super(props)
   }
@@ -104,4 +104,4 @@ class d3wordcloud {
 
 
 
-export default Other;
+export default WordCloud;

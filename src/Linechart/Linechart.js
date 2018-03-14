@@ -4,19 +4,108 @@ import "d3-selection-multi";
 import PropTypes from 'prop-types'
 
 class Linechart extends Component {
+  static propTypes = {
+    /** 資料*/
+    data: PropTypes.array.isRequired,
+    /** SVG 的寬度*/
+    width: PropTypes.number,
+    /** SVG 的高度 */
+    height: PropTypes.number,
+    /** SVG 的上邊界 */
+    margintop: PropTypes.number,
+    /** SVG 的下邊界 */
+    marginbottom: PropTypes.number,
+    /** SVG 的右邊界 */
+    marginright: PropTypes.number,
+    /** SVG 的左邊界*/
+    marginleft: PropTypes.number,
+    /** X軸的取資料函式 */
+    getX:PropTypes.func,
+    /** Y軸的取資料函式 */
+    getY:PropTypes.func,
+    /** 提示字的取資料函式 */
+    tiptext:PropTypes.func,
+    /** 圖表線條 path 的屬性 */
+    lineattrs:PropTypes.object,
+    /** 圖表線條的 path 的 CSS 樣式*/
+    linestyles:PropTypes.object,
+    /** 圖表圓點的 circle 的屬性*/
+    plotattrs:PropTypes.object,
+    /** 圖表圓點的 circle 的 CSS 樣式*/
+    plotstyles:PropTypes.object,
+    /** 圖表圓點的 circle hover的屬性變化 */
+    plotattrs_hover:PropTypes.object,
+    /** 圖表圓點的 circle hover的樣式變化 */
+    plotstyles_hover:PropTypes.object,
+    /** 時間parse 的格式  
+     * 
+     * [連結](https://github.com/d3/d3-time-format#locale_format)
+     * */
+    timeParse:PropTypes.string,
+    /** 時間呈現的格式  
+     * 
+     * [連結](https://github.com/d3/d3-time-format#locale_format)
+     * */
+    timeformat:PropTypes.string,
+    /**
+     * 是否呈現網格
+     */
+    showgrid:PropTypes.bool,
+    /**
+     * 是否呈現提示字
+     */
+    showgridtip:PropTypes.bool,
+    /**
+     * 是否呈現提示線
+     */
+    showplottip:PropTypes.bool,
+    /**
+     * 點擊圓點的觸發事件
+     */
+    plotclick:PropTypes.func,
+    /**
+     * 線的動畫時間 (ms)
+     */
+    lineAnimateTime:PropTypes.number,
+  }
+  static defaultProps = {
+    width: 800,
+    height: 300,
+    margintop: 50,
+    marginbottom: 30,
+    marginright: 50,
+    marginleft: 40,
+    getX: (d) => d.date,
+    getY: (d) => d.count,
+    tiptext: (d) => d.count,
+    lineattrs: {},
+    linestyles: {},
+    plotattrs: {},
+    plotstyles: {},
+    plotattrs_hover: {},
+    plotstyles_hover: {},
+    timeParse: "%Y-%m-%d",
+    timeformat: "%m-%d",
+    showgrid: true,
+    showgridtip: true,
+    showplottip: true,
+    plotclick: (d, i) => { console.log(d, i) },
+    lineAnimateTime: 1000,
+
+  }
   constructor(props) {
     super(props)
   }
   componentDidMount() {
-    const { data, settings
+    const { data, ...settings
 
-  } = this.props
+    } = this.props
     let el = this.refs.el,
       line = new d3line(el)
     line.render(data, settings)
   }
   render() {
-    return <svg ref='el'/>
+    return <svg ref='el' />
   }
 }
 
@@ -27,43 +116,18 @@ class d3line {
   }
 
   render(data, settings) {
-    let { width, height,
+    let {
+      width, height,
       margintop, marginbottom, marginright, marginleft,
       lineattr, linestyles,
       plotattrs, plotstyles,
-      plotattrs_hover,plotstykes_hover,
-      getX, getY,tiptext,
+      plotattrs_hover, plotstyles_hover,
+      getX, getY, tiptext,
       showgridtip, showplottip, showgrid,
       timeParse, timeformat,
       lineAnimateTime,
-      plotclick } = {
-        width: 800,
-        height: 300,
-        margintop: 50,
-        marginbottom: 30,
-        marginright: 50,
-        marginleft: 40,
-        getX: (d) => d.date,
-        getY: (d) => d.count,
-        tiptext:(d)=>d.count,
-        lineattrs: {},
-        linestyles: {},
-        plotattrs: {},
-        plotstyles: {},
-        plotattrs_hover:{},
-        plotstykes_hover:{},
-        timeParse: '%Y-%m-%d',
-        timeformat: '%m-%d',
-        showgrid: true,
-        showgridtip: true,
-        showplottip: true,
-        plotclick: (d, i) => { console.log(d, i) },
-        lineAnimateTime: 1000,
-        ...settings
-
-      }
-
-
+      plotclick
+    } = settings
     let parseTime = d3.timeParse(timeParse)
     data.map(
       d => {
@@ -179,8 +243,8 @@ class d3line {
           fill: '#ace',
           ...plotattrs
         })
-        .styles({ 'cursor': 'pointer',...plotstyles })
-      
+        .styles({ 'cursor': 'pointer', ...plotstyles })
+
         .on('click', plotclick)
     }
     group
@@ -206,17 +270,17 @@ class d3line {
         .duration(800)
         .attr('dy', '0')
         .attr('fill', '#f00')
-        
+
 
       item.select('circle')
         .transition()
         .duration(800)
         .attrs({
-          fill:'#f00',
+          fill: '#f00',
           ...plotattrs_hover
         })
         .styles({
-          ...plotstykes_hover
+          ...plotstyles_hover
         })
     }
     function gridMouseOut() {
