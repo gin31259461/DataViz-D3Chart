@@ -68,13 +68,13 @@ class WordCloud extends Component {
   }
   componentDidMount() {
     const { data, ...settings } = this.props
-    let el = this.refs.el
+    let el = this.el
     this.Wordcloud = new d3wordcloud(el)
     this.Wordcloud.render(data, settings)
   }
 
   render() {
-    return <svg ref='el' />
+    return <svg ref={(el)=>this.el=el}  />
   }
 }
 

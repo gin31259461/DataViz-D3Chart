@@ -58,12 +58,12 @@ class Piechart extends Component {
 
   componentDidMount() {
     const { data, ...settings } = this.props
-    var el =this.refs.el,
+    var el =this.el,
       pie = new d3pie(el)
     pie.render(data, settings)
   }
   render() {
-    return <svg  ref='el' />
+    return <svg  ref={(el)=>this.el=el}  />
   }
 }
 

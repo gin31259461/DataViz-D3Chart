@@ -46,14 +46,18 @@ var Piechart = function (_Component) {
           data = _props.data,
           settings = _objectWithoutProperties(_props, ['data']);
 
-      var el = this.refs.el,
+      var el = this.el,
           pie = new d3pie(el);
       pie.render(data, settings);
     }
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('svg', { ref: 'el' });
+      var _this2 = this;
+
+      return _react2.default.createElement('svg', { ref: function ref(el) {
+          return _this2.el = el;
+        } });
     }
   }]);
 
