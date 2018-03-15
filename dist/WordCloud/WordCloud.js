@@ -171,8 +171,6 @@ var d3wordcloud = function () {
         return fz_scale(d.freq);
       }).start();
 
-      console.log(words_data);
-
       this.tag = this.g.selectAll('.tag').data(words_data);
       this.tag.enter().append('text').on('click', onClick).attr('class', 'tag').attr("text-anchor", "middle").style("fill", "#FFF").attr("transform", function (d) {
         return 'translate(' + (width * Math.random() - width / 2) + ', ' + (height * Math.random() - height / 2) + ')';

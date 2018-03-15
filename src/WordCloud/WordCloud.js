@@ -118,7 +118,7 @@ class d3wordcloud {
       .fontSize((d) => fz_scale(d.freq))
       .start();
 
-    console.log(words_data)
+
 
     this.tag = this.g.selectAll('.tag').data(words_data)
     this.tag
