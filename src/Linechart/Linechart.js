@@ -100,12 +100,12 @@ class Linechart extends Component {
     const { data, ...settings
 
     } = this.props
-    let el = this.refs.el,
+    let el = this.el
       line = new d3line(el)
     line.render(data, settings)
   }
   render() {
-    return <svg ref='el' />
+    return <svg ref={(el)=>this.el=el} />
   }
 }
 
