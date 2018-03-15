@@ -89,7 +89,7 @@ class Linechart extends Component {
     showgrid: true,
     showgridtip: true,
     showplottip: true,
-    plotclick: (d, i) => { console.log(d, i) },
+    plotclick: (d, i) => {  },
     lineAnimateTime: 1000,
 
   }
