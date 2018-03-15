@@ -16,7 +16,8 @@ let data =[{
     value: 1.7
   }
 ];
-<WordCloud 
-data={data}
- /> 
+
+  <WordCloud 
+      data={data}
+  ></WordCloud>
 ```

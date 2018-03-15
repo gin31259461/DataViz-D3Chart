@@ -49,8 +49,8 @@ class WordCloud extends Component {
     onClick: PropTypes.func,
   }
   static defaultProps = {
-    width: 600,
-    height: 600,
+    width: 300,
+    height: 300,
     margintop: 50,
     marginbottom: 30,
     marginright: 50,
