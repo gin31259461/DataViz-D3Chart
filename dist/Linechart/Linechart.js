@@ -50,8 +50,8 @@ var Linechart = function (_Component) {
           data = _props.data,
           settings = _objectWithoutProperties(_props, ['data']);
 
-      var el = this.el;
-      line = new d3line(el);
+      var el = this.el,
+          line = new d3line(el);
       line.render(data, settings);
     }
   }, {

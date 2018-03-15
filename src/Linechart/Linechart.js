@@ -100,7 +100,7 @@ class Linechart extends Component {
     const { data, ...settings
 
     } = this.props
-    let el = this.el
+    let el = this.el,
       line = new d3line(el)
     line.render(data, settings)
   }
