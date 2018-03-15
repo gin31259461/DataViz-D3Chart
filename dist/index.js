@@ -31,4 +31,13 @@ Object.defineProperty(exports, "Piechart", {
   }
 });
 
+var _LiquidFillGauge = require("./LiquidFillGauge/LiquidFillGauge");
+
+Object.defineProperty(exports, "LiquidFillGauge", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_LiquidFillGauge).default;
+  }
+});
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
