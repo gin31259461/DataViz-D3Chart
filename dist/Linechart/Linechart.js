@@ -116,11 +116,11 @@ Linechart.propTypes = {
    */
   showgrid: _propTypes2.default.bool,
   /**
-   * 是否呈現提示字
+   * 是否呈現提示線
    */
   showgridtip: _propTypes2.default.bool,
   /**
-   * 是否呈現提示線
+   * 是否呈現提示點
    */
   showplottip: _propTypes2.default.bool,
   /**
