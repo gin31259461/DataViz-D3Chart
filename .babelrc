@@ -1,5 +1,6 @@
 {
   "presets": [
+    "babili",
     "env",
     "react",
     "stage-0"
