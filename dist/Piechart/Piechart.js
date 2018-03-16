@@ -80,7 +80,6 @@ Piechart.propTypes = {
   /** SVG 的左邊界*/
   marginleft: _propTypes2.default.number,
   /** 圓餅圖的半徑*/
-
   radius: _propTypes2.default.number,
   /** 圓餅外圈的縮放倍數  */
   outerRadius: _propTypes2.default.number,
@@ -90,10 +89,12 @@ Piechart.propTypes = {
   gettext: _propTypes2.default.func,
   /** 取出資料數值欄位的函式 */
   getvalue: _propTypes2.default.func,
-  /** 給定分類資料的對樣顏色 */
+  /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
   color: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.arrayOf(_propTypes2.default.string)]),
   /** 點擊圖表觸發函式 */
-  onClick: _propTypes2.default.func
+  onClick: _propTypes2.default.func,
+  /** 圖表的動畫時間 ( ms )*/
+  AnimateTime: _propTypes2.default.number
 };
 Piechart.defaultProps = {
   width: 200,
@@ -112,7 +113,8 @@ Piechart.defaultProps = {
     return d.count;
   },
   color: d3.scaleOrdinal(d3.schemeCategory20),
-  onClick: function onClick(d, i) {}
+  onClick: function onClick(d, i) {},
+  AnimateTime: 1500
 
 };
 
@@ -138,7 +140,8 @@ var d3pie = function () {
           innerRadius = settings.innerRadius,
           gettext = settings.gettext,
           getvalue = settings.getvalue,
-          onClick = settings.onClick;
+          onClick = settings.onClick,
+          AnimateTime = settings.AnimateTime;
 
 
       var newdata = data.map(function (d) {
@@ -152,7 +155,7 @@ var d3pie = function () {
 
       var group = g.selectAll(".arc").data(pie(newdata)).enter().append("g").on('click', onClick);
 
-      group.append("path").attr('class', 'gpath').attr('stroke-width', 1).attr('stroke', '#fff').transition().duration(1500).attrTween('d', function (d) {
+      group.append("path").attr('class', 'gpath').attr('stroke-width', 1).attr('stroke', '#fff').transition().duration(AnimateTime).attrTween('d', function (d) {
         var start = {
           endAngle: d.startAngle
         };
@@ -160,20 +163,20 @@ var d3pie = function () {
         return function (t) {
           return arc(interpolate_d(t));
         };
-      }).style("fill", function (d) {
-        return color(d.data.text);
+      }).style("fill", function (d, i) {
+        return Array.isArray(color) ? color[i % color.length] : color(i);
       });
       var text = group.append("text").attr('class', 'textval').attr("transform", function (d) {
         return 'translate( ' + arc.centroid(d) + ' )';
       }).attr("dy", ".35em").attr("text-anchor", "middle").text(function (d) {
         return d.data.value;
-      }).style('font-size', 0).transition().duration(1500).style('font-size', '14px');
+      }).style('font-size', 0).transition().duration(AnimateTime).style('font-size', '14px');
 
       var legend = group.append('g').attr('cursor', 'pointer');
       var legendrect = legend.append('rect').attr('width', 15).attr('height', 15).attr('transform', function (d, i) {
         return 'translate( ' + radius + ' , ' + (30 * i - radius) + ')';
-      }).style("fill", function (d) {
-        return color(d.data.text);
+      }).style("fill", function (d, i) {
+        return Array.isArray(color) ? color[i % color.length] : color(i);
       });
 
       var legendtext = legend.append('text').attr('fill', '#000').text(function (d) {
@@ -185,7 +188,6 @@ var d3pie = function () {
       legend.on('mouseover', legendMouseOver);
       legend.on('mouseout', legendMouseOut);
       function legendMouseOver(d, i) {
-
         var item = d3.select(this.parentNode);
         item.select('rect').attr("stroke", '#000');
         item.select('path').attr("transform", 'translate( ' + arc.centroid(d)[0] * .2 + ',' + arc.centroid(d)[1] * .2 + ' )');

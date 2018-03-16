@@ -87,7 +87,7 @@ Barchart.propTypes = {
     YaxisText: _propTypes2.default.string,
     /** X軸的間隔  ( 0 - 1 )*/
     Xpadding: _propTypes2.default.number,
-    /** 給定分類資料的對樣顏色 */
+    /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
     color: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.arrayOf(_propTypes2.default.string)]),
     /** 是否呈現數值提示 */
     showtip: _propTypes2.default.bool,
@@ -171,9 +171,6 @@ var d3bar = function () {
             y.domain([0, d3.max(data, function (d) {
                 return d.Y * 1.05;
             })]);
-            color.domain([0, d3.max(data, function (d) {
-                return d.Y * 1.05;
-            })]);
 
             var g = this.svg.attr('width', width + marginleft + marginright).attr('height', height + margintop + marginbottom).append('g').attr('transform', 'translate( ' + marginleft + ' , ' + margintop + ' )');
 
@@ -195,16 +192,16 @@ var d3bar = function () {
                     return y(d.Y);
                 }).attr("height", function (d) {
                     return height - y(d.Y);
-                }).attr("fill", function (d) {
-                    return color(d.Y);
+                }).attr("fill", function (d, i) {
+                    return Array.isArray(color) ? color[i % color.length] : color(i);
                 });
             } else {
                 rect.attr("y", function (d) {
                     return y(d.Y);
                 }).attr("height", function (d) {
                     return height - y(d.Y);
-                }).attr("fill", function (d) {
-                    return color(d.Y);
+                }).attr("fill", function (d, i) {
+                    return Array.isArray(color) ? color[i % color.length] : color(i);
                 });
             }
             if (showtip) {

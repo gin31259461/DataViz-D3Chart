@@ -21,7 +21,6 @@ class Piechart extends Component {
     /** SVG 的左邊界*/
     marginleft: PropTypes.number,
     /** 圓餅圖的半徑*/
-    
     radius: PropTypes.number,
     /** 圓餅外圈的縮放倍數  */
     outerRadius: PropTypes.number,
@@ -31,13 +30,15 @@ class Piechart extends Component {
     gettext: PropTypes.func,
     /** 取出資料數值欄位的函式 */
     getvalue: PropTypes.func,
-    /** 給定分類資料的對樣顏色 */
+        /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
     color: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string),
     ]),
     /** 點擊圖表觸發函式 */
     onClick:PropTypes.func,
+    /** 圖表的動畫時間 ( ms )*/
+    AnimateTime:PropTypes.number,
   }
   static defaultProps = {
     width: 200,
@@ -53,6 +54,7 @@ class Piechart extends Component {
     getvalue: (d) => d.count,
     color: d3.scaleOrdinal(d3.schemeCategory20),
     onClick:(d,i)=>{},
+    AnimateTime:1500
 
   }
 
@@ -82,7 +84,7 @@ class d3pie {
       color, radius,
       outerRadius, innerRadius,
       gettext, getvalue,
-      onClick
+      onClick,AnimateTime
       }
       = settings
     
@@ -112,7 +114,7 @@ class d3pie {
       .attr('stroke-width', 1)
       .attr('stroke', '#fff')
       .transition()
-      .duration(1500)
+      .duration(AnimateTime)
       .attrTween('d', d => {
         let start = {
           endAngle: d.startAngle
@@ -120,7 +122,7 @@ class d3pie {
         let interpolate_d = d3.interpolate(start, d);
         return t => arc(interpolate_d(t))
       })
-      .style("fill", d => color(d.data.text))
+      .style("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
     let text = group.append("text")
       .attr('class', 'textval')
       .attr("transform", d => `translate( ${arc.centroid(d)} )`)
@@ -129,7 +131,7 @@ class d3pie {
       .text(d => d.data.value)
       .style('font-size', 0)
       .transition()
-      .duration(1500)
+      .duration(AnimateTime)
       .style('font-size', '14px')
 
     let legend = group.append('g')
@@ -139,7 +141,7 @@ class d3pie {
       .attr('width', 15)
       .attr('height', 15)
       .attr('transform', (d, i) => { return `translate( ${radius } , ${30 * i - radius})` })
-      .style("fill", d => color(d.data.text))
+      .style("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
 
 
     let legendtext = legend.append('text')
@@ -152,10 +154,6 @@ class d3pie {
     legend.on('mouseover', legendMouseOver)
     legend.on('mouseout', legendMouseOut)
     function legendMouseOver(d, i) {
-
-
-
-
       let item = d3.select(this.parentNode)
       item.select('rect')
         .attr("stroke", `#000`)

@@ -28,7 +28,7 @@ class Barchart extends Component {
         YaxisText:PropTypes.string,
         /** X軸的間隔  ( 0 - 1 )*/
         Xpadding: PropTypes.number,
-        /** 給定分類資料的對樣顏色 */
+        /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
         color: PropTypes.oneOfType([
             PropTypes.func,
             PropTypes.arrayOf(PropTypes.string),
@@ -105,7 +105,6 @@ class d3bar {
 
         x.domain(data.map(d => d.X))
         y.domain([0, d3.max(data, d => d.Y * 1.05)])
-        color.domain([0, d3.max(data, d => d.Y * 1.05)])
 
         let g = this.svg
             .attr('width', width + marginleft + marginright)
@@ -161,12 +160,12 @@ class d3bar {
                 .duration(barAnimateTime)
                 .attr("y", d => y(d.Y))
                 .attr("height", d => height - y(d.Y))
-                .attr("fill", d => color(d.Y))
+                .attr("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
         }
         else {
             rect.attr("y", d => y(d.Y))
                 .attr("height", d => height - y(d.Y))
-                .attr("fill", d => color(d.Y))
+                .attr("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
         }
         if (showtip) {
             bar.append('text')
