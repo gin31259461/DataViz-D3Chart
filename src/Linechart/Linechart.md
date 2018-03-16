@@ -40,6 +40,7 @@ let data =[{
   }];
       <Linechart 
         data={data}
-        width={700}
+        width={500}
+        height={200}
       ></Linechart>
 ```
