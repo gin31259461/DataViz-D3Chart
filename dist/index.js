@@ -4,6 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _Barchart = require("./Barchart/Barchart");
+
+Object.defineProperty(exports, "Barchart", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Barchart).default;
+  }
+});
+
 var _Linechart = require("./Linechart/Linechart");
 
 Object.defineProperty(exports, "Linechart", {
