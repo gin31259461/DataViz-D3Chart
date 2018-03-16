@@ -13,6 +13,15 @@ Object.defineProperty(exports, "Barchart", {
   }
 });
 
+var _BarchartGroup = require("./BarchartGroup/BarchartGroup");
+
+Object.defineProperty(exports, "BarchartGroup", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_BarchartGroup).default;
+  }
+});
+
 var _Linechart = require("./Linechart/Linechart");
 
 Object.defineProperty(exports, "Linechart", {
