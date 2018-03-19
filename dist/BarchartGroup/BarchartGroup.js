@@ -98,8 +98,6 @@ BarchartGroup.propTypes = {
   color: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.arrayOf(_propTypes2.default.string)]),
   /** 是否呈現網格*/
   showgrid: _propTypes2.default.bool,
-  /** 圖表是否上升動畫 */
-  barAnimate: _propTypes2.default.bool,
   /** 圖表上升動畫時間 */
   barAnimateTime: _propTypes2.default.number,
   /** 長條圖點擊時觸發事件  */
@@ -123,8 +121,6 @@ BarchartGroup.defaultProps = {
   Xpadding: .1,
   color: d3.scaleOrdinal(d3.schemeCategory20),
   showgrid: true,
-
-  barAnimate: true,
   legendClick: true,
   barAnimateTime: 1000,
   onClick: function onClick(d, i) {}
@@ -154,7 +150,6 @@ var d3bar = function () {
           Xaxisattrs = settings.Xaxisattrs,
           showgrid = settings.showgrid,
           color = settings.color,
-          barAnimate = settings.barAnimate,
           barAnimateTime = settings.barAnimateTime,
           legendClick = settings.legendClick,
           onClick = settings.onClick;
@@ -186,6 +181,7 @@ var d3bar = function () {
       var group = g.append("g").selectAll("g").data(data).enter().append("g").attr("transform", function (d) {
         return 'translate(' + x(getX(d)) + ',0)';
       }).on('click', onClick);
+
       var rect = group.selectAll("rect").data(function (d) {
         return keys.map(function (key) {
           return { key: key, value: d[key] };
