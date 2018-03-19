@@ -39,9 +39,6 @@ class BarchartGroup extends Component {
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string),
     ]),
-    /** 是否呈現數值提示 */
-    showtip: PropTypes.bool,
-  
     /** 是否呈現網格*/
     showgrid: PropTypes.bool,
     /** 圖表是否上升動畫 */
@@ -67,7 +64,7 @@ class BarchartGroup extends Component {
     Xpadding: .1,
     color: d3.scaleOrdinal(d3.schemeCategory20),
     showgrid: true,
-    showtip: true,
+
     barAnimate: true,
     legendClick: true,
     barAnimateTime: 1000,
@@ -94,7 +91,7 @@ class d3bar {
     let { width, height,
       margintop, marginbottom, marginright, marginleft,
       getX,  Xpadding, YaxisText, Xgroup, Xaxisattrs,
-      showgrid, showtip,
+      showgrid,
       color,
       barAnimate, barAnimateTime, legendClick,
       onClick
@@ -209,7 +206,7 @@ class d3bar {
             .attr("y", d => d.key == item ? y(d.value) : height)
             .attr("height", d => d.key == item ? height - y(d.value) : 0)
             .attr('fill', (d, i) => d.key == item ? Array.isArray(color) ? color[i % color.length] : color(d.key) : 'rgba(255,0,0,0)')
-
+            
           rect.transition().delay(barAnimateTime)
             .duration(barAnimateTime)
             .attr("x", d => d.key == item ? x1(keys[0]) : x1(d.key))

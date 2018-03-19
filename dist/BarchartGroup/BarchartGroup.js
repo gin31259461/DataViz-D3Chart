@@ -96,9 +96,6 @@ BarchartGroup.propTypes = {
 
   /** 給定 Xgroup 的對應顏色陣列 或者d3 顏色函式 */
   color: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.arrayOf(_propTypes2.default.string)]),
-  /** 是否呈現數值提示 */
-  showtip: _propTypes2.default.bool,
-
   /** 是否呈現網格*/
   showgrid: _propTypes2.default.bool,
   /** 圖表是否上升動畫 */
@@ -126,7 +123,7 @@ BarchartGroup.defaultProps = {
   Xpadding: .1,
   color: d3.scaleOrdinal(d3.schemeCategory20),
   showgrid: true,
-  showtip: true,
+
   barAnimate: true,
   legendClick: true,
   barAnimateTime: 1000,
@@ -156,7 +153,6 @@ var d3bar = function () {
           Xgroup = settings.Xgroup,
           Xaxisattrs = settings.Xaxisattrs,
           showgrid = settings.showgrid,
-          showtip = settings.showtip,
           color = settings.color,
           barAnimate = settings.barAnimate,
           barAnimateTime = settings.barAnimateTime,
