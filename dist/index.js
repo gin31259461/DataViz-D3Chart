@@ -40,6 +40,15 @@ Object.defineProperty(exports, "Linechart", {
   }
 });
 
+var _LinechartMulti = require("./LinechartMulti/LinechartMulti");
+
+Object.defineProperty(exports, "LinechartMulti", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_LinechartMulti).default;
+  }
+});
+
 var _WordCloud = require("./WordCloud/WordCloud");
 
 Object.defineProperty(exports, "WordCloud", {
