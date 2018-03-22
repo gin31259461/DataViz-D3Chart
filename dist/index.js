@@ -76,4 +76,13 @@ Object.defineProperty(exports, "LiquidFillGauge", {
   }
 });
 
+var _ScatterPlot = require("./ScatterPlot/ScatterPlot");
+
+Object.defineProperty(exports, "ScatterPlot", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ScatterPlot).default;
+  }
+});
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }

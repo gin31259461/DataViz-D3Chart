@@ -6,4 +6,4 @@ export {default as LinechartMulti} from "./LinechartMulti/LinechartMulti";
 export {default as WordCloud} from "./WordCloud/WordCloud";
 export {default as Piechart} from "./Piechart/Piechart";
 export {default as LiquidFillGauge} from "./LiquidFillGauge/LiquidFillGauge";
-
+export {default as ScatterPlot} from "./ScatterPlot/ScatterPlot";
