@@ -34,7 +34,7 @@ class ScatterPlot extends Component {
         /** 圓的顏色軸的單位 */
         color: PropTypes.string,
         /**  圓的大小*/
-        size: PropTypes.string,
+        size: PropTypes.number,
         /** 是否呈現網格*/
         showgrid: PropTypes.bool,
         /** 動畫時間 (ms)*/

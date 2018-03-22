@@ -94,7 +94,7 @@ ScatterPlot.propTypes = {
     /** 圓的顏色軸的單位 */
     color: _propTypes2.default.string,
     /**  圓的大小*/
-    size: _propTypes2.default.string,
+    size: _propTypes2.default.number,
     /** 是否呈現網格*/
     showgrid: _propTypes2.default.bool,
     /** 動畫時間 (ms)*/
