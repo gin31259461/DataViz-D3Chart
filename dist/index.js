@@ -85,4 +85,13 @@ Object.defineProperty(exports, "ScatterPlot", {
   }
 });
 
+var _ScatterPlotGroup = require("./ScatterPlotGroup/ScatterPlotGroup");
+
+Object.defineProperty(exports, "ScatterPlotGroup", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_ScatterPlotGroup).default;
+  }
+});
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
