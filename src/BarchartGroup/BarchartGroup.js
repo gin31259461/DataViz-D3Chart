@@ -172,6 +172,7 @@ class d3bar {
       .data([...keys, 'all'])
       .enter()
       .append('g')
+      .style("opacity", d => d == 'all' ? 1 : 0.1)
     let legendrect = legend.append('rect')
       .attr('width', 15)
       .attr('height', 15)
@@ -183,11 +184,14 @@ class d3bar {
       .attr('transform', (d, i) => { return `translate( ${width + 20} , ${30 * i + 15})` })
 
     if (legendClick) {
+      
       legend.attr('cursor', 'pointer').on('mouseover', legendMouseOver)
         .on("mouseout", legendMouseOut)
         .on('click', legendclick)
 
       function legendclick(item, i) {
+        legend.style("opacity", 0.1)
+        d3.select(this).style("opacity", 1)
         if (item === 'all') {
           rect.transition()
             .duration(barAnimateTime)

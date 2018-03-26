@@ -185,7 +185,9 @@ var d3bar = function () {
                 var grid = g.append('g');
                 grid.append("g").call(d3.axisLeft(y).tickSize(-width).tickFormat("")).attr("stroke-opacity", 0.3).attr("stroke-width", 1).attr("shape-rendering", "crispEdges").select('path').attr("stroke-width", 0);
             }
-            var legend = g.append('g').selectAll("g").data([].concat(_toConsumableArray(keys), ['all'])).enter().append('g');
+            var legend = g.append('g').selectAll("g").data([].concat(_toConsumableArray(keys), ['all'])).enter().append('g').style("opacity", function (d) {
+                return d == 'all' ? 1 : 0.1;
+            });
             var legendrect = legend.append('rect').attr('width', 15).attr('height', 15).attr('transform', function (d, i) {
                 return 'translate( ' + width + ' , ' + 30 * i + ')';
             }).style("fill", function (d, i) {
@@ -221,6 +223,8 @@ var d3bar = function () {
 
             if (legendClick) {
                 var legendclick = function legendclick(item, i) {
+                    legend.style("opacity", 0.1);
+                    d3.select(this).style("opacity", 1);
                     if (item === 'all') {
                         y.domain([0, d3.max(data, function (d) {
                             return d.total;

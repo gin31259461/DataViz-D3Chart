@@ -197,7 +197,9 @@ var d3bar = function () {
         return Array.isArray(color) ? color[i % color.length] : color(d.key);
       });
 
-      var legend = g.append('g').selectAll("g").data([].concat(_toConsumableArray(keys), ['all'])).enter().append('g');
+      var legend = g.append('g').selectAll("g").data([].concat(_toConsumableArray(keys), ['all'])).enter().append('g').style("opacity", function (d) {
+        return d == 'all' ? 1 : 0.1;
+      });
       var legendrect = legend.append('rect').attr('width', 15).attr('height', 15).attr('transform', function (d, i) {
         return 'translate( ' + width + ' , ' + 30 * i + ')';
       }).style("fill", function (d, i) {
@@ -211,6 +213,8 @@ var d3bar = function () {
 
       if (legendClick) {
         var legendclick = function legendclick(item, i) {
+          legend.style("opacity", 0.1);
+          d3.select(this).style("opacity", 1);
           if (item === 'all') {
             rect.transition().duration(barAnimateTime).attr("x", function (d) {
               return x1(d.key);
