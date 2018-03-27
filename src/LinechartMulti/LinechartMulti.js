@@ -109,7 +109,10 @@ class d3line {
                 .y(d => y(d.Y))
         x.domain(d3.extent(data, d => d._X))
         y.domain([0, d3.max(data, d => d3.max(keys, k => d[k]) * 1.2)])
-        let newdata = keys.map(k => { return { id: k, value: data.map(d => { return { X: d._X, Y: d[k], K: k } }) } })
+        let newdata = keys.map(k => {
+            let nd=[] 
+            data.map(d => { if(d[k])  nd.push({ X: d._X, Y: d[k], K: k })  }) 
+            return { id: k, value: nd }})
         let g = this.svg
             .attr('width', width + marginleft + marginright)
             .attr('height', height + margintop + marginbottom)

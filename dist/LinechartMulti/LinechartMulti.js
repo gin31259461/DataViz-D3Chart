@@ -177,9 +177,11 @@ var d3line = function () {
                 }) * 1.2;
             })]);
             var newdata = keys.map(function (k) {
-                return { id: k, value: data.map(function (d) {
-                        return { X: d._X, Y: d[k], K: k };
-                    }) };
+                var nd = [];
+                data.map(function (d) {
+                    if (d[k]) nd.push({ X: d._X, Y: d[k], K: k });
+                });
+                return { id: k, value: nd };
             });
             var g = this.svg.attr('width', width + marginleft + marginright).attr('height', height + margintop + marginbottom).append('g').attr('transform', 'translate( ' + marginleft + ' , ' + margintop + ' )');
             g.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x).tickFormat(d3.timeFormat(timeformat)));
