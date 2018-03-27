@@ -4,6 +4,15 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _Areachart = require("./Areachart/Areachart");
+
+Object.defineProperty(exports, "Areachart", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Areachart).default;
+  }
+});
+
 var _Barchart = require("./Barchart/Barchart");
 
 Object.defineProperty(exports, "Barchart", {
