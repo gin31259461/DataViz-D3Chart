@@ -91,6 +91,10 @@ Areachart.propTypes = {
     XaxisText: _propTypes2.default.string,
     /** Y軸的單位 */
     YaxisText: _propTypes2.default.string,
+    /** 線的顏色 */
+    pathcolor: _propTypes2.default.string,
+    /** 區塊的顏色 */
+    areacolor: _propTypes2.default.string,
     /** 圖表圓點的 circle 的屬性*/
     plotattrs: _propTypes2.default.object,
     /** 圖表圓點的 circle 的 CSS 樣式*/
@@ -144,6 +148,8 @@ Areachart.defaultProps = {
     timeformat: "%m-%d",
     showgrid: true,
     showplottip: true,
+    pathcolor: '#ace',
+    areacolor: '#a7eae2',
     plotclick: function plotclick(d, i) {
         console.log(d, i);
     },
@@ -175,6 +181,8 @@ var d3area = function () {
                 getX = settings.getX,
                 getY = settings.getY,
                 tiptext = settings.tiptext,
+                areacolor = settings.areacolor,
+                pathcolor = settings.pathcolor,
                 showplottip = settings.showplottip,
                 showgrid = settings.showgrid,
                 timeParse = settings.timeParse,
@@ -218,7 +226,7 @@ var d3area = function () {
                 grid.append("g").call(d3.axisLeft(y).tickSize(-width).tickFormat("")).attr("stroke-opacity", 0.3).attr("stroke-width", 1).attr("shape-rendering", "crispEdges").select('path').attr("stroke-width", 0);
             }
             var gdata = g.datum(data);
-            gdata.append("path").attr("fill", "#a7eae2").style("opacity", 0.5).attr('d', function (d) {
+            gdata.append("path").attr("fill", areacolor).style("opacity", 0.5).attr('d', function (d) {
                 return area2(d);
             }).transition().duration(AnimateTime / 2).attr('d', function (d) {
                 return area(d);
@@ -228,7 +236,7 @@ var d3area = function () {
                 return line(d);
             }).call(transition);
             function transition(path) {
-                path.transition().ease(d3.easeLinear).delay(AnimateTime / 2).duration(AnimateTime).attr("stroke", "steelblue").attr("stroke-linejoin", "round").attr("stroke-linecap", "round").attr("stroke-width", 1.5).attrTween("stroke-dasharray", tweenDash);
+                path.transition().ease(d3.easeLinear).delay(AnimateTime / 2).duration(AnimateTime).attr("stroke", pathcolor).attr("stroke-linejoin", "round").attr("stroke-linecap", "round").attr("stroke-width", 1.5).attrTween("stroke-dasharray", tweenDash);
             }
             function tweenDash() {
                 var l = this.getTotalLength(),
@@ -247,7 +255,7 @@ var d3area = function () {
                     return y(d._Y);
                 }).attrs(_extends({
                     r: 5,
-                    fill: '#ace'
+                    fill: pathcolor
                 }, plotattrs)).style("opacity", 0).styles(_extends({ 'cursor': 'pointer' }, plotstyles)).on('click', plotclick);
             }
             group.append('text').text(tiptext).attr("text-anchor", function (d) {
@@ -264,17 +272,14 @@ var d3area = function () {
                 item.select('text').transition().duration(800).attr('fill', '#000').attr("font-size", 14);
 
                 item.select('circle').transition().duration(800).attrs(_extends({
-                    fill: '#ace'
+                    fill: pathcolor
                 }, plotattrs_hover)).style("opacity", 1).styles(_extends({}, plotstyles_hover));
             }
             function gridMouseOut() {
                 var item = d3.select(this);
                 item.select('line').transition().duration(100).attr("stroke", 'rgba(0,0,0,0)');
                 item.select('text').transition().duration(500).attr('fill', 'rgba(0,0,0,0)').attr("font-size", 0);
-                item.select('circle').transition().duration(800).attrs(_extends({
-                    r: 5,
-                    fill: '#ace'
-                }, plotattrs)).style("opacity", 0).styles(_extends({}, plotstyles));
+                item.select('circle').transition().duration(800).style("opacity", 0).styles(_extends({}, plotstyles));
             }
             g.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("x", width + 10).attr("dy", "-.71em").style("text-anchor", "end").attr('font-weight', 'bold').attr('fill', 'rgba(0,0,0,1)').text(XaxisText);
 

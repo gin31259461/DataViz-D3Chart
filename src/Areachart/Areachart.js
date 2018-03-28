@@ -30,6 +30,10 @@ class Areachart extends Component {
         XaxisText: PropTypes.string,
         /** Y軸的單位 */
         YaxisText: PropTypes.string,
+        /** 線的顏色 */
+        pathcolor:PropTypes.string,
+        /** 區塊的顏色 */
+        areacolor:PropTypes.string,
         /** 圖表圓點的 circle 的屬性*/
         plotattrs: PropTypes.object,
         /** 圖表圓點的 circle 的 CSS 樣式*/
@@ -77,6 +81,8 @@ class Areachart extends Component {
         timeformat: "%m-%d",
         showgrid: true,
         showplottip: true,
+        pathcolor:'#ace',
+        areacolor:'#a7eae2',
         plotclick: (d, i) => { console.log(d, i) },
         AnimateTime: 1000,
 
@@ -106,6 +112,7 @@ class d3area {
             plotattrs, plotstyles,
             plotattrs_hover, plotstyles_hover,
             getX, getY, tiptext,
+            areacolor,pathcolor,
             showplottip, showgrid,
             timeParse, timeformat,
             XaxisText, YaxisText,
@@ -158,7 +165,7 @@ class d3area {
         }
         let gdata = g.datum(data)
         gdata.append("path")
-            .attr("fill", "#a7eae2")
+            .attr("fill", areacolor)
             .style("opacity", 0.5)
             .attr('d', (d) => area2(d))
             .transition()
@@ -174,7 +181,7 @@ class d3area {
                 .ease(d3.easeLinear)
                 .delay(AnimateTime / 2)
                 .duration(AnimateTime)
-                .attr("stroke", "steelblue")
+                .attr("stroke", pathcolor)
                 .attr("stroke-linejoin", "round")
                 .attr("stroke-linecap", "round")
                 .attr("stroke-width", 1.5)
@@ -199,7 +206,7 @@ class d3area {
                 .attr('cy', d => y(d._Y))
                 .attrs({
                     r: 5,
-                    fill: '#ace',
+                    fill: pathcolor,
                     ...plotattrs
                 })
                 .style("opacity", 0)
@@ -235,7 +242,7 @@ class d3area {
                 .transition()
                 .duration(800)
                 .attrs({
-                    fill: '#ace',
+                    fill:pathcolor,
                     ...plotattrs_hover
                 })
                 .style("opacity", 1)
@@ -257,11 +264,6 @@ class d3area {
             item.select('circle')
                 .transition()
                 .duration(800)
-                .attrs({
-                    r: 5,
-                    fill: '#ace',
-                    ...plotattrs
-                })
                 .style("opacity", 0)
                 .styles({ ...plotstyles })
         }
