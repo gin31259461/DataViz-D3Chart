@@ -49,6 +49,15 @@ Object.defineProperty(exports, "BarchartStacked", {
   }
 });
 
+var _Bubblechart = require("./Bubblechart/Bubblechart");
+
+Object.defineProperty(exports, "Bubblechart", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Bubblechart).default;
+  }
+});
+
 var _Linechart = require("./Linechart/Linechart");
 
 Object.defineProperty(exports, "Linechart", {
