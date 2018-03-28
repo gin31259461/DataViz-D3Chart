@@ -13,6 +13,15 @@ Object.defineProperty(exports, "Areachart", {
   }
 });
 
+var _AreachartGroup = require("./AreachartGroup/AreachartGroup");
+
+Object.defineProperty(exports, "AreachartGroup", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_AreachartGroup).default;
+  }
+});
+
 var _Barchart = require("./Barchart/Barchart");
 
 Object.defineProperty(exports, "Barchart", {
