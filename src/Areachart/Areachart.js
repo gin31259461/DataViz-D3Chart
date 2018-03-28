@@ -226,18 +226,11 @@ class d3area {
 
         function gridMouseOver() {
             let item = d3.select(this)
-            item.select('line')
-                .transition()
-                .duration(100)
-                .attr("stroke", '#888')
-                .attr("stroke-width", 2)
             item.select('text')
                 .transition()
                 .duration(800)
                 .attr('fill', '#000')
                 .attr("font-size", 14)
-
-
             item.select('circle')
                 .transition()
                 .duration(800)
@@ -252,10 +245,6 @@ class d3area {
         }
         function gridMouseOut() {
             let item = d3.select(this)
-            item.select('line')
-                .transition()
-                .duration(100)
-                .attr("stroke", 'rgba(0,0,0,0)')
             item.select('text')
                 .transition()
                 .duration(500)

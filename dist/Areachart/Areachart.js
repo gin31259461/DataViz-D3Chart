@@ -268,16 +268,13 @@ var d3area = function () {
 
             function gridMouseOver() {
                 var item = d3.select(this);
-                item.select('line').transition().duration(100).attr("stroke", '#888').attr("stroke-width", 2);
                 item.select('text').transition().duration(800).attr('fill', '#000').attr("font-size", 14);
-
                 item.select('circle').transition().duration(800).attrs(_extends({
                     fill: pathcolor
                 }, plotattrs_hover)).style("opacity", 1).styles(_extends({}, plotstyles_hover));
             }
             function gridMouseOut() {
                 var item = d3.select(this);
-                item.select('line').transition().duration(100).attr("stroke", 'rgba(0,0,0,0)');
                 item.select('text').transition().duration(500).attr('fill', 'rgba(0,0,0,0)').attr("font-size", 0);
                 item.select('circle').transition().duration(800).style("opacity", 0).styles(_extends({}, plotstyles));
             }
