@@ -58,12 +58,12 @@ Object.defineProperty(exports, "Bubblechart", {
   }
 });
 
-var _Linechart = require("./Linechart/Linechart");
+var _CalendarView = require("./CalendarView/CalendarView");
 
-Object.defineProperty(exports, "Linechart", {
+Object.defineProperty(exports, "CalendarView", {
   enumerable: true,
   get: function get() {
-    return _interopRequireDefault(_Linechart).default;
+    return _interopRequireDefault(_CalendarView).default;
   }
 });
 
