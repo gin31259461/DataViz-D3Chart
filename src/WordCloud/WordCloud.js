@@ -34,7 +34,7 @@ class WordCloud extends Component {
     /** 文字顏色呈現的對應範圍*/
     colorrange: PropTypes.arrayOf(PropTypes.string),
     /** 給定文字旋轉的數值角度或者函式 */
-    rotate:PropTypes.oneOfType([
+    rotate: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.func,
     ]),
@@ -64,7 +64,7 @@ class WordCloud extends Component {
     rotate: 0,
     padding: 2,
     animation: 1000,
-    onClick: (d, i) => {  },
+    onClick: (d, i) => { },
   }
   componentDidMount() {
     const { data, ...settings } = this.props
@@ -72,9 +72,12 @@ class WordCloud extends Component {
     this.Wordcloud = new d3wordcloud(el)
     this.Wordcloud.render(data, settings)
   }
-
+  componentDidUpdate() {
+    const { data, ...settings } = this.props
+    this.Wordcloud.update(data, settings)
+  }
   render() {
-    return <svg ref={(el)=>this.el=el}  />
+    return <svg ref={(el) => this.el = el} />
   }
 }
 
@@ -108,7 +111,7 @@ class d3wordcloud {
         text: gettext(d),
         freq: getvalue(d),
       }
-    }).sort((a, b) => getvalue(b) - getvalue(a))
+    })
     let color = d3.scaleLinear().range(colorrange).domain(colordomain)
     const layout = cloud()
       .size([width + marginleft + marginright, height + margintop + marginbottom])
@@ -120,10 +123,12 @@ class d3wordcloud {
 
 
 
-    this.tag = this.g.selectAll('.tag').data(words_data)
-    this.tag
+    this.tag = this.g.selectAll('.tag')
+      .data(words_data)
       .enter()
       .append('text')
+
+    this.tag
       .on('click', onClick)
       .attr('class', 'tag')
       .attr("text-anchor", "middle")
@@ -138,7 +143,40 @@ class d3wordcloud {
 
 
   }
+  update(data, settings) {
+    let {
+      width, height,
+      margintop, marginbottom, marginright, marginleft,
+      fontSizedomain, fontSizerange,
+      gettext, getvalue,
+      colorrange, colordomain,
+      rotate, padding, animation, onClick
+    } = settings
+    let words_data = data.map((d) => {
+      return {
+        text: gettext(d),
+        freq: getvalue(d),
+      }
+    })
+    let fz_scale = d3.scaleLinear().domain(fontSizedomain).range(fontSizerange)
+    let color = d3.scaleLinear().range(colorrange).domain(colordomain)
+    const layout = cloud()
+      .size([width + marginleft + marginright, height + margintop + marginbottom])
+      .words(words_data)
+      .rotate(rotate)
+      .padding(padding)
+      .fontSize((d) => fz_scale(d.freq))
+      .start();
+    this.tag.data(words_data)
+      .transition()
+      .duration(animation)
+      .attr("transform", d => `translate(${d.x}, ${d.y})`)
+      .attr('font-size', d => `${d.size}px`)
+      .style("fill", (d, i) => color(d.size))
+      .text(d => d.text)
+    this.tag.data(words_data).exit().remove()
 
+  }
 }
 
 

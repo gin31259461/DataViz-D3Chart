@@ -55,6 +55,15 @@ var WordCloud = function (_Component) {
       this.Wordcloud.render(data, settings);
     }
   }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      var _props2 = this.props,
+          data = _props2.data,
+          settings = _objectWithoutProperties(_props2, ['data']);
+
+      this.Wordcloud.update(data, settings);
+    }
+  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -163,16 +172,15 @@ var d3wordcloud = function () {
           text: gettext(d),
           freq: getvalue(d)
         };
-      }).sort(function (a, b) {
-        return getvalue(b) - getvalue(a);
       });
       var color = d3.scaleLinear().range(colorrange).domain(colordomain);
       var layout = (0, _d3Cloud2.default)().size([width + marginleft + marginright, height + margintop + marginbottom]).words(words_data).rotate(rotate).padding(padding).fontSize(function (d) {
         return fz_scale(d.freq);
       }).start();
 
-      this.tag = this.g.selectAll('.tag').data(words_data);
-      this.tag.enter().append('text').on('click', onClick).attr('class', 'tag').attr("text-anchor", "middle").style("fill", "#FFF").attr("transform", function (d) {
+      this.tag = this.g.selectAll('.tag').data(words_data).enter().append('text');
+
+      this.tag.on('click', onClick).attr('class', 'tag').attr("text-anchor", "middle").style("fill", "#FFF").attr("transform", function (d) {
         return 'translate(' + (width * Math.random() - width / 2) + ', ' + (height * Math.random() - height / 2) + ')';
       }).transition().duration(animation).attr("transform", function (d) {
         return 'translate(' + d.x + ', ' + d.y + ')';
@@ -183,6 +191,48 @@ var d3wordcloud = function () {
       }).text(function (d) {
         return d.text;
       });
+    }
+  }, {
+    key: 'update',
+    value: function update(data, settings) {
+      var width = settings.width,
+          height = settings.height,
+          margintop = settings.margintop,
+          marginbottom = settings.marginbottom,
+          marginright = settings.marginright,
+          marginleft = settings.marginleft,
+          fontSizedomain = settings.fontSizedomain,
+          fontSizerange = settings.fontSizerange,
+          gettext = settings.gettext,
+          getvalue = settings.getvalue,
+          colorrange = settings.colorrange,
+          colordomain = settings.colordomain,
+          rotate = settings.rotate,
+          padding = settings.padding,
+          animation = settings.animation,
+          onClick = settings.onClick;
+
+      var words_data = data.map(function (d) {
+        return {
+          text: gettext(d),
+          freq: getvalue(d)
+        };
+      });
+      var fz_scale = d3.scaleLinear().domain(fontSizedomain).range(fontSizerange);
+      var color = d3.scaleLinear().range(colorrange).domain(colordomain);
+      var layout = (0, _d3Cloud2.default)().size([width + marginleft + marginright, height + margintop + marginbottom]).words(words_data).rotate(rotate).padding(padding).fontSize(function (d) {
+        return fz_scale(d.freq);
+      }).start();
+      this.tag.data(words_data).transition().duration(animation).attr("transform", function (d) {
+        return 'translate(' + d.x + ', ' + d.y + ')';
+      }).attr('font-size', function (d) {
+        return d.size + 'px';
+      }).style("fill", function (d, i) {
+        return color(d.size);
+      }).text(function (d) {
+        return d.text;
+      });
+      this.tag.data(words_data).exit().remove();
     }
   }]);
 
