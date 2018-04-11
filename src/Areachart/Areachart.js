@@ -83,7 +83,7 @@ class Areachart extends Component {
         showplottip: true,
         pathcolor:'#ace',
         areacolor:'#a7eae2',
-        plotclick: (d, i) => { console.log(d, i) },
+        plotclick: (d, i) => {  },
         AnimateTime: 1000,
 
     }

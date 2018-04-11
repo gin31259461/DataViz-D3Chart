@@ -91,8 +91,6 @@ class d3tree {
             d._value = getvalue(d)
             d._text = gettext(d)
         })
-
-        console.log(data)
         let stratify = d3.stratify()
             .parentId(function (d) {
                 return d._pcid

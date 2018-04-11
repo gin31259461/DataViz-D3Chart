@@ -150,9 +150,7 @@ Areachart.defaultProps = {
     showplottip: true,
     pathcolor: '#ace',
     areacolor: '#a7eae2',
-    plotclick: function plotclick(d, i) {
-        console.log(d, i);
-    },
+    plotclick: function plotclick(d, i) {},
     AnimateTime: 1000
 
 };
