@@ -95,7 +95,7 @@ CalendarView.propTypes = {
   /** 顏色的原始資料範圍 */
   colordomain: _propTypes2.default.arrayOf(_propTypes2.default.number),
   /** 顏色的對應值 */
-  colorrange: _propTypes2.default.objectOf(_propTypes2.default.string),
+  colorrange: _propTypes2.default.arrayOf(_propTypes2.default.string),
   /** 是否顯示月份 */
   showmonth: _propTypes2.default.bool,
   /** 是否顯示圖例 */

@@ -31,7 +31,7 @@ class CalendarView extends Component {
     /** 顏色的原始資料範圍 */
     colordomain: PropTypes.arrayOf(PropTypes.number),
     /** 顏色的對應值 */
-    colorrange: PropTypes.objectOf(PropTypes.string),
+    colorrange: PropTypes.arrayOf(PropTypes.string),
     /** 是否顯示月份 */
     showmonth: PropTypes.bool,
     /** 是否顯示圖例 */
