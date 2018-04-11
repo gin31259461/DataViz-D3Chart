@@ -11,6 +11,7 @@ export {default as Piechart} from "./Piechart/Piechart";
 export {default as LiquidFillGauge} from "./LiquidFillGauge/LiquidFillGauge";
 export {default as ScatterPlot} from "./ScatterPlot/ScatterPlot";
 export {default as ScatterPlotGroup} from "./ScatterPlotGroup/ScatterPlotGroup";
+export {default as DirectoryTree} from "./DirectoryTree/DirectoryTree";
 
 
 

@@ -121,4 +121,13 @@ Object.defineProperty(exports, "ScatterPlotGroup", {
   }
 });
 
+var _DirectoryTree = require("./DirectoryTree/DirectoryTree");
+
+Object.defineProperty(exports, "DirectoryTree", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_DirectoryTree).default;
+  }
+});
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
