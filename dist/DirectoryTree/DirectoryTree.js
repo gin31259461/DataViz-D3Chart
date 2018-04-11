@@ -187,7 +187,7 @@ var d3tree = function () {
                 layout(root);
                 var nodes = treeData.descendants().slice(1);
 
-                svg.attr('height', nodes.length * nodeHeight + margintop + marginbottom);
+                svg.transition().duration(AnimateTime).attr('height', nodes.length * nodeHeight + margintop + marginbottom);
                 var node = g.selectAll('g.node').data(nodes, function (d) {
                     return d.id || (d.id = ++i);
                 });

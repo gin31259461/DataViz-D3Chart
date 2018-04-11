@@ -125,7 +125,8 @@ class d3tree {
             layout(root);
             var nodes = treeData.descendants().slice(1)
 
-            svg
+            svg    .transition()
+            .duration(AnimateTime)
                 .attr('height', nodes.length * nodeHeight + margintop + marginbottom)
             var node = g.selectAll('g.node')
                 .data(nodes, (d) => d.id || (d.id = ++i));
