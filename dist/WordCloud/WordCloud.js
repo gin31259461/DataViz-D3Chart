@@ -54,15 +54,11 @@ var WordCloud = function (_PureComponent) {
       this.Wordcloud = new d3wordcloud(el);
       this.Wordcloud.render(data, settings);
     }
-  }, {
-    key: 'componentDidUpdate',
-    value: function componentDidUpdate() {
-      var _props2 = this.props,
-          data = _props2.data,
-          settings = _objectWithoutProperties(_props2, ['data']);
+    // componentDidUpdate() {
+    //   const { data, ...settings } = this.props
+    //   this.Wordcloud.update(data, settings)
+    // }
 
-      this.Wordcloud.update(data, settings);
-    }
   }, {
     key: 'render',
     value: function render() {

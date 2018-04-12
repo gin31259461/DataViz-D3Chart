@@ -72,10 +72,10 @@ class WordCloud extends PureComponent {
     this.Wordcloud = new d3wordcloud(el)
     this.Wordcloud.render(data, settings)
   }
-  componentDidUpdate() {
-    const { data, ...settings } = this.props
-    this.Wordcloud.update(data, settings)
-  }
+  // componentDidUpdate() {
+  //   const { data, ...settings } = this.props
+  //   this.Wordcloud.update(data, settings)
+  // }
   render() {
     return <svg ref={(el) => this.el = el} />
   }
