@@ -129,7 +129,7 @@ class d3wordcloud {
       .append('text')
 
     this.tag
-      .on('click', onClick)
+      .on('click', (d,i) =>onClick(d,i,d3.event))
       .attr('class', 'tag')
       .attr("text-anchor", "middle")
       .style("fill", "#FFF")

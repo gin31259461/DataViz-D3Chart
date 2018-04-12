@@ -176,7 +176,9 @@ var d3wordcloud = function () {
 
       this.tag = this.g.selectAll('.tag').data(words_data).enter().append('text');
 
-      this.tag.on('click', onClick).attr('class', 'tag').attr("text-anchor", "middle").style("fill", "#FFF").attr("transform", function (d) {
+      this.tag.on('click', function (d, i) {
+        return onClick(d, i, d3.event);
+      }).attr('class', 'tag').attr("text-anchor", "middle").style("fill", "#FFF").attr("transform", function (d) {
         return 'translate(' + (width * Math.random() - width / 2) + ', ' + (height * Math.random() - height / 2) + ')';
       }).transition().duration(animation).attr("transform", function (d) {
         return 'translate(' + d.x + ', ' + d.y + ')';
