@@ -34,8 +34,8 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var WordCloud = function (_Component) {
-  _inherits(WordCloud, _Component);
+var WordCloud = function (_PureComponent) {
+  _inherits(WordCloud, _PureComponent);
 
   function WordCloud(props) {
     _classCallCheck(this, WordCloud);
@@ -75,7 +75,7 @@ var WordCloud = function (_Component) {
   }]);
 
   return WordCloud;
-}(_react.Component);
+}(_react.PureComponent);
 
 WordCloud.propTypes = {
   /** 資料的來源 */
@@ -185,7 +185,7 @@ var d3wordcloud = function () {
       }).transition().duration(animation).attr("transform", function (d) {
         return 'translate(' + d.x + ', ' + d.y + ')';
       }).attr('font-size', function (d) {
-        return d.size + 'px';
+        return d.size / 14 + 'rem';
       }).style("fill", function (d, i) {
         return color(d.size);
       }).text(function (d) {
@@ -226,7 +226,7 @@ var d3wordcloud = function () {
       this.tag.data(words_data).transition().duration(animation).attr("transform", function (d) {
         return 'translate(' + d.x + ', ' + d.y + ')';
       }).attr('font-size', function (d) {
-        return d.size + 'px';
+        return d.size / 14 + 'rem';
       }).style("fill", function (d, i) {
         return color(d.size);
       }).text(function (d) {

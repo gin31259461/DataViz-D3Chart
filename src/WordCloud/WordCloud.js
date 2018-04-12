@@ -1,8 +1,8 @@
-import React, { Component, } from 'react'
+import React, { PureComponent } from 'react'
 import * as d3 from 'd3'
 import cloud from 'd3-cloud'
 import PropTypes from 'prop-types'
-class WordCloud extends Component {
+class WordCloud extends PureComponent {
   constructor(props) {
     super(props)
   }
@@ -137,7 +137,7 @@ class d3wordcloud {
       .transition()
       .duration(animation)
       .attr("transform", d => `translate(${d.x}, ${d.y})`)
-      .attr('font-size', d => `${d.size}px`)
+      .attr('font-size', d => `${d.size/14}rem`)
       .style("fill", (d, i) => color(d.size))
       .text(d => d.text)
 
@@ -171,7 +171,7 @@ class d3wordcloud {
       .transition()
       .duration(animation)
       .attr("transform", d => `translate(${d.x}, ${d.y})`)
-      .attr('font-size', d => `${d.size}px`)
+      .attr('font-size', d => `${d.size/14}rem`)
       .style("fill", (d, i) => color(d.size))
       .text(d => d.text)
     this.tag.data(words_data).exit().remove()
