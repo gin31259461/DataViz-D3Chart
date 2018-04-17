@@ -67,6 +67,15 @@ Object.defineProperty(exports, "CalendarView", {
   }
 });
 
+var _Linechart = require("./Linechart/Linechart");
+
+Object.defineProperty(exports, "Linechart", {
+  enumerable: true,
+  get: function get() {
+    return _interopRequireDefault(_Linechart).default;
+  }
+});
+
 var _LinechartMulti = require("./LinechartMulti/LinechartMulti");
 
 Object.defineProperty(exports, "LinechartMulti", {
