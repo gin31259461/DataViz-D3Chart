@@ -212,8 +212,8 @@ var d3tree = function () {
                     }, node);
                 }
 
-                var nodeEnter = node.enter().append('g').attr('class', 'node').attr("transform", function (d) {
-                    return 'translate(  ' + source.y0 + ', ' + (source.x0 - nodeHeight) + ' )';
+                var nodeEnter = node.enter().append('g').attr('class', 'node').style("opacity", 1).attr("transform", function (d) {
+                    return 'translate(  ' + source.y0 + ', ' + source.x0 + ' )';
                 }).attr('cursor', function (d) {
                     return d.children || d._children ? 'pointer' : 'default';
                 }).on('click', function (d) {
@@ -222,7 +222,7 @@ var d3tree = function () {
 
                 nodeEnter.append('rect').attr('x', 0).attr('y', -nodeHeight / 2).attr('width', function (d) {
                     return width - d.y;
-                }).attr('height', nodeHeight * .8).style("fill", 'rgba(50,150,250,.5)').attr('stroke', 'rgba(0,0,0,1)');
+                }).attr('height', nodeHeight * .8).style("fill", '#98cafc').attr('stroke', 'rgba(0,0,0,1)');
                 nodeEnter.append('text').attr('class', 'treeopen').attr('dx', '3px').text(function (d) {
                     return d.children || d._children ? d.children ? '-' : '+' : '';
                 }).attr('stroke', 'rgba(0,0,0,1)');
@@ -242,15 +242,15 @@ var d3tree = function () {
                     return d.data._value + '%';
                 }).attr('dx', '10px').style("fill", 'rgba(0,0,0,1)');
                 var nodeUpdate = nodeEnter.merge(node);
-                nodeUpdate.transition().duration(AnimateTime).attr("transform", function (d) {
+                nodeUpdate.transition().duration(AnimateTime).style("opacity", 1).attr("transform", function (d) {
                     return 'translate(' + (d.y - childIndent) + ' ,' + (d.x - nodeHeight) + ')';
                 });
 
                 nodeUpdate.select('.treeopen').text(function (d) {
                     return d.children || d._children ? d.children ? '-' : '+' : '';
                 });
-                var nodeExit = node.exit().transition().duration(AnimateTime).attr("transform", function (d) {
-                    return 'translate(' + source.y + ' ,' + (source.x - nodeHeight) + ' )';
+                var nodeExit = node.exit().style("opacity", 1).transition('nodeExit').duration(AnimateTime).attr("transform", function (d) {
+                    return 'translate(' + source.y + ' ,' + (source.x - nodeHeight / 2) + ' )';
                 }).style("opacity", 0).remove();
 
                 nodes.forEach(function (d) {

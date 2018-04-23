@@ -29,12 +29,12 @@ export default class DirectoryTree extends Component {
         getparentId: PropTypes.func,
         /** 自己的資料欄位 */
         getid: PropTypes.func,
-       /** 取文字資料的函式 */
+        /** 取文字資料的函式 */
         gettext: PropTypes.func,
         /** 取出數值資料的函式 */
         getvalue: PropTypes.func,
         /** 是否一開始就摺疊 */
-        IsCollapse:PropTypes.bool,
+        IsCollapse: PropTypes.bool,
         /** 動畫時間 (ms) */
         AnimateTime: PropTypes.number,
     }
@@ -123,8 +123,8 @@ class d3tree {
             layout(root);
             var nodes = treeData.descendants().slice(1)
 
-            svg    .transition()
-            .duration(AnimateTime)
+            svg.transition()
+                .duration(AnimateTime)
                 .attr('height', nodes.length * nodeHeight + margintop + marginbottom)
             var node = g.selectAll('g.node')
                 .data(nodes, (d) => d.id || (d.id = ++i));
@@ -152,7 +152,8 @@ class d3tree {
 
             let nodeEnter = node.enter().append('g')
                 .attr('class', 'node')
-                .attr("transform", (d) => `translate(  ${source.y0}, ${source.x0 - nodeHeight} )`)
+                .style("opacity", 1)
+                .attr("transform", (d) => `translate(  ${source.y0}, ${source.x0} )`)
                 .attr('cursor', d => d.children || d._children ? 'pointer' : 'default')
                 .on('click', d => d.children || d._children ? click(d) : () => { });
 
@@ -161,7 +162,7 @@ class d3tree {
                 .attr('y', -nodeHeight / 2)
                 .attr('width', d => width - d.y)
                 .attr('height', nodeHeight * .8)
-                .style("fill", 'rgba(50,150,250,.5)')
+                .style("fill", '#98cafc')
                 .attr('stroke', 'rgba(0,0,0,1)')
             nodeEnter.append('text')
                 .attr('class', 'treeopen')
@@ -197,14 +198,16 @@ class d3tree {
             let nodeUpdate = nodeEnter.merge(node);
             nodeUpdate.transition()
                 .duration(AnimateTime)
+                .style("opacity", 1)
                 .attr("transform", (d) => `translate(${d.y - childIndent} ,${d.x - nodeHeight})`)
 
             nodeUpdate.select('.treeopen')
                 .text(d => d.children || d._children ? d.children ? '-' : '+' : '')
             var nodeExit = node.exit()
-                .transition()
+                .style("opacity", 1)
+                .transition('nodeExit')
                 .duration(AnimateTime)
-                .attr("transform", (d) => `translate(${source.y} ,${source.x - nodeHeight} )`)
+                .attr("transform", (d) => `translate(${source.y} ,${source.x-nodeHeight/2} )`)
                 .style("opacity", 0)
                 .remove();
 
