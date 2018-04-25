@@ -222,25 +222,26 @@ var d3tree = function () {
 
                 nodeEnter.append('rect').attr('x', 0).attr('y', -nodeHeight / 2).attr('width', function (d) {
                     return width - d.y;
-                }).attr('height', nodeHeight * .8).style("fill", '#98cafc').attr('stroke', 'rgba(0,0,0,1)');
+                }).attr('height', nodeHeight * .8).style("fill", '#c8def4').attr('stroke', 'rgba(0,0,0,.2)');
                 nodeEnter.append('text').attr('class', 'treeopen').attr('dx', '3px').text(function (d) {
                     return d.children || d._children ? d.children ? '-' : '+' : '';
-                }).attr('stroke', 'rgba(0,0,0,1)');
+                }).attr('stroke', 'rgba(0,0,0,.2)');
                 nodeEnter.append('text').text(function (d) {
                     return d.data._text;
                 }).attr('dx', '15px');
+
                 var nodeEnterg = nodeEnter.append('g').attr("transform", function (d) {
                     return 'translate(  ' + (width / 2 - d.y) + ', ' + 0 + ' )';
                 });
                 nodeEnterg.append('rect').attr('x', 0).attr('y', -nodeHeight / 3).attr('width', function (d) {
                     return width / 2 - 10;
-                }).attr('height', nodeHeight / 2).style("fill", 'rgba(255,255,255,1)').attr('stroke', 'rgba(0,0,0,1)');
-                nodeEnterg.append('rect').attr('x', 0).attr('y', -nodeHeight / 3).attr('width', 0).attr('height', nodeHeight / 2).style("fill", 'rgba(50,150,250,1)').transition().delay(AnimateTime).duration(1000).attr('width', function (d) {
+                }).attr('height', nodeHeight / 2).style("fill", 'rgba(255,255,255,1)').attr('stroke', 'rgba(0,0,0,.2)');
+                nodeEnterg.append('rect').attr('x', 0).attr('y', -nodeHeight / 3).attr('width', 0).attr('height', nodeHeight / 2).style("fill", '#6da2dc').transition().delay(AnimateTime).duration(1000).attr('width', function (d) {
                     return (width / 2 - 10) * d.data._value / 100;
                 });
                 nodeEnterg.append('text').text(function (d) {
                     return d.data._value + '%';
-                }).attr('dx', '10px').style("fill", 'rgba(0,0,0,1)');
+                }).attr('dx', '10px').attr('dy', '0.1em').style("fill", 'rgba(0,0,0,1)');
                 var nodeUpdate = nodeEnter.merge(node);
                 nodeUpdate.transition().duration(AnimateTime).style("opacity", 1).attr("transform", function (d) {
                     return 'translate(' + (d.y - childIndent) + ' ,' + (d.x - nodeHeight) + ')';
