@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = require('react');
@@ -89,8 +91,10 @@ Piechart.propTypes = {
   gettext: _propTypes2.default.func,
   /** 取出資料數值欄位的函式 */
   getvalue: _propTypes2.default.func,
-  /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
-  color: _propTypes2.default.oneOfType([_propTypes2.default.func, _propTypes2.default.arrayOf(_propTypes2.default.string)]),
+  /** 顏色的取資料函式 */
+  getcolor: _propTypes2.default.func,
+  /** 圓的顏色的對應物件 */
+  color: _propTypes2.default.object,
   /** 點擊圖表觸發函式 */
   onClick: _propTypes2.default.func,
   /** 圖表的動畫時間 ( ms )*/
@@ -112,9 +116,12 @@ Piechart.defaultProps = {
   getvalue: function getvalue(d) {
     return d.count;
   },
-  color: d3.scaleOrdinal(d3.schemeCategory20),
+  getcolor: function getcolor(d) {
+    return d.color;
+  },
+  color: {},
   onClick: function onClick(d, i) {},
-  AnimateTime: 1500
+  AnimateTime: 500
 
 };
 
@@ -140,22 +147,25 @@ var d3pie = function () {
           innerRadius = settings.innerRadius,
           gettext = settings.gettext,
           getvalue = settings.getvalue,
+          getcolor = settings.getcolor,
           onClick = settings.onClick,
           AnimateTime = settings.AnimateTime;
 
 
       var newdata = data.map(function (d) {
-        return { text: gettext(d), value: getvalue(d) };
+        return _extends({}, d, { text: gettext(d), value: getvalue(d), _color: getcolor(d) });
       });
+      var defaultcolor = d3.scaleOrdinal(d3.schemeCategory20);
       var arc = d3.arc().outerRadius(radius * outerRadius).innerRadius(radius * innerRadius),
           pie = d3.pie().sort(null).value(function (d) {
         return d.value;
       });
       var g = this.svg.attr('width', width + marginleft + marginright).attr('height', height + margintop + marginbottom).append('g').attr('transform', 'translate(  ' + (width + marginright + marginleft) / 2 + ' , ' + (height + margintop + marginbottom) / 2 + ' )');
 
-      var group = g.selectAll(".arc").data(pie(newdata)).enter().append("g").on('click', onClick);
+      var group = g.selectAll(".arc").data(pie(newdata)).enter().append("g").attr('cursor', 'pointer').on('click', legendMouseClick);
 
-      group.append("path").attr('class', 'gpath').attr('stroke-width', 1).attr('stroke', '#fff').transition().duration(AnimateTime).attrTween('d', function (d) {
+      var gpath = group.append("path").attr('class', 'gpath').attr('stroke-width', 1).attr('stroke', '#fff');
+      gpath.transition("init").duration(AnimateTime).attrTween('d', function (d) {
         var start = {
           endAngle: d.startAngle
         };
@@ -163,9 +173,10 @@ var d3pie = function () {
         return function (t) {
           return arc(interpolate_d(t));
         };
-      }).style("fill", function (d, i) {
-        return Array.isArray(color) ? color[i % color.length] : color(i);
+      }).attr("fill", function (d) {
+        return color[d.data._color] ? color[d.data._color] : defaultcolor(d.data._color);
       });
+
       var text = group.append("text").attr('class', 'textval').attr("transform", function (d) {
         return 'translate( ' + arc.centroid(d) + ' )';
       }).attr("dy", ".35em").attr("text-anchor", "middle").text(function (d) {
@@ -175,8 +186,8 @@ var d3pie = function () {
       var legend = group.append('g').attr('cursor', 'pointer');
       var legendrect = legend.append('rect').attr('width', 15).attr('height', 15).attr('transform', function (d, i) {
         return 'translate( ' + radius + ' , ' + (30 * i - radius) + ')';
-      }).style("fill", function (d, i) {
-        return Array.isArray(color) ? color[i % color.length] : color(i);
+      }).attr("fill", function (d) {
+        return color[d.data._color] ? color[d.data._color] : defaultcolor(d.data._color);
       });
 
       var legendtext = legend.append('text').attr('fill', '#000').text(function (d) {
@@ -185,21 +196,37 @@ var d3pie = function () {
         return 'translate( ' + (radius + 20) + ' , ' + (30 * i - radius + 15) + ')';
       });
 
-      legend.on('mouseover', legendMouseOver);
-      legend.on('mouseout', legendMouseOut);
+      gpath.on('mouseover', legendMouseOver);
+      // .on('mouseout', legendMouseOut)
+
+      function legendMouseClick(d) {
+        group.selectAll('.gpath').attr('stroke', '#fff').attr("stroke-width", '1px');
+        group.selectAll('rect').attr("stroke", '#fff');
+        var item = d3.select(this);
+        item.select('path').attr("stroke", '#000').attr("stroke-width", '2px');
+        item.select('rect').attr("stroke", '#000');
+        onClick(d.data);
+      }
       function legendMouseOver(d, i) {
+        group.selectAll('rect').attr("stroke", '#fff');
+        group.selectAll('.gpath').transition("legendMouseOut").duration(500).attr("transform", function (d) {
+          return 'translate( 0,0 )';
+        });
+        group.selectAll('.textval').transition("legendMouseOut").duration(500).attr("transform", function (d) {
+          return 'translate( ' + arc.centroid(d) + ' )';
+        });
         var item = d3.select(this.parentNode);
         item.select('rect').attr("stroke", '#000');
-        item.select('path').attr("transform", 'translate( ' + arc.centroid(d)[0] * .2 + ',' + arc.centroid(d)[1] * .2 + ' )');
-        item.select('.textval').attr("transform", 'translate( ' + arc.centroid(d)[0] * 1.2 + ',' + arc.centroid(d)[1] * 1.2 + ' )');
+        item.select('path').transition("legendMouseOut").duration(500).delay(250).attr("transform", 'translate( ' + arc.centroid(d)[0] * .2 + ',' + arc.centroid(d)[1] * .2 + ' )');
+
+        item.select('.textval').transition("legendMouseOut").duration(500).delay(250).attr("transform", 'translate( ' + arc.centroid(d)[0] * 1.2 + ',' + arc.centroid(d)[1] * 1.2 + ' )');
       }
       function legendMouseOut(d, i) {
         group.selectAll('rect').attr("stroke", '#fff');
-        group.selectAll('.gpath').attr("transform", function (d) {
+        group.selectAll('.gpath').transition("legendMouseOut").duration(500).attr("transform", function (d) {
           return 'translate( 0,0 )';
         });
-
-        group.selectAll('.textval').attr("transform", function (d) {
+        group.selectAll('.textval').transition("legendMouseOut").duration(500).attr("transform", function (d) {
           return 'translate( ' + arc.centroid(d) + ' )';
         });
       }

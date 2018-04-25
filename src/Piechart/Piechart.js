@@ -30,15 +30,14 @@ class Piechart extends Component {
     gettext: PropTypes.func,
     /** 取出資料數值欄位的函式 */
     getvalue: PropTypes.func,
-        /** 給定分類資料的對應顏色陣列 或者d3 顏色函式 */
-    color: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string),
-    ]),
+    /** 顏色的取資料函式 */
+    getcolor: PropTypes.func,
+    /** 圓的顏色的對應物件 */
+    color: PropTypes.object,
     /** 點擊圖表觸發函式 */
-    onClick:PropTypes.func,
+    onClick: PropTypes.func,
     /** 圖表的動畫時間 ( ms )*/
-    AnimateTime:PropTypes.number,
+    AnimateTime: PropTypes.number,
   }
   static defaultProps = {
     width: 200,
@@ -52,20 +51,21 @@ class Piechart extends Component {
     innerRadius: 0,
     gettext: (d) => d.text,
     getvalue: (d) => d.count,
-    color: d3.scaleOrdinal(d3.schemeCategory20),
-    onClick:(d,i)=>{},
-    AnimateTime:1500
+    getcolor: (d) => d.color,
+    color: {},
+    onClick: (d, i) => { },
+    AnimateTime: 500
 
   }
 
   componentDidMount() {
     const { data, ...settings } = this.props
-    var el =this.el,
+    var el = this.el,
       pie = new d3pie(el)
     pie.render(data, settings)
   }
   render() {
-    return <svg  ref={(el)=>this.el=el}  />
+    return <svg ref={(el) => this.el = el} />
   }
 }
 
@@ -83,12 +83,13 @@ class d3pie {
       margintop, marginbottom, marginright, marginleft,
       color, radius,
       outerRadius, innerRadius,
-      gettext, getvalue,
-      onClick,AnimateTime
-      }
+      gettext, getvalue, getcolor,
+      onClick, AnimateTime
+    }
       = settings
-    
-    let newdata = data.map(d => ({ text: gettext(d), value: getvalue(d) }))
+
+    let newdata = data.map(d => ({ ...d, text: gettext(d), value: getvalue(d), _color: getcolor(d), }))
+    let defaultcolor = d3.scaleOrdinal(d3.schemeCategory20)
     let arc = d3.arc()
       .outerRadius(radius * outerRadius)
       .innerRadius(radius * innerRadius),
@@ -104,16 +105,16 @@ class d3pie {
     let group = g.selectAll(".arc")
       .data(pie(newdata))
       .enter().append("g")
-      .on('click',onClick)
+      .attr('cursor', 'pointer')
+      .on('click', legendMouseClick)
 
-
-
-    group
+    let gpath = group
       .append("path")
       .attr('class', 'gpath')
       .attr('stroke-width', 1)
       .attr('stroke', '#fff')
-      .transition()
+    gpath
+      .transition("init")
       .duration(AnimateTime)
       .attrTween('d', d => {
         let start = {
@@ -122,7 +123,9 @@ class d3pie {
         let interpolate_d = d3.interpolate(start, d);
         return t => arc(interpolate_d(t))
       })
-      .style("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
+      .attr("fill", d => color[d.data._color] ? color[d.data._color] : defaultcolor(d.data._color))
+
+
     let text = group.append("text")
       .attr('class', 'textval')
       .attr("transform", d => `translate( ${arc.centroid(d)} )`)
@@ -140,26 +143,57 @@ class d3pie {
 
       .attr('width', 15)
       .attr('height', 15)
-      .attr('transform', (d, i) => { return `translate( ${radius } , ${30 * i - radius})` })
-      .style("fill", (d ,i)=> Array.isArray(color)?color[i% color.length]:color(i))
+      .attr('transform', (d, i) => { return `translate( ${radius} , ${30 * i - radius})` })
+      .attr("fill", d => color[d.data._color] ? color[d.data._color] : defaultcolor(d.data._color))
 
 
     let legendtext = legend.append('text')
       .attr('fill', '#000')
       .text(d => d.data.text)
-      .attr('transform', (d, i) => { return `translate( ${radius  + 20} , ${30 * i - radius + 15})` })
+      .attr('transform', (d, i) => { return `translate( ${radius + 20} , ${30 * i - radius + 15})` })
 
+    gpath
+      .on('mouseover', legendMouseOver)
+    // .on('mouseout', legendMouseOut)
 
-
-    legend.on('mouseover', legendMouseOver)
-    legend.on('mouseout', legendMouseOut)
+    function legendMouseClick(d) {
+      group.selectAll('.gpath')
+        .attr('stroke', '#fff')
+        .attr("stroke-width", `1px`)
+      group.selectAll('rect')
+        .attr("stroke", `#fff`)
+      let item = d3.select(this)
+      item.select('path')
+        .attr("stroke", `#000`)
+        .attr("stroke-width", `2px`)
+      item.select('rect')
+        .attr("stroke", `#000`)
+      onClick(d.data)
+    }
     function legendMouseOver(d, i) {
+      group.selectAll('rect')
+        .attr("stroke", `#fff`)
+      group.selectAll('.gpath')
+        .transition("legendMouseOut")
+        .duration(500)
+        .attr("transform", d => `translate( 0,0 )`)
+      group.selectAll('.textval')
+        .transition("legendMouseOut")
+        .duration(500)
+        .attr("transform", d => `translate( ${arc.centroid(d)} )`)
       let item = d3.select(this.parentNode)
       item.select('rect')
         .attr("stroke", `#000`)
       item.select('path')
+        .transition("legendMouseOut")
+        .duration(500)
+        .delay(250)
         .attr("transform", `translate( ${arc.centroid(d)[0] * .2},${arc.centroid(d)[1] * .2} )`)
+
       item.select('.textval')
+        .transition("legendMouseOut")
+        .duration(500)
+        .delay(250)
         .attr("transform", `translate( ${arc.centroid(d)[0] * 1.2},${arc.centroid(d)[1] * 1.2} )`)
 
     }
@@ -167,16 +201,15 @@ class d3pie {
       group.selectAll('rect')
         .attr("stroke", `#fff`)
       group.selectAll('.gpath')
+        .transition("legendMouseOut")
+        .duration(500)
         .attr("transform", d => `translate( 0,0 )`)
-
       group.selectAll('.textval')
+        .transition("legendMouseOut")
+        .duration(500)
         .attr("transform", d => `translate( ${arc.centroid(d)} )`)
-
     }
-
-
   }
-
 }
 
 
