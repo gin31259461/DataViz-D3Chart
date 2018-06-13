@@ -93,6 +93,8 @@ DirectoryTree.propTypes = {
     gettext: _propTypes2.default.func,
     /** 取出數值資料的函式 */
     getvalue: _propTypes2.default.func,
+    /** 取出數值資料的函式 */
+    getvaluetext: _propTypes2.default.func,
     /** 是否一開始就摺疊 */
     IsCollapse: _propTypes2.default.bool,
     /** 動畫時間 (ms) */
@@ -116,6 +118,9 @@ DirectoryTree.defaultProps = {
         return d.text;
     },
     getvalue: function getvalue(d) {
+        return d.value;
+    },
+    getvaluetext: function getvaluetext(d) {
         return d.value;
     },
     IsCollapse: true,
@@ -154,6 +159,7 @@ var d3tree = function () {
             data.map(function (d) {
                 d._pcid = getparentId(d), d._cid = getid(d);
                 d._value = getvalue(d);
+                d._valuetext = getvaluetext(d);
                 d._text = gettext(d);
             });
             var stratify = d3.stratify().parentId(function (d) {
@@ -240,7 +246,7 @@ var d3tree = function () {
                     return (width / 2 - 10) * d.data._value / 100;
                 });
                 nodeEnterg.append('text').text(function (d) {
-                    return '' + d.data._value;
+                    return '' + d.data._valuetext;
                 }).attr('dx', '10px').attr('dy', '0.1em').style("fill", 'rgba(0,0,0,1)');
                 var nodeUpdate = nodeEnter.merge(node);
                 nodeUpdate.transition().duration(AnimateTime).style("opacity", 1).attr("transform", function (d) {

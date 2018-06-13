@@ -33,6 +33,8 @@ export default class DirectoryTree extends Component {
         gettext: PropTypes.func,
         /** 取出數值資料的函式 */
         getvalue: PropTypes.func,
+        /** 取出數值資料的函式 */
+        getvaluetext: PropTypes.func,
         /** 是否一開始就摺疊 */
         IsCollapse: PropTypes.bool,
         /** 動畫時間 (ms) */
@@ -50,6 +52,7 @@ export default class DirectoryTree extends Component {
         getid: (d) => d.cid,
         gettext: (d) => d.text,
         getvalue: (d) => d.value,
+        getvaluetext:(d)=>d.value,
         IsCollapse: true,
         AnimateTime: 500
     }
@@ -89,6 +92,7 @@ class d3tree {
             d._pcid = getparentId(d),
                 d._cid = getid(d)
             d._value = getvalue(d)
+            d._valuetext=getvaluetext(d)
             d._text = gettext(d)
         })
         let stratify = d3.stratify()
@@ -172,7 +176,7 @@ class d3tree {
             nodeEnter.append('text')
                 .text(d => d.data._text)
                 .attr('dx', '15px')
-        
+
             let nodeEnterg = nodeEnter.append('g')
                 .attr("transform", (d) => `translate(  ${width / 2 - d.y}, ${0} )`)
             nodeEnterg.append('rect')
@@ -193,7 +197,7 @@ class d3tree {
                 .duration(1000)
                 .attr('width', d => (width / 2 - 10) * d.data._value / 100)
             nodeEnterg.append('text')
-                .text(d => `${d.data._value}`)
+                .text(d => `${d.data._valuetext}`)
                 .attr('dx', '10px')
                 .attr('dy', '0.1em')
                 .style("fill", 'rgba(0,0,0,1)')
@@ -209,7 +213,7 @@ class d3tree {
                 .style("opacity", 1)
                 .transition('nodeExit')
                 .duration(AnimateTime)
-                .attr("transform", (d) => `translate(${source.y} ,${source.x-nodeHeight/2} )`)
+                .attr("transform", (d) => `translate(${source.y} ,${source.x - nodeHeight / 2} )`)
                 .style("opacity", 0)
                 .remove();
 
