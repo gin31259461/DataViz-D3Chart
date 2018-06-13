@@ -76,7 +76,7 @@ class d3tree {
         let {
             width,
             margintop, marginbottom, marginright, marginleft,
-            getparentId, getid, gettext, getvalue,
+            getparentId, getid, gettext, getvalue,getvaluetext,
             nodeHeight, childIndent, IsCollapse,
             AnimateTime
         } = settings

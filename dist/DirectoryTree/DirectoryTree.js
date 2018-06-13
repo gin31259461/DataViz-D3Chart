@@ -147,6 +147,7 @@ var d3tree = function () {
                 getid = settings.getid,
                 gettext = settings.gettext,
                 getvalue = settings.getvalue,
+                getvaluetext = settings.getvaluetext,
                 nodeHeight = settings.nodeHeight,
                 childIndent = settings.childIndent,
                 IsCollapse = settings.IsCollapse,
