@@ -193,7 +193,7 @@ class d3tree {
                 .duration(1000)
                 .attr('width', d => (width / 2 - 10) * d.data._value / 100)
             nodeEnterg.append('text')
-                .text(d => `${d.data._value}%`)
+                .text(d => `${d.data._value}`)
                 .attr('dx', '10px')
                 .attr('dy', '0.1em')
                 .style("fill", 'rgba(0,0,0,1)')

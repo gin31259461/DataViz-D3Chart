@@ -240,7 +240,7 @@ var d3tree = function () {
                     return (width / 2 - 10) * d.data._value / 100;
                 });
                 nodeEnterg.append('text').text(function (d) {
-                    return d.data._value + '%';
+                    return '' + d.data._value;
                 }).attr('dx', '10px').attr('dy', '0.1em').style("fill", 'rgba(0,0,0,1)');
                 var nodeUpdate = nodeEnter.merge(node);
                 nodeUpdate.transition().duration(AnimateTime).style("opacity", 1).attr("transform", function (d) {
