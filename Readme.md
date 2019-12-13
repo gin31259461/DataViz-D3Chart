@@ -5,7 +5,7 @@
 
 ## Installation
 ```
-    npm install git+http://192.168.1.136/SideProject/Chart_Component.git
+    npm install git+http://10.21.21.12/wke/Chart_Component.git
 ```
 
 ## 支援版本
@@ -25,10 +25,6 @@ import { Linechart } from 'chart-component';
   ></Linechart>
 ```
 
-
-## UNLICENSED
-
-Copyright © 2018 IQ Service International Corp. All rights reserved
 
 
 
