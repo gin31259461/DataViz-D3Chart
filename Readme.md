@@ -1,6 +1,6 @@
 # IQS 前端圖表component
 
-[Docs & Demo](http://192.168.1.89/component/)
+[Docs & Demo](http://react_component.gitlabpage.wke.csie.ncnu.edu.tw/Chart_Component/)
 
 
 ## Installation
