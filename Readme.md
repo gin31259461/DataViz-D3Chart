@@ -5,7 +5,7 @@
 
 ## Installation
 ```
-    npm install git+http://10.21.21.12/wke/Chart_Component.git
+   npm install git+https://gitlab.wke.csie.ncnu.edu.tw/react_component/Chart_Component.git
 ```
 
 ## 支援版本
