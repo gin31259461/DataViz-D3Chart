@@ -207,7 +207,8 @@ class d3area {
                 .attr("r",5)
                 .attr('fill',pathcolor)
                 .style("opacity", 0)
-                .styles({ 'cursor': 'pointer', ...plotstyles })
+                .style("cursor", 'pointer')
+        
                 .on('click', plotclick)
         }
         group
@@ -233,9 +234,7 @@ class d3area {
                 .duration(800)
                 .attr("fill",pathcolor)
                 .style("opacity", 1)
-                .styles({
-                    ...plotstyles_hover
-                })
+              
         }
         function gridMouseOut() {
             let item = d3.select(this)
@@ -248,7 +247,7 @@ class d3area {
                 .transition()
                 .duration(800)
                 .style("opacity", 0)
-                .styles({ ...plotstyles })
+               
         }
         g.append("g")
             .attr("class", "axis axis--x")
