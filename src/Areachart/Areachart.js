@@ -1,7 +1,6 @@
 import React, { Component, } from 'react'
 import * as d3 from 'd3'
 import PropTypes from 'prop-types'
-import "d3-selection-multi";
 class Areachart extends Component {
     constructor(props) {
         super(props)
@@ -205,11 +204,8 @@ class d3area {
             group.append('circle')
                 .attr('cx', d => x(d._X))
                 .attr('cy', d => y(d._Y))
-                .attrs({
-                    r: 5,
-                    fill: pathcolor,
-                    ...plotattrs
-                })
+                .attr("r",5)
+                .attr('fill',pathcolor)
                 .style("opacity", 0)
                 .styles({ 'cursor': 'pointer', ...plotstyles })
                 .on('click', plotclick)
@@ -235,10 +231,7 @@ class d3area {
             item.select('circle')
                 .transition()
                 .duration(800)
-                .attrs({
-                    fill:pathcolor,
-                    ...plotattrs_hover
-                })
+                .attr("fill",pathcolor)
                 .style("opacity", 1)
                 .styles({
                     ...plotstyles_hover
