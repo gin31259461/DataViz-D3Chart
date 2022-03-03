@@ -1,11 +1,11 @@
 # IQS 前端圖表component
 
-[Docs & Demo](http://192.168.1.89/component/)
+[Docs & Demo](http://react_component.gitlabpage.wke.csie.ncnu.edu.tw/Chart_Component/)
 
 
 ## Installation
 ```
-    npm install git+http://10.21.21.12/wke/Chart_Component.git
+   npm install git+https://gitlab.wke.csie.ncnu.edu.tw/react_component/Chart_Component.git
 ```
 
 ## 支援版本
