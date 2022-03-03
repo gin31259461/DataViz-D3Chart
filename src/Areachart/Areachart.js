@@ -1,6 +1,7 @@
 import React, { Component, } from 'react'
 import * as d3 from 'd3'
 import PropTypes from 'prop-types'
+import "d3-selection-multi";
 class Areachart extends Component {
     constructor(props) {
         super(props)
