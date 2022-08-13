@@ -1,239 +1,450 @@
-import React, { Component, } from 'react'
-import * as d3 from 'd3'
-import PropTypes from 'prop-types'
-class BarchartStacked extends Component {
-    constructor(props) {
-        super(props)
+import React, { Component } from "react";
+import * as d3 from "d3";
+import PropTypes from "prop-types";
+
+class BarChartStacked extends Component {
+
+  constructor(props) {
+    super(props);
+  }
+
+  static propTypes = {
+    data: PropTypes.array.isRequired,
+    getX: PropTypes.func, // function to fetch x-axis data
+    keysOfGroups: PropTypes.arrayOf(PropTypes.string), // fetch y-axis data
+    width: PropTypes.number, // chart width
+    height: PropTypes.number, // chart height
+    chartTitleText: PropTypes.string, // title of chart
+    tooltipTitle: PropTypes.func, // function of tooltip title
+    xAxisText: PropTypes.string, // x axis label
+    yAxisText: PropTypes.string, // y axis label
+    xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    xPadding: PropTypes.number,
+    marginTop: PropTypes.number,
+    marginRight: PropTypes.number,
+    marginBottom: PropTypes.number,
+    marginLeft: PropTypes.number,
+    color: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.arrayOf(PropTypes.string) 
+    ]), // bar color
+    xDomain: [PropTypes.number, PropTypes.number],
+    yDomain: [PropTypes.number, PropTypes.number],
+    xRange: [PropTypes.number, PropTypes.number],
+    yRange: [PropTypes.number, PropTypes.number],
+    animationTime: PropTypes.number, // ms
+    enableAnimation: PropTypes.bool,
+    enableBarValue: PropTypes.bool,
+    enableXAxis: PropTypes.bool,
+    enableYAxis: PropTypes.bool,
+    enableLegend: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    getX: d => d.x,
+    keysOfGroups: ["y"],
+    width: 500,
+    height: 300,
+    chartTitleText: "",
+    tooltipTitle: undefined, 
+    xAxisText: "",
+    yAxisText: "", 
+    xAxisTicksTextRotation: 0,
+    xPadding: 0.1,
+    marginTop: 40,
+    marginRight: 40,
+    marginBottom: 30,
+    marginLeft: 60,
+    color: undefined,
+    xDomain: undefined,
+    yDomain: undefined,
+    xRange: undefined,
+    yRange: undefined,
+    animationTime: 2000,
+    enableAnimation: true,
+    enableBarValue: true,
+    enableXAxis: true,
+    enableYAxis: true,
+    enableLegend: true,
+  };
+
+  componentDidMount() {
+    const { data, ...attr } = this.props;
+    const element = this.element, bar = new D3BarChartStacked(element);
+    bar.render(data, attr);
+  }
+
+  render() {
+    return <svg ref = { element => this.element = element} />;
+  }
+
+};
+
+class D3BarChartStacked {
+
+  constructor(element) {
+    this.svg = d3.select(element)
+  }
+
+  render(data, attr) {
+
+    let {
+      getX, keysOfGroups, width, height, chartTitleText, tooltipTitle, xAxisText, yAxisText,
+      xPadding, marginTop, marginRight, marginBottom, marginLeft, animationTime,
+      color, xRange, yRange, xDomain, yDomain, enableLegend, xAxisTicksTextRotation,
+      enableAnimation, enableBarValue, enableXAxis, enableYAxis,
+    } = attr;
+
+    if (xRange === undefined) xRange = [marginLeft, width - marginRight];
+    if (yRange === undefined) yRange = [height - marginBottom, marginTop];
+
+    const x = d3.map(data, getX);
+
+    const groupData = keysOfGroups.map(k => {
+      const newData = [];
+      d3.map(data, (d, i) => {
+        newData.push({
+          "x": x[i],
+          "y": Number(d[k]),
+          "stackedY": Number(d[k]),
+          "group": k,
+        });
+      });
+      return { "group": k, "value": newData};
+    });
+    keysOfGroups.push("all");
+
+    // stack data
+    groupData.map( (g, i) => {
+      g.value.map( (_, k) => {
+        if (i >= 1)
+          groupData[i].value[k].stackedY += groupData[i-1].value[k].stackedY; 
+      });
+    });
+
+    if(xDomain === undefined) xDomain = x.filter( d => d != "");
+    if(yDomain === undefined) yDomain = [0, d3.max(data, d => d3.sum(d3.map(keysOfGroups, k => d[k]))) * 1.2];
+
+    // unique domain
+    xDomain = new d3.InternSet(xDomain);
+
+    const
+      xScale = d3.scaleBand(xDomain, xRange).padding(xPadding),
+      yScale = d3.scaleLinear(yDomain, yRange),
+      xAxisType = d3.axisBottom(xScale).tickSizeOuter(0),
+      yAxisType = d3.axisLeft(yScale).ticks(height / 40),
+      fontSize = (width + height) / 100 + "px";
+
+    if (color === undefined)
+      color = d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), keysOfGroups.length);
+
+    const colorScale = d3.scaleOrdinal(keysOfGroups, color);
+
+    if(tooltipTitle === undefined)
+      tooltipTitle = d => {
+        return `group: ${d.group}\nx: ${d.x}\ny: ${d.y}`;
+      };
+
+    const svg = this.svg 
+      .attr("width", width)
+      .attr("height", height)
+      .attr("viewBox", [0, 0, width, height])
+      .attr("overflow", "visible");
+
+    function yAxisAttr() {
+      yAxis
+        .call(g => g.select(".domain").remove()) // remove y axis domain line
+        .call(g => g.selectAll(".tick line").clone() // copy y axis tick line
+          .attr('x2', width - marginLeft - marginRight)
+          .attr("stroke-opacity", 0.1)
+        )
+        .call(g => g.append("text")
+          .attr("x", -20)
+          .attr("y", marginTop - 25) 
+          .attr("fill", "black")
+          .attr("text-anchor", "start")
+          .style("font-size", "12px")
+          .text(yAxisText)
+        )
     }
-    static propTypes = {
-        /** 資料*/
-        data: PropTypes.array.isRequired,
-        /** SVG 的寬度*/
-        width: PropTypes.number,
-        /** SVG 的高度 */
-        height: PropTypes.number,
-        /** SVG 的上邊界 */
-        margintop: PropTypes.number,
-        /** SVG 的下邊界 */
-        marginbottom: PropTypes.number,
-        /** SVG 的右邊界 */
-        marginright: PropTypes.number,
-        /** SVG 的左邊界*/
-        marginleft: PropTypes.number,
-        /** X軸的取資料函式 */
-        getX: PropTypes.func,
-        /** X軸 text 的屬性 */
-        Xaxisattrs: PropTypes.object,
-        /** X軸的間隔  ( 0 - 1 )*/
-        Xpadding: PropTypes.number,
-        /** 每個X軸群集的 資料 key 值 */
-        Xgroup: PropTypes.arrayOf(PropTypes.string),
-        /** Y軸的單位 */
-        YaxisText: PropTypes.string,
-        /** 給定 Xgroup 的對應顏色陣列 或者d3 顏色函式 */
-        color: PropTypes.oneOfType([
-            PropTypes.func,
-            PropTypes.arrayOf(PropTypes.string),
-        ]),
-        /** 是否呈現網格*/
-        showgrid: PropTypes.bool,
-        /** 圖表上升動畫時間 */
-        barAnimateTime: PropTypes.number,
-        /** 長條圖點擊時觸發事件  */
-        onClick: PropTypes.func,
-        /** 圖例點擊動畫是否啟動 */
-        legendClick: PropTypes.bool,
+
+    const yAxis = svg.append("g").attr("transform", `translate(${marginLeft}, 0)`);
+    if (enableYAxis) {
+      yAxis
+        .call(yAxisType);
+      yAxisAttr();
     }
-    static defaultProps = {
-        width: 500,
-        height: 200,
-        margintop: 50,
-        marginbottom: 30,
-        marginright: 150,
-        marginleft: 40,
-        getX: (d) => d.text,
-        Xgroup: ['groupA', "groupB"],
-        Xaxisattrs: {},
-        YaxisText: '$',
-        Xpadding: .3,
-        color: d3.scaleOrdinal(d3.schemeCategory20),
-        showgrid: true,
-        legendClick: true,
-        barAnimateTime: 1000,
-        onClick: (d, i) => { },
 
+    if (enableXAxis) {
+      const xAxis = svg.append("g").attr("transform", `translate(0, ${height - marginBottom})`);
+      xAxis
+        .call(xAxisType)
+      if (xAxisTicksTextRotation != 0)
+        xAxis
+          .selectAll("text")
+            .attr("text-anchor", "start")
+            .attr("transform", d => `rotate(${xAxisTicksTextRotation})`)
+      xAxis
+        .call(g => g.append("text")
+          .attr("x", width - marginRight + 25) 
+          .attr("y", 15)
+          .attr("fill", "black") 
+          .attr("style", "12px")
+          .text(xAxisText)
+        );
     }
-    componentDidMount() {
-        const { data, ...settings } = this.props
-        var el = this.el,
-            bar = new d3bar(el)
-        bar.render(data, settings)
+        
+    const 
+      bar = svg.append("g"),
+      barWidth = xScale.bandwidth() / 2,
+      createBar = bar.selectAll("rect");
+
+    let currentY = [];
+    groupData[1].value.map(d => currentY.push(yScale(d.y)));
+    
+    groupData.map( (d, i) => {
+      createBar
+        .data(d.value)
+        .join("rect")
+          .attr("class", "all _" + d.group)
+          .attr("fill", d => colorScale(d.group))
+          .attr("height", d => yScale(0) - yScale(d.y))
+          .attr("width", barWidth)
+          .attr("x", d => xScale(d.x) + barWidth / 2) 
+          .attr("y", d => yScale(d.stackedY))
+        .on("mouseover", showTooltip)
+        .on("mouseleave", hideTooltip);
+    });
+
+    const
+      barValue = svg.append("g"),
+      createBarValue = barValue.selectAll("text");
+    if (enableBarValue) {
+      groupData.map( d => {
+        createBarValue
+          .data(d.value)
+          .join("text")
+          .text(d => d.stackedY)
+            .attr("class", d => "all _" + d.x + " _" + d.group)
+            .style("font-size", fontSize)
+            .attr("fill", "none")
+            .attr("text-anchor", "middle")
+            .attr("x", d => xScale(d.x) + barWidth) 
+            .attr("y", d => yScale(d.stackedY) - 2);
+      })
     }
-    render() {
-        return <svg ref={(el) => this.el = el} />
-    }
-}
+    barValue.selectAll("._" + keysOfGroups[keysOfGroups.length - 2]).attr("fill", "black");
 
-class d3bar {
-    constructor(el) {
-        this.svg = d3.select(el)
-    }
-    render(data, settings) {
-        let { width, height,
-            margintop, marginbottom, marginright, marginleft,
-            getX, Xpadding, YaxisText, Xgroup, Xaxisattrs,
-            showgrid, 
-            color,
-            barAnimateTime, legendClick,
-            onClick
-        } = settings
+    const chartTitle = svg.append("g");
+    chartTitle
+    .call(g => g.append("text")
+      .attr("x", marginLeft + (width - marginRight - marginLeft) / 2)
+      .attr("y", marginTop / 2)
+      .attr("fill", "black")
+      .style("font-weight", 550)
+      .style("font-size", "20px")
+      .attr("text-anchor", "middle")
+      .text(chartTitleText)
+    );
 
-        let x = d3.scaleBand().rangeRound([0, width]).padding(Xpadding),
-            y = d3.scaleLinear().rangeRound([height, 0])
-        let keys = Xgroup
-        data = data.map(d => {
-            let total = 0
-            keys.map(k => { total += d[k] })
-            return {
-                ...d,
-                total,
-                X: getX(d)
-            }
-        })
+    // animation
+    if (enableAnimation) {
+      bar.selectAll("rect")
+        .attr("y", height - marginBottom)
+        .attr("height", 0)
+        .attr("fill", "rgba(0, 0, 0, 0)")
+        .transition()
+        .attr("y", d => yScale(d.stackedY))
+        .attr("height", d => yScale(0) - yScale(d.y))
+        .attr("fill", d => colorScale(d.group))
+        .duration(animationTime);
 
-        x.domain(data.map(d => d.X))
-        y.domain([0, d3.max(data, d => d.total)]).nice()
-        let g = this.svg
-            .attr('width', width + marginleft + marginright)
-            .attr('height', height + margintop + marginbottom)
-            .append('g')
-            .attr('transform', `translate( ${marginleft} , ${margintop} )`)
-
-        g.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + (height) + ")")
-            .call(d3.axisBottom(x))
-            .selectAll("text")
-            .attrs(Xaxisattrs)
-
-        let axisY = g.append("g")
-            .attr("class", "axis axis--y")
-            .call(d3.axisLeft(y).ticks(10))
-
-        axisY
-            .append("text")
-            .attr("transform", "rotate(-90)")
-            .attr("y", 6)
-            .attr("dy", ".71em")
-            .style("text-anchor", "end")
-            .attr('font-weight', 'bold')
-            .attr('fill', 'rgba(0,0,0,1)')
-            .text(YaxisText)
-        if (showgrid) {
-            let grid = g.append('g')
-            grid.append("g")
-                .call(d3.axisLeft(y)
-                    .tickSize(-width)
-                    .tickFormat("")
-                )
-                .attr("stroke-opacity", 0.3)
-                .attr("stroke-width", 1)
-                .attr("shape-rendering", "crispEdges")
-                .select('path')
-                .attr("stroke-width", 0)
+      if (enableBarValue) {
+        barValue.selectAll("text")
+          .transition()
+          .attrTween("y", d => {
+            const f = d3.interpolate(yScale(0), yScale(d.stackedY) - 2);
+            return t => {
+                return f(t);
+            };
+          })
+          .textTween( d => {
+            const f = d3.interpolate(0, d.stackedY);
+            return t => {
+              return `${d3.format(".0f")(f(t))}`;
+            };
+          })
+          .duration(animationTime);
         }
-        let legend = g.append('g')
-            .selectAll("g")
-            .data([...keys, 'all'])
-            .enter()
-            .append('g')
-            .style("opacity", d => d == 'all' ? 1 : 0.1)
-        let legendrect = legend.append('rect')
-            .attr('width', 15)
-            .attr('height', 15)
-            .attr('transform', (d, i) => { return `translate( ${width} , ${30 * i})` })
-            .style("fill", (d, i) => Array.isArray(color) ? color[i % color.length] : color(d))
-        let legendtext = legend.append('text')
-            .attr('fill', '#000')
-            .text(d => d)
-            .attr('transform', (d, i) => { return `translate( ${width + 20} , ${30 * i + 15})` })
+    }
 
-        let group = g.append("g")
-            .selectAll("g")
-            .data(d3.stack().keys(keys)(data))
-            .enter()
-            .append("g")
-          
+    // control tooltip
+    let selectedOne = false;
 
-        let rect = group
-            .selectAll("rect")
-            .data(d => { d.map((item) => item.key = d.key); return d })
-            .enter()
-            .append("rect")
-            .attr("x", d => x(d.data.X))
-            .attr("y", d => height)
+    // tooltip
+    const tooltip = svg.append("g")
+      .attr("pointer-events", "none")
+
+    function showTooltip(_, d) {
+      const i = keysOfGroups.indexOf(d.group);
+      tooltip.style("display", null);
+      tooltip.attr("transform", `translate(${xScale(d.x) + barWidth}, ${yScale(d.stackedY) - 10})`);
+      barValue.select("._" + d.x).style("opacity", 0);
+
+      const path = tooltip.selectAll("path")
+      .data([,])
+      .join("path")
+        .attr("fill", "rgba(250, 250, 250, 0.8)")
+        .attr("stroke", "rgba(224, 224, 224, 1)")
+        .attr("color", "black");
+
+      const text = tooltip.selectAll("text")
+      .data([,])
+      .join("text")
+        .style("font-size", fontSize)
+      .call(text => text
+        .selectAll("tspan")
+        .data(`${tooltipTitle(d)}`.split(/\n/))
+        .join("tspan")
+        .attr("x", 0)
+        .attr("y", (_, i) => `${i * 1.1}em`)
+        .attr("font-weight", (_, i) => i ? null : "bold")
+        .text(d => d)
+      );
+
+      const textBox = text.node().getBBox();
+      text.attr("transform", `translate(${-textBox.width / 2}, ${-textBox.height + 5})`);
+      path.attr("d", `M${-textBox.width / 2 - 10},5H-5l5,5l5,-5H${textBox.width / 2 + 10}v${-textBox.height - 20}h-${textBox.width + 20}z`);
+    }
+    function hideTooltip(_, d) {
+      tooltip.style("display", "none");
+      barValue.select("._" + d.x).style("opacity", 1);
+    }
+
+    // legend
+    if (enableLegend) {
+      const legend = svg.append("g")
+        .attr("transform", `translate(${width - marginRight + 25 + 20}, ${marginTop})`)
+        .style("cursor", "pointer");
+      legend
+        .selectAll("circle")
+        .data(keysOfGroups)
+        .join("circle")
+          .attr("class", d => "legend_" + d)
+          .attr("cx", 0)
+          .attr("cy", (_, i) => i * 20 * 1.1)
+          .attr("r", 10)
+          .attr("fill", d => colorScale(d));
+      legend
+        .selectAll("text")
+        .data(keysOfGroups)
+        .join("text")
+          .attr("class", d => "legend_" + d)
+          .attr("x", 20)
+          .attr("y", (_, i) => i * 20 * 1.1 + 4)
+          .attr("text-anchor", "start")
+          .style("font-size", "12px")
+          .style("font-weight", 300)
+          .text(d => d);
+      setTimeout(() => {
+        keysOfGroups.slice(0, -1).map(d => {
+          legend.select(".legend_" + d)
+            .on("mouseover", highlight)
+            .on("mouseleave", noHighlight)
+            .on("click", selectOne);
+        });
+        legend.select(".legend_all").on("click", selectAll);
+      }, animationTime);
+    }
+
+    function highlight(_, d) {
+      if (!(d === "all") && !selectedOne) {
+        bar.selectAll(".all").style("opacity", 0.2);
+        barValue.selectAll(".all").style("opacity", 0.2);
+        bar.selectAll("._" + d).style("opacity", 1);
+      }
+    }
+    function noHighlight() {
+        bar.selectAll(".all").style("opacity", 1);
+        barValue.selectAll(".all").style("opacity", 1);
+    }
+    function selectOne(_, d) {
+      selectedOne = true;
+      groupData.map(data => {
+        if (!(data.group === d) && !(d === "all")) {
+          bar.selectAll("._" + data.group)
+            .transition()
             .attr("height", 0)
-            .attr("width", x.bandwidth())
-            .on('click', (d,i)=>onClick(d.data,i))
-
-
-        rect.transition()
-            .duration(barAnimateTime)
-            .attr("y", d => y(d[1]))
-            .attr("height", d => y(d[0]) - y(d[1]))
-            .attr("fill", d => Array.isArray(color) ? color[i % color.length] : color(d.key))
-
-        if (legendClick) {
-      
-            legend.attr('cursor', 'pointer').on('mouseover', legendMouseOver)
-                .on("mouseout", legendMouseOut)
-                .on('click', legendclick)
-
-            function legendclick(item, i) {
-                legend.style("opacity", 0.1)
-                d3.select(this).style("opacity", 1)
-                if (item === 'all') {
-                    y.domain([0, d3.max(data, d => d.total)]).nice()
-                    axisY.transition()
-                        .duration(750)
-                        .call(d3.axisLeft(y).ticks(10));
-                    rect.transition()
-                        .duration(barAnimateTime)
-                        .attr("y", d => y(d[1]))
-                        .attr("height", d => y(d[0]) - y(d[1]))
-                        .attr("fill", d => Array.isArray(color) ? color[i % color.length] : color(d.key))
-                }
-                else {
-                    y.domain([0, d3.max(data, d => d[item])]).nice()
-                    axisY.transition()
-                        .duration(barAnimateTime)
-                        .call(d3.axisLeft(y).ticks(10));
-                    rect.transition()
-                        .duration(barAnimateTime)
-                        .attr("y", d => d.key == item ? height - y(d[0]) + y(d[1]) : height)
-                        .attr("height", d => d.key == item ? y(d[0]) - y(d[1]) : 0)
-                        .attr('fill', (d, i) => d.key == item ? Array.isArray(color) ? color[i % color.length] : color(d.key) : 'rgba(255,0,0,0)')
-                }
-
-            }
-
-            function legendMouseOver() {
-                let item = d3.select(this)
-                item.select('text')
-                    .attr('fill', '#f00')
-            }
-            function legendMouseOut() {
-                let item = d3.select(this)
-                item.select('text')
-                    .attr('fill', '#000')
-
-            }
+            .attr("width", barWidth)
+            .attr("x", d => xScale(d.x) + barWidth / 2)
+            .attr("y", height - marginBottom)
+            .attr("fill", "rgba(0, 0, 0, 0)")
+            .duration(500);
+          barValue.selectAll("._" + data.group)
+            .transition()
+            .attr("x", d => xScale(d.x) + barWidth)
+            .attr("y", yScale(0))
+            .style("fill", "none")
+            .duration(500);
         }
-
+        else if (data.group === d) {
+          const selectOneYScale = d3.scaleLinear([0, d3.max(data.value, d => d.y) * 1.2], yRange);
+          yAxis.selectAll(".tick").remove();
+          yAxis
+            .transition()
+            .call(d3.axisLeft(selectOneYScale).ticks(height / 40))
+            .duration(500);
+          yAxisAttr();
+          bar.selectAll("._" + data.group)
+            .transition()
+            .attr("height", d => selectOneYScale(0) - selectOneYScale(d.y))
+            .attr("width", xScale.bandwidth() / 2)
+            .attr("x", d => xScale(d.x) + barWidth / 2)
+            .attr("y", d => selectOneYScale(d.y))
+            .attr("fill", d => colorScale(d.group))
+            .duration(500);
+          barValue.selectAll("._" + data.group)
+            .transition()
+            .text(d => d.y)
+            .attr("x", d => xScale(d.x) + barWidth)
+            .attr("y", d => selectOneYScale(d.y) - 2)
+            .style("fill", "black")
+            .duration(500);
+        }
+      });
     }
+    function selectAll() {
+      selectedOne = false;
+      yAxis.selectAll(".tick").remove();
+      yAxis
+        .transition()
+        .call(yAxisType)
+        .duration(500);
+      yAxisAttr();
+      bar.selectAll(".all")
+        .transition()
+        .attr("height", d => yScale(0) - yScale(d.y))
+        .attr("width", barWidth)
+        .attr("x", d => xScale(d.x) + barWidth / 2) 
+        .attr("y", d => yScale(d.stackedY))
+        .attr("fill", d => colorScale(d.group))
+        .duration(500);
+      barValue.selectAll(".all")
+        .transition()
+        .attr("x", d => xScale(d.x) + barWidth) 
+        .attr("y", d => yScale(d.stackedY) - 2)
+        .style("fill", "none")
+        .duration(500);
+      barValue.selectAll("._" + keysOfGroups[keysOfGroups.length - 2])
+        .transition()
+        .text(d => d.stackedY)
+        .attr("x", d => xScale(d.x) + barWidth) 
+        .attr("y", d => yScale(d.stackedY) - 2)
+        .style("fill", "black")
+        .duration(500);
+    }
+  }
 
-}
+};
 
-
-
-export default BarchartStacked;
+export {BarChartStacked};
