@@ -10,4 +10,5 @@ pages:
     paths:
       - public
   only:
+    - master
     - d3v7
