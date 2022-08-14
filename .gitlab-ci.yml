@@ -8,7 +8,6 @@ pages:
     - mv styleguide public 
   artifacts:
     paths:
-      - public
+      - d3v7-chart
   only:
-    - master
     - d3v7
