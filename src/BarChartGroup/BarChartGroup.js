@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import * as d3 from "d3";
 import PropTypes from "prop-types";
 
-class BarChartStacked extends Component {
+class BarChartGroup extends Component {
 
   constructor(props) {
     super(props);
@@ -70,7 +70,7 @@ class BarChartStacked extends Component {
 
   componentDidMount() {
     const { data, ...attr } = this.props;
-    const element = this.element, bar = new D3BarChartStacked(element);
+    const element = this.element, bar = new D3BarChartGroup(element);
     bar.render(data, attr);
   }
 
@@ -80,7 +80,7 @@ class BarChartStacked extends Component {
 
 };
 
-class D3BarChartStacked {
+class D3BarChartGroup {
 
   constructor(element) {
     this.svg = d3.select(element)
@@ -106,7 +106,6 @@ class D3BarChartStacked {
         newData.push({
           "x": x[i],
           "y": Number(d[k]),
-          "stackedY": Number(d[k]),
           "group": k,
         });
       });
@@ -114,16 +113,8 @@ class D3BarChartStacked {
     });
     keysOfGroups.push("all");
 
-    // stack data
-    groupData.map( (g, i) => {
-      g.value.map( (_, k) => {
-        if (i >= 1)
-          groupData[i].value[k].stackedY += groupData[i-1].value[k].stackedY; 
-      });
-    });
-
     if(xDomain === undefined) xDomain = x.filter( d => d != "");
-    if(yDomain === undefined) yDomain = [0, d3.max(data, d => d3.sum(d3.map(keysOfGroups, k => d[k]))) * 1.2];
+    if(yDomain === undefined) yDomain = [0, d3.max(data, d => d3.max(keysOfGroups, k => d[k])) * 1.1];
 
     // unique domain
     xDomain = new d3.InternSet(xDomain);
@@ -151,28 +142,23 @@ class D3BarChartStacked {
       .attr("viewBox", [0, 0, width, height])
       .attr("overflow", "visible");
 
-    function yAxisAttr() {
-      yAxis
-        .call(g => g.select(".domain").remove()) // remove y axis domain line
-        .call(g => g.selectAll(".tick line").clone() // copy y axis tick line
-          .attr('x2', width - marginLeft - marginRight)
-          .attr("stroke-opacity", 0.1)
-        )
-        .call(g => g.append("text")
-          .attr("x", -20)
-          .attr("y", marginTop - 25) 
-          .attr("fill", "black")
-          .attr("text-anchor", "start")
-          .style("font-size", "12px")
-          .text(yAxisText)
-        )
-    }
-
-    const yAxis = svg.append("g").attr("transform", `translate(${marginLeft}, 0)`);
     if (enableYAxis) {
+      const yAxis = svg.append("g").attr("transform", `translate(${marginLeft}, 0)`);
       yAxis
-        .call(yAxisType);
-      yAxisAttr();
+      .call(yAxisType)
+      .call(g => g.select(".domain").remove()) // remove y axis domain line
+      .call(g => g.selectAll(".tick line").clone() // copy y axis tick line
+        .attr('x2', width - marginLeft - marginRight)
+        .attr("stroke-opacity", 0.1)
+      )
+      .call(g => g.append("text")
+        .attr("x", -20)
+        .attr("y", marginTop - 25) 
+        .attr("fill", "black")
+        .attr("text-anchor", "start")
+        .style("font-size", "12px")
+        .text(yAxisText)
+      );
     }
 
     if (enableXAxis) {
@@ -196,22 +182,22 @@ class D3BarChartStacked {
         
     const 
       bar = svg.append("g"),
-      barWidth = xScale.bandwidth() / 2,
+      barSize = keysOfGroups.length - 1,
+      barPadding = 2,
+      barWidth = (xScale.bandwidth() / 2 - ((barSize - 1) * barPadding)) / barSize,
       createBar = bar.selectAll("rect");
 
-    let currentY = [];
-    groupData[1].value.map(d => currentY.push(yScale(d.y)));
-    
     groupData.map( (d, i) => {
       createBar
         .data(d.value)
         .join("rect")
           .attr("class", "all _" + d.group)
           .attr("fill", d => colorScale(d.group))
-          .attr("height", d => yScale(0) - yScale(d.y))
+          .style("cursor", "pointer")
           .attr("width", barWidth)
-          .attr("x", d => xScale(d.x) + barWidth / 2) 
-          .attr("y", d => yScale(d.stackedY))
+          .attr("height", d => yScale(0) - yScale(d.y))
+          .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding) 
+          .attr("y", d => yScale(d.y))
         .on("mouseover", showTooltip)
         .on("mouseleave", hideTooltip);
     });
@@ -219,21 +205,20 @@ class D3BarChartStacked {
     const
       barValue = svg.append("g"),
       createBarValue = barValue.selectAll("text");
+
     if (enableBarValue) {
-      groupData.map( d => {
+      groupData.map( (d, i) => {
         createBarValue
           .data(d.value)
           .join("text")
-          .text(d => d.stackedY)
-            .attr("class", d => "all _" + d.x + " _" + d.group)
+          .text(d => d.y)
+            .attr("class", (d, i) => "all _" + d.group + " barValue_" + d.group + "_" + d.x)
             .style("font-size", fontSize)
-            .attr("fill", "none")
             .attr("text-anchor", "middle")
-            .attr("x", d => xScale(d.x) + barWidth) 
-            .attr("y", d => yScale(d.stackedY) - 2);
-      })
+            .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding + barWidth / 2) 
+            .attr("y", d => yScale(d.y) - 2);
+      });
     }
-    barValue.selectAll("._" + keysOfGroups[keysOfGroups.length - 2]).attr("fill", "black");
 
     const chartTitle = svg.append("g");
     chartTitle
@@ -254,7 +239,7 @@ class D3BarChartStacked {
         .attr("height", 0)
         .attr("fill", "rgba(0, 0, 0, 0)")
         .transition()
-        .attr("y", d => yScale(d.stackedY))
+        .attr("y", d => yScale(d.y))
         .attr("height", d => yScale(0) - yScale(d.y))
         .attr("fill", d => colorScale(d.group))
         .duration(animationTime);
@@ -263,13 +248,13 @@ class D3BarChartStacked {
         barValue.selectAll("text")
           .transition()
           .attrTween("y", d => {
-            const f = d3.interpolate(yScale(0), yScale(d.stackedY) - 2);
+            const f = d3.interpolate(yScale(0), yScale(d.y) - 2);
             return t => {
                 return f(t);
             };
           })
           .textTween( d => {
-            const f = d3.interpolate(0, d.stackedY);
+            const f = d3.interpolate(0, d.y);
             return t => {
               return `${d3.format(".0f")(f(t))}`;
             };
@@ -288,8 +273,11 @@ class D3BarChartStacked {
     function showTooltip(_, d) {
       const i = keysOfGroups.indexOf(d.group);
       tooltip.style("display", null);
-      tooltip.attr("transform", `translate(${xScale(d.x) + barWidth}, ${yScale(d.stackedY) - 10})`);
-      barValue.select("._" + d.x).style("opacity", 0);
+      if (selectedOne)
+        tooltip.attr("transform", `translate(${xScale(d.x) + xScale.bandwidth() / 2}, ${yScale(d.y) - 10})`);
+      else
+        tooltip.attr("transform", `translate(${xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding + barWidth / 2}, ${yScale(d.y) - 10})`);
+      barValue.select(".barValue_" + d.group + "_" + d.x).style("opacity", 0);
 
       const path = tooltip.selectAll("path")
       .data([,])
@@ -318,7 +306,7 @@ class D3BarChartStacked {
     }
     function hideTooltip(_, d) {
       tooltip.style("display", "none");
-      barValue.select("._" + d.x).style("opacity", 1);
+      barValue.select(".barValue_" + d.group + "_" + d.x).style("opacity", 1);
     }
 
     // legend
@@ -362,6 +350,7 @@ class D3BarChartStacked {
         bar.selectAll(".all").style("opacity", 0.2);
         barValue.selectAll(".all").style("opacity", 0.2);
         bar.selectAll("._" + d).style("opacity", 1);
+        barValue.selectAll("._" + d).style("opacity", 1);
       }
     }
     function noHighlight() {
@@ -375,39 +364,31 @@ class D3BarChartStacked {
           bar.selectAll("._" + data.group)
             .transition()
             .attr("height", 0)
-            .attr("width", barWidth)
-            .attr("x", d => xScale(d.x) + barWidth / 2)
+            .attr("width", xScale.bandwidth() / 2)
+            .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4)
             .attr("y", height - marginBottom)
             .attr("fill", "rgba(0, 0, 0, 0)")
             .duration(500);
           barValue.selectAll("._" + data.group)
             .transition()
-            .attr("x", d => xScale(d.x) + barWidth)
+            .attr("x", d => xScale(d.x) + xScale.bandwidth() / 2)
             .attr("y", yScale(0))
             .style("fill", "none")
             .duration(500);
         }
         else if (data.group === d) {
-          const selectOneYScale = d3.scaleLinear([0, d3.max(data.value, d => d.y) * 1.2], yRange);
-          yAxis.selectAll(".tick").remove();
-          yAxis
-            .transition()
-            .call(d3.axisLeft(selectOneYScale).ticks(height / 40))
-            .duration(500);
-          yAxisAttr();
           bar.selectAll("._" + data.group)
             .transition()
-            .attr("height", d => selectOneYScale(0) - selectOneYScale(d.y))
+            .attr("height", d => yScale(0) - yScale(d.y))
             .attr("width", xScale.bandwidth() / 2)
-            .attr("x", d => xScale(d.x) + barWidth / 2)
-            .attr("y", d => selectOneYScale(d.y))
+            .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4)
+            .attr("y", d => yScale(d.y))
             .attr("fill", d => colorScale(d.group))
             .duration(500);
           barValue.selectAll("._" + data.group)
             .transition()
-            .text(d => d.y)
-            .attr("x", d => xScale(d.x) + barWidth)
-            .attr("y", d => selectOneYScale(d.y) - 2)
+            .attr("x", d => xScale(d.x) + xScale.bandwidth() / 2)
+            .attr("y", d => yScale(d.y) - 2)
             .style("fill", "black")
             .duration(500);
         }
@@ -415,36 +396,25 @@ class D3BarChartStacked {
     }
     function selectAll() {
       selectedOne = false;
-      yAxis.selectAll(".tick").remove();
-      yAxis
-        .transition()
-        .call(yAxisType)
-        .duration(500);
-      yAxisAttr();
-      bar.selectAll(".all")
-        .transition()
-        .attr("height", d => yScale(0) - yScale(d.y))
-        .attr("width", barWidth)
-        .attr("x", d => xScale(d.x) + barWidth / 2) 
-        .attr("y", d => yScale(d.stackedY))
-        .attr("fill", d => colorScale(d.group))
-        .duration(500);
-      barValue.selectAll(".all")
-        .transition()
-        .attr("x", d => xScale(d.x) + barWidth) 
-        .attr("y", d => yScale(d.stackedY) - 2)
-        .style("fill", "none")
-        .duration(500);
-      barValue.selectAll("._" + keysOfGroups[keysOfGroups.length - 2])
-        .transition()
-        .text(d => d.stackedY)
-        .attr("x", d => xScale(d.x) + barWidth) 
-        .attr("y", d => yScale(d.stackedY) - 2)
-        .style("fill", "black")
-        .duration(500);
+      groupData.map( (data, i) => {
+        bar.selectAll("._" + data.group)
+          .transition()
+          .attr("height", d => yScale(0) - yScale(d.y))
+          .attr("width", barWidth)
+          .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding) 
+          .attr("y", d => yScale(d.y))
+          .attr("fill", d => colorScale(d.group))
+          .duration(500);
+        barValue.selectAll("._" + data.group)
+          .transition()
+          .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding + barWidth / 2) 
+          .attr("y", d => yScale(d.y) - 2)
+          .style("fill", "black")
+          .duration(500);
+      });
     }
   }
 
 };
 
-export {BarChartStacked};
+export {BarChartGroup};

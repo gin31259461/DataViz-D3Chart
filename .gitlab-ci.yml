@@ -1,9 +1,7 @@
-pages:
+react-d3-component:
   cache:
     paths:
       - node_modules
-  tags:
-    - "shell"
   script:
     - npm install 
     - npm run styleguide:build
