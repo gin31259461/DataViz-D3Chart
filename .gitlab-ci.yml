@@ -3,6 +3,8 @@ stages:
 
 react-d3-component:
   stage: build
+  tags:
+    - "gitlab-page"
   only:
     - d3v7
   cache:
