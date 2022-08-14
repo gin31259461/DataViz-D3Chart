@@ -1,1 +1,276 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _react=_interopRequireWildcard(require("react")),d3=_interopRequireWildcard(require("d3")),_propTypes=_interopRequireDefault(require("prop-types"));function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}function _getRequireWildcardCache(){if("function"!=typeof WeakMap)return null;var a=new WeakMap;return _getRequireWildcardCache=function(){return a},a}function _interopRequireWildcard(a){if(a&&a.__esModule)return a;if(null===a||"object"!==_typeof(a)&&"function"!=typeof a)return{default:a};var b=_getRequireWildcardCache();if(b&&b.has(a))return b.get(a);var c={},d=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var e in a)if(Object.prototype.hasOwnProperty.call(a,e)){var f=d?Object.getOwnPropertyDescriptor(a,e):null;f&&(f.get||f.set)?Object.defineProperty(c,e,f):c[e]=a[e]}return c["default"]=a,b&&b.set(a,c),c}function _typeof(a){"@babel/helpers - typeof";return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol&&a!==Symbol.prototype?"symbol":typeof a},_typeof(a)}function _objectWithoutProperties(a,b){if(null==a)return{};var c,d,e=_objectWithoutPropertiesLoose(a,b);if(Object.getOwnPropertySymbols){var f=Object.getOwnPropertySymbols(a);for(d=0;d<f.length;d++)c=f[d],!(0<=b.indexOf(c))&&Object.prototype.propertyIsEnumerable.call(a,c)&&(e[c]=a[c])}return e}function _objectWithoutPropertiesLoose(a,b){if(null==a)return{};var c,d,e={},f=Object.keys(a);for(d=0;d<f.length;d++)c=f[d],0<=b.indexOf(c)||(e[c]=a[c]);return e}function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperties(a,b){for(var c,d=0;d<b.length;d++)c=b[d],c.enumerable=c.enumerable||!1,c.configurable=!0,"value"in c&&(c.writable=!0),Object.defineProperty(a,c.key,c)}function _createClass(a,b,c){return b&&_defineProperties(a.prototype,b),c&&_defineProperties(a,c),a}function _inherits(a,b){if("function"!=typeof b&&null!==b)throw new TypeError("Super expression must either be null or a function");a.prototype=Object.create(b&&b.prototype,{constructor:{value:a,writable:!0,configurable:!0}}),b&&_setPrototypeOf(a,b)}function _setPrototypeOf(a,b){return _setPrototypeOf=Object.setPrototypeOf||function(a,b){return a.__proto__=b,a},_setPrototypeOf(a,b)}function _createSuper(a){var b=_isNativeReflectConstruct();return function(){var c,d=_getPrototypeOf(a);if(b){var e=_getPrototypeOf(this).constructor;c=Reflect.construct(d,arguments,e)}else c=d.apply(this,arguments);return _possibleConstructorReturn(this,c)}}function _possibleConstructorReturn(a,b){return b&&("object"===_typeof(b)||"function"==typeof b)?b:_assertThisInitialized(a)}function _assertThisInitialized(a){if(void 0===a)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return a}function _isNativeReflectConstruct(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],function(){})),!0}catch(a){return!1}}function _getPrototypeOf(a){return _getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function(a){return a.__proto__||Object.getPrototypeOf(a)},_getPrototypeOf(a)}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var Areachart=function(a){function b(a){return _classCallCheck(this,b),c.call(this,a)}_inherits(b,a);var c=_createSuper(b);return _createClass(b,[{key:"componentDidMount",value:function componentDidMount(){var a=this.props,b=a.data,c=_objectWithoutProperties(a,["data"]),d=this.el,e=new d3area(d);e.render(b,c)}},{key:"render",value:function render(){var a=this;return _react["default"].createElement("svg",{ref:function ref(b){return a.el=b}})}}]),b}(_react.Component);_defineProperty(Areachart,"propTypes",{data:_propTypes["default"].array.isRequired,width:_propTypes["default"].number,height:_propTypes["default"].number,margintop:_propTypes["default"].number,marginbottom:_propTypes["default"].number,marginright:_propTypes["default"].number,marginleft:_propTypes["default"].number,getX:_propTypes["default"].func,getY:_propTypes["default"].func,tiptext:_propTypes["default"].func,XaxisText:_propTypes["default"].string,YaxisText:_propTypes["default"].string,pathcolor:_propTypes["default"].string,areacolor:_propTypes["default"].string,plotattrs:_propTypes["default"].object,plotstyles:_propTypes["default"].object,plotattrs_hover:_propTypes["default"].object,plotstyles_hover:_propTypes["default"].object,timeParse:_propTypes["default"].string,timeformat:_propTypes["default"].string,showgrid:_propTypes["default"].bool,showplottip:_propTypes["default"].bool,plotclick:_propTypes["default"].func,AnimateTime:_propTypes["default"].number}),_defineProperty(Areachart,"defaultProps",{width:500,height:300,margintop:50,marginbottom:30,marginright:50,marginleft:40,getX:function getX(a){return a.date},getY:function getY(a){return a.count},tiptext:function tiptext(a){return"".concat(a.date,"\n").concat(a.count)},plotattrs:{},plotstyles:{},plotattrs_hover:{},plotstyles_hover:{},XaxisText:"\u65E5",YaxisText:"$",timeParse:"%Y-%m-%d",timeformat:"%m-%d",showgrid:!0,showplottip:!0,pathcolor:"#ace",areacolor:"#a7eae2",plotclick:function plotclick(){},AnimateTime:1e3});var d3area=function(){function a(b){_classCallCheck(this,a),this.svg=d3.select(b)}return _createClass(a,[{key:"render",value:function render(a,b){function c(){var a=this.getTotalLength(),b=d3.interpolateString("0,"+a,a+","+a);return function(a){return b(a)}}var e=b.width,f=b.height,h=b.margintop,i=b.marginbottom,j=b.marginright,k=b.marginleft,l=b.lineattr,m=b.plotattrs,n=b.plotstyles,o=b.plotattrs_hover,p=b.plotstyles_hover,q=b.getX,r=b.getY,s=b.tiptext,t=b.areacolor,u=b.pathcolor,v=b.showplottip,w=b.showgrid,z=b.timeParse,A=b.timeformat,B=b.XaxisText,C=b.YaxisText,D=b.AnimateTime,E=b.plotclick,F=d3.scaleTime().rangeRound([0,e]),x=d3.scaleLinear().rangeRound([f,0]),y=d3.area().x(function(a){return F(a._X)}).y1(function(a){return x(a._Y)}).y0(f),G=d3.area().x(function(a){return F(a._X)}).y1(f).y0(f),H=d3.line().x(function(a){return F(a._X)}).y(function(a){return x(a._Y)}),I=d3.timeParse(z);a.map(function(a){a._X=I(q(a)),a._Y=r(a)}),F.domain(d3.extent(a,function(a){return a._X})),x.domain([0,d3.max(a,function(a){return a._Y})]);var J=this.svg.attr("width",e+k+j).attr("height",f+h+i).append("g").attr("transform","translate( ".concat(k," , ").concat(h," )"));if(w){var K=J.append("g");K.append("g").call(d3.axisLeft(x).tickSize(-e).tickFormat("")).attr("stroke-opacity",.3).attr("stroke-width",1).attr("shape-rendering","crispEdges").select("path").attr("stroke-width",0)}var d=J.datum(a);d.append("path").attr("fill",t).style("opacity",.5).attr("d",function(a){return G(a)}).transition().duration(D/2).attr("d",function(a){return y(a)}),d.append("path").attr("fill","none").attr("d",function(a){return H(a)}).call(function(a){a.transition().ease(d3.easeLinear).delay(D/2).duration(D).attr("stroke",u).attr("stroke-linejoin","round").attr("stroke-linecap","round").attr("stroke-width",1.5).attrTween("stroke-dasharray",c)});var g=J.append("g").selectAll("tip").data(a).enter().append("g");g.on("mouseover",function(){var a=d3.select(this);a.select("text").transition().duration(800).attr("fill","#000").attr("font-size",14),a.select("circle").transition().duration(800).attr("fill",u).style("opacity",1)}).on("mouseout",function(){var a=d3.select(this);a.select("text").transition().duration(500).attr("fill","rgba(0,0,0,0)").attr("font-size",0),a.select("circle").transition().duration(800).style("opacity",0)}),v&&g.append("circle").attr("cx",function(a){return F(a._X)}).attr("cy",function(a){return x(a._Y)}).attr("r",5).attr("fill",u).style("opacity",0).style("cursor","pointer").on("click",E),g.append("text").text(s).attr("text-anchor",function(a){return F(a._X)<e/2?"start":"end"}).attr("font-size",0).attr("fill","rgba(0,0,0,0)").attr("font-weight","bold").attr("dy","-0.7em").attr("dx",function(a){return F(a._X)<e/2?"0.8em":"-0.8em"}).attr("transform",function(a){return"translate(".concat(F(a._X),",").concat(x(a._Y),")")}),J.append("g").attr("class","axis axis--x").attr("transform","translate(0,"+f+")").call(d3.axisBottom(F)).append("text").attr("x",e+10).attr("dy","-.71em").style("text-anchor","end").attr("font-weight","bold").attr("fill","rgba(0,0,0,1)").text(B),J.append("g").attr("class","axis axis--y").call(d3.axisLeft(x)).append("text").attr("transform","rotate(-90)").attr("y",6).attr("dy",".71em").style("text-anchor","end").attr("font-weight","bold").attr("fill","rgba(0,0,0,1)").text(C)}}]),a}(),_default=Areachart;exports["default"]=_default;
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _react = _interopRequireWildcard(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _excluded = ["data"];
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var Areachart = function (_Component) {
+  _inherits(Areachart, _Component);
+
+  var _super = _createSuper(Areachart);
+
+  function Areachart(props) {
+    _classCallCheck(this, Areachart);
+
+    return _super.call(this, props);
+  }
+
+  _createClass(Areachart, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this$props = this.props,
+          data = _this$props.data,
+          settings = _objectWithoutProperties(_this$props, _excluded);
+
+      var el = this.el,
+          area = new d3area(el);
+      area.render(data, settings);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this = this;
+
+      return _react["default"].createElement("svg", {
+        ref: function ref(el) {
+          return _this.el = el;
+        }
+      });
+    }
+  }]);
+
+  return Areachart;
+}(_react.Component);
+
+_defineProperty(Areachart, "propTypes", {
+  data: _propTypes["default"].array.isRequired,
+  width: _propTypes["default"].number,
+  height: _propTypes["default"].number,
+  margintop: _propTypes["default"].number,
+  marginbottom: _propTypes["default"].number,
+  marginright: _propTypes["default"].number,
+  marginleft: _propTypes["default"].number,
+  getX: _propTypes["default"].func,
+  getY: _propTypes["default"].func,
+  tiptext: _propTypes["default"].func,
+  XaxisText: _propTypes["default"].string,
+  YaxisText: _propTypes["default"].string,
+  pathcolor: _propTypes["default"].string,
+  areacolor: _propTypes["default"].string,
+  plotattrs: _propTypes["default"].object,
+  plotstyles: _propTypes["default"].object,
+  plotattrs_hover: _propTypes["default"].object,
+  plotstyles_hover: _propTypes["default"].object,
+  timeParse: _propTypes["default"].string,
+  timeformat: _propTypes["default"].string,
+  showgrid: _propTypes["default"].bool,
+  showplottip: _propTypes["default"].bool,
+  plotclick: _propTypes["default"].func,
+  AnimateTime: _propTypes["default"].number
+});
+
+_defineProperty(Areachart, "defaultProps", {
+  width: 500,
+  height: 300,
+  margintop: 50,
+  marginbottom: 30,
+  marginright: 50,
+  marginleft: 40,
+  getX: function getX(d) {
+    return d.date;
+  },
+  getY: function getY(d) {
+    return d.count;
+  },
+  tiptext: function tiptext(d) {
+    return "".concat(d.date, "\n").concat(d.count);
+  },
+  plotattrs: {},
+  plotstyles: {},
+  plotattrs_hover: {},
+  plotstyles_hover: {},
+  XaxisText: "日",
+  YaxisText: "$",
+  timeParse: "%Y-%m-%d",
+  timeformat: "%m-%d",
+  showgrid: true,
+  showplottip: true,
+  pathcolor: '#ace',
+  areacolor: '#a7eae2',
+  plotclick: function plotclick(d, i) {},
+  AnimateTime: 1000
+});
+
+var d3area = function () {
+  function d3area(el) {
+    _classCallCheck(this, d3area);
+
+    this.svg = d3.select(el);
+  }
+
+  _createClass(d3area, [{
+    key: "render",
+    value: function render(data, settings) {
+      var width = settings.width,
+          height = settings.height,
+          margintop = settings.margintop,
+          marginbottom = settings.marginbottom,
+          marginright = settings.marginright,
+          marginleft = settings.marginleft,
+          lineattr = settings.lineattr,
+          plotattrs = settings.plotattrs,
+          plotstyles = settings.plotstyles,
+          plotattrs_hover = settings.plotattrs_hover,
+          plotstyles_hover = settings.plotstyles_hover,
+          getX = settings.getX,
+          getY = settings.getY,
+          tiptext = settings.tiptext,
+          areacolor = settings.areacolor,
+          pathcolor = settings.pathcolor,
+          showplottip = settings.showplottip,
+          showgrid = settings.showgrid,
+          timeParse = settings.timeParse,
+          timeformat = settings.timeformat,
+          XaxisText = settings.XaxisText,
+          YaxisText = settings.YaxisText,
+          AnimateTime = settings.AnimateTime,
+          plotclick = settings.plotclick;
+      var x = d3.scaleTime().rangeRound([0, width]),
+          y = d3.scaleLinear().rangeRound([height, 0]),
+          area = d3.area().x(function (d) {
+        return x(d._X);
+      }).y1(function (d) {
+        return y(d._Y);
+      }).y0(height),
+          area2 = d3.area().x(function (d) {
+        return x(d._X);
+      }).y1(height).y0(height),
+          line = d3.line().x(function (d) {
+        return x(d._X);
+      }).y(function (d) {
+        return y(d._Y);
+      });
+      var parseTime = d3.timeParse(timeParse);
+      data.map(function (d) {
+        d._X = parseTime(getX(d));
+        d._Y = getY(d);
+      });
+      x.domain(d3.extent(data, function (d) {
+        return d._X;
+      }));
+      y.domain([0, d3.max(data, function (d) {
+        return d._Y;
+      })]);
+      var g = this.svg.attr('width', width + marginleft + marginright).attr('height', height + margintop + marginbottom).append('g').attr('transform', "translate( ".concat(marginleft, " , ").concat(margintop, " )"));
+
+      if (showgrid) {
+        var grid = g.append('g');
+        grid.append("g").call(d3.axisLeft(y).tickSize(-width).tickFormat("")).attr("stroke-opacity", 0.3).attr("stroke-width", 1).attr("shape-rendering", "crispEdges").select('path').attr("stroke-width", 0);
+      }
+
+      var gdata = g.datum(data);
+      gdata.append("path").attr("fill", areacolor).style("opacity", 0.5).attr('d', function (d) {
+        return area2(d);
+      }).transition().duration(AnimateTime / 2).attr('d', function (d) {
+        return area(d);
+      });
+      gdata.append("path").attr("fill", "none").attr('d', function (d) {
+        return line(d);
+      }).call(transition);
+
+      function transition(path) {
+        path.transition().ease(d3.easeLinear).delay(AnimateTime / 2).duration(AnimateTime).attr("stroke", pathcolor).attr("stroke-linejoin", "round").attr("stroke-linecap", "round").attr("stroke-width", 1.5).attrTween("stroke-dasharray", tweenDash);
+      }
+
+      function tweenDash() {
+        var l = this.getTotalLength(),
+            i = d3.interpolateString("0," + l, l + "," + l);
+        return function (t) {
+          return i(t);
+        };
+      }
+
+      var group = g.append('g').selectAll('tip').data(data).enter().append('g');
+      group.on('mouseover', gridMouseOver).on("mouseout", gridMouseOut);
+
+      if (showplottip) {
+        group.append('circle').attr('cx', function (d) {
+          return x(d._X);
+        }).attr('cy', function (d) {
+          return y(d._Y);
+        }).attr("r", 5).attr('fill', pathcolor).style("opacity", 0).style("cursor", 'pointer').on('click', plotclick);
+      }
+
+      group.append('text').text(tiptext).attr("text-anchor", function (d) {
+        return x(d._X) < width / 2 ? "start" : "end";
+      }).attr("font-size", 0).attr('fill', 'rgba(0,0,0,0)').attr('font-weight', 'bold').attr('dy', '-0.7em').attr('dx', function (d) {
+        return x(d._X) < width / 2 ? "0.8em" : '-0.8em';
+      }).attr('transform', function (d) {
+        return "translate(".concat(x(d._X), ",").concat(y(d._Y), ")");
+      });
+
+      function gridMouseOver() {
+        var item = d3.select(this);
+        item.select('text').transition().duration(800).attr('fill', '#000').attr("font-size", 14);
+        item.select('circle').transition().duration(800).attr("fill", pathcolor).style("opacity", 1);
+      }
+
+      function gridMouseOut() {
+        var item = d3.select(this);
+        item.select('text').transition().duration(500).attr('fill', 'rgba(0,0,0,0)').attr("font-size", 0);
+        item.select('circle').transition().duration(800).style("opacity", 0);
+      }
+
+      g.append("g").attr("class", "axis axis--x").attr("transform", "translate(0," + height + ")").call(d3.axisBottom(x)).append("text").attr("x", width + 10).attr("dy", "-.71em").style("text-anchor", "end").attr('font-weight', 'bold').attr('fill', 'rgba(0,0,0,1)').text(XaxisText);
+      g.append("g").attr("class", "axis axis--y").call(d3.axisLeft(y)).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").attr('font-weight', 'bold').attr('fill', 'rgba(0,0,0,1)').text(YaxisText);
+    }
+  }]);
+
+  return d3area;
+}();
+
+var _default = Areachart;
+exports["default"] = _default;

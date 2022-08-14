@@ -1,1 +1,408 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _react=_interopRequireWildcard(require("react")),d3=_interopRequireWildcard(require("d3")),_propTypes=_interopRequireDefault(require("prop-types"));function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}function _getRequireWildcardCache(){if("function"!=typeof WeakMap)return null;var a=new WeakMap;return _getRequireWildcardCache=function(){return a},a}function _interopRequireWildcard(a){if(a&&a.__esModule)return a;if(null===a||"object"!=typeof a&&"function"!=typeof a)return{default:a};var b=_getRequireWildcardCache();if(b&&b.has(a))return b.get(a);var c={},d=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var e in a)if(Object.prototype.hasOwnProperty.call(a,e)){var f=d?Object.getOwnPropertyDescriptor(a,e):null;f&&(f.get||f.set)?Object.defineProperty(c,e,f):c[e]=a[e]}return c.default=a,b&&b.set(a,c),c}function ownKeys(a,b){var c=Object.keys(a);if(Object.getOwnPropertySymbols){var d=Object.getOwnPropertySymbols(a);b&&(d=d.filter(function(b){return Object.getOwnPropertyDescriptor(a,b).enumerable})),c.push.apply(c,d)}return c}function _objectSpread(a){for(var b,c=1;c<arguments.length;c++)b=null==arguments[c]?{}:arguments[c],c%2?ownKeys(Object(b),!0).forEach(function(c){_defineProperty(a,c,b[c])}):Object.getOwnPropertyDescriptors?Object.defineProperties(a,Object.getOwnPropertyDescriptors(b)):ownKeys(Object(b)).forEach(function(c){Object.defineProperty(a,c,Object.getOwnPropertyDescriptor(b,c))});return a}function _typeof(a){"@babel/helpers - typeof";return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(a){return typeof a}:function(a){return a&&"function"==typeof Symbol&&a.constructor===Symbol&&a!==Symbol.prototype?"symbol":typeof a},_typeof(a)}function _objectWithoutProperties(a,b){if(null==a)return{};var c,d,e=_objectWithoutPropertiesLoose(a,b);if(Object.getOwnPropertySymbols){var f=Object.getOwnPropertySymbols(a);for(d=0;d<f.length;d++)c=f[d],!(0<=b.indexOf(c))&&Object.prototype.propertyIsEnumerable.call(a,c)&&(e[c]=a[c])}return e}function _objectWithoutPropertiesLoose(a,b){if(null==a)return{};var c,d,e={},f=Object.keys(a);for(d=0;d<f.length;d++)c=f[d],0<=b.indexOf(c)||(e[c]=a[c]);return e}function _classCallCheck(a,b){if(!(a instanceof b))throw new TypeError("Cannot call a class as a function")}function _defineProperties(a,b){for(var c,d=0;d<b.length;d++)c=b[d],c.enumerable=c.enumerable||!1,c.configurable=!0,"value"in c&&(c.writable=!0),Object.defineProperty(a,c.key,c)}function _createClass(a,b,c){return b&&_defineProperties(a.prototype,b),c&&_defineProperties(a,c),a}function _inherits(a,b){if("function"!=typeof b&&null!==b)throw new TypeError("Super expression must either be null or a function");a.prototype=Object.create(b&&b.prototype,{constructor:{value:a,writable:!0,configurable:!0}}),b&&_setPrototypeOf(a,b)}function _setPrototypeOf(a,b){return _setPrototypeOf=Object.setPrototypeOf||function(a,b){return a.__proto__=b,a},_setPrototypeOf(a,b)}function _createSuper(a){var b=_isNativeReflectConstruct();return function(){var c,d=_getPrototypeOf(a);if(b){var e=_getPrototypeOf(this).constructor;c=Reflect.construct(d,arguments,e)}else c=d.apply(this,arguments);return _possibleConstructorReturn(this,c)}}function _possibleConstructorReturn(a,b){return b&&("object"===_typeof(b)||"function"==typeof b)?b:_assertThisInitialized(a)}function _assertThisInitialized(a){if(void 0===a)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return a}function _isNativeReflectConstruct(){if("undefined"==typeof Reflect||!Reflect.construct)return!1;if(Reflect.construct.sham)return!1;if("function"==typeof Proxy)return!0;try{return Date.prototype.toString.call(Reflect.construct(Date,[],function(){})),!0}catch(a){return!1}}function _getPrototypeOf(a){return _getPrototypeOf=Object.setPrototypeOf?Object.getPrototypeOf:function(a){return a.__proto__||Object.getPrototypeOf(a)},_getPrototypeOf(a)}function _defineProperty(a,b,c){return b in a?Object.defineProperty(a,b,{value:c,enumerable:!0,configurable:!0,writable:!0}):a[b]=c,a}var Piechart=function(a){function b(a){return _classCallCheck(this,b),c.call(this,a)}_inherits(b,a);var c=_createSuper(b);return _createClass(b,[{key:"componentDidMount",value:function componentDidMount(){var a=this.props,b=a.data,c=_objectWithoutProperties(a,["data"]),d=this.el,e=new d3pie(d);e.render(b,c)}},{key:"render",value:function render(){var a=this;return _react["default"].createElement("svg",{ref:function ref(b){return a.el=b}})}}]),b}(_react.Component);_defineProperty(Piechart,"propTypes",{data:_propTypes["default"].array.isRequired,width:_propTypes["default"].number,height:_propTypes["default"].number,margintop:_propTypes["default"].number,marginbottom:_propTypes["default"].number,marginright:_propTypes["default"].number,marginleft:_propTypes["default"].number,radius:_propTypes["default"].number,outerRadius:_propTypes["default"].number,innerRadius:_propTypes["default"].number,gettext:_propTypes["default"].func,getvalue:_propTypes["default"].func,getcolor:_propTypes["default"].func,color:_propTypes["default"].object,onClick:_propTypes["default"].func,AnimateTime:_propTypes["default"].number}),_defineProperty(Piechart,"defaultProps",{width:200,height:200,margintop:50,marginbottom:30,marginright:50,marginleft:40,radius:100,outerRadius:.9,innerRadius:0,gettext:function gettext(a){return a.text},getvalue:function getvalue(a){return a.count},getcolor:function getcolor(a){return a.color},color:{},onClick:function onClick(){},AnimateTime:500});var d3pie=function(){function a(b){_classCallCheck(this,a),this.svg=d3.select(b)}return _createClass(a,[{key:"render",value:function render(a,b){var c=b.width,d=b.height,e=b.margintop,f=b.marginbottom,h=b.marginright,i=b.marginleft,j=b.color,k=b.radius,l=b.outerRadius,m=b.innerRadius,n=b.gettext,o=b.getvalue,p=b.getcolor,q=b.onClick,r=b.AnimateTime,s=a.map(function(a){return _objectSpread(_objectSpread({},a),{},{text:n(a),value:o(a),_color:p(a)})}),t=d3.scaleOrdinal(d3.schemeCategory20),u=d3.arc().outerRadius(k*l).innerRadius(k*m),v=d3.pie().sort(null).value(function(a){return a.value}),w=this.svg.attr("width",c+i+h).attr("height",d+e+f).append("g").attr("transform","translate(  ".concat((c+h+i)/2," , ").concat((d+e+f)/2," )")),g=w.selectAll(".arc").data(v(s)).enter().append("g").attr("cursor","pointer").on("click",function(a){g.selectAll(".gpath").attr("stroke","#fff").attr("stroke-width","1px"),g.selectAll("rect").attr("stroke","#fff");var b=d3.select(this);b.select("path").attr("stroke","#000").attr("stroke-width","2px"),b.select("rect").attr("stroke","#000"),q(a.data)}),x=g.append("path").attr("class","gpath").attr("stroke-width",1).attr("stroke","#fff");x.transition("init").duration(r).attrTween("d",function(a){var b={endAngle:a.startAngle},c=d3.interpolate(b,a);return function(a){return u(c(a))}}).attr("fill",function(a){return j[a.data._color]?j[a.data._color]:t(a.data._color)});var y=g.append("text").attr("class","textval").attr("transform",function(a){return"translate( ".concat(u.centroid(a)," )")}).attr("dy",".35em").attr("text-anchor","middle").text(function(a){return a.data.value}).style("font-size",0).transition().duration(r).style("font-size","14px"),z=g.append("g").attr("cursor","pointer"),A=z.append("rect").attr("width",15).attr("height",15).attr("transform",function(a,b){return"translate( ".concat(k," , ").concat(30*b-k,")")}).attr("fill",function(a){return j[a.data._color]?j[a.data._color]:t(a.data._color)}),B=z.append("text").attr("fill","#000").text(function(a){return a.data.text}).attr("transform",function(a,b){return"translate( ".concat(k+20," , ").concat(30*b-k+15,")")});x.on("mouseover",function(a){g.selectAll("rect").attr("stroke","#fff"),g.selectAll(".gpath").transition("legendMouseOut").duration(500).attr("transform",function(){return"translate( 0,0 )"}),g.selectAll(".textval").transition("legendMouseOut").duration(500).attr("transform",function(a){return"translate( ".concat(u.centroid(a)," )")});var b=d3.select(this.parentNode);b.select("rect").attr("stroke","#000"),b.select("path").transition("legendMouseOut").duration(500).delay(250).attr("transform","translate( ".concat(.2*u.centroid(a)[0],",").concat(.2*u.centroid(a)[1]," )")),b.select(".textval").transition("legendMouseOut").duration(500).delay(250).attr("transform","translate( ".concat(1.2*u.centroid(a)[0],",").concat(1.2*u.centroid(a)[1]," )"))})}}]),a}(),_default=Piechart;exports["default"]=_default;
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.PieChart = void 0;
+
+var _react = _interopRequireWildcard(require("react"));
+
+var d3 = _interopRequireWildcard(require("d3"));
+
+var _propTypes = _interopRequireDefault(require("prop-types"));
+
+var _excluded = ["data"];
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); Object.defineProperty(subClass, "prototype", { writable: false }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+function _createSuper(Derived) { var hasNativeReflectConstruct = _isNativeReflectConstruct(); return function _createSuperInternal() { var Super = _getPrototypeOf(Derived), result; if (hasNativeReflectConstruct) { var NewTarget = _getPrototypeOf(this).constructor; result = Reflect.construct(Super, arguments, NewTarget); } else { result = Super.apply(this, arguments); } return _possibleConstructorReturn(this, result); }; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } else if (call !== void 0) { throw new TypeError("Derived constructors may only return object or undefined"); } return _assertThisInitialized(self); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var PieChart = function (_Component) {
+  _inherits(PieChart, _Component);
+
+  var _super = _createSuper(PieChart);
+
+  function PieChart(props) {
+    _classCallCheck(this, PieChart);
+
+    return _super.call(this, props);
+  }
+
+  _createClass(PieChart, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this$props = this.props,
+          data = _this$props.data,
+          attr = _objectWithoutProperties(_this$props, _excluded);
+
+      var element = this.element,
+          pie = new D3PieChart(element);
+      pie.render(data, attr);
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this = this;
+
+      return _react["default"].createElement("svg", {
+        ref: function ref(element) {
+          return _this.element = element;
+        }
+      });
+    }
+  }]);
+
+  return PieChart;
+}(_react.Component);
+
+exports.PieChart = PieChart;
+
+_defineProperty(PieChart, "propTypes", {
+  data: _propTypes["default"].array.isRequired,
+  getName: _propTypes["default"].func,
+  getValue: _propTypes["default"].func,
+  getDetail: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  width: _propTypes["default"].number,
+  height: _propTypes["default"].number,
+  nameDomain: _propTypes["default"].arrayOf([_propTypes["default"].number, _propTypes["default"].number]),
+  color: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  chartTitleText: _propTypes["default"].string,
+  format: _propTypes["default"].string,
+  tooltipTitle: _propTypes["default"].func,
+  marginTop: _propTypes["default"].number,
+  marginRight: _propTypes["default"].number,
+  marginBottom: _propTypes["default"].number,
+  marginLeft: _propTypes["default"].number,
+  innerRadius: _propTypes["default"].number,
+  outerRadius: _propTypes["default"].number,
+  labelRadius: _propTypes["default"].number,
+  stroke: _propTypes["default"].string,
+  strokeWidth: _propTypes["default"].number,
+  strokeLinejoin: _propTypes["default"].string,
+  padAngle: _propTypes["default"].number,
+  animationTime: _propTypes["default"].number,
+  enableAnimation: _propTypes["default"].bool,
+  enablePieLabel: _propTypes["default"].bool,
+  enableLegend: _propTypes["default"].bool
+});
+
+_defineProperty(PieChart, "defaultProps", {
+  getName: function getName(d) {
+    return d.name;
+  },
+  getValue: function getValue(d) {
+    return d.value;
+  },
+  getDetail: undefined,
+  width: 500,
+  height: 300,
+  nameDomain: undefined,
+  color: undefined,
+  chartTitleText: "",
+  format: ",.0f",
+  tooltipTitle: undefined,
+  marginTop: 40,
+  marginRight: 0,
+  marginBottom: 0,
+  marginLeft: 0,
+  innerRadius: 0,
+  outerRadius: undefined,
+  labelRadius: undefined,
+  stroke: undefined,
+  strokeWidth: 2,
+  strokeLinejoin: "round",
+  padAngle: undefined,
+  animationTime: 2000,
+  enableAnimation: true,
+  enablePieLabel: true,
+  enableLegend: true
+});
+
+;
+
+var D3PieChart = function () {
+  function D3PieChart(element) {
+    _classCallCheck(this, D3PieChart);
+
+    this.svg = d3.select(element);
+  }
+
+  _createClass(D3PieChart, [{
+    key: "render",
+    value: function render(data, attr) {
+      var getName = attr.getName,
+          getValue = attr.getValue,
+          width = attr.width,
+          height = attr.height,
+          nameDomain = attr.nameDomain,
+          color = attr.color,
+          format = attr.format,
+          tooltipTitle = attr.tooltipTitle,
+          innerRadius = attr.innerRadius,
+          outerRadius = attr.outerRadius,
+          labelRadius = attr.labelRadius,
+          stroke = attr.stroke,
+          strokeWidth = attr.strokeWidth,
+          strokeLinejoin = attr.strokeLinejoin,
+          padAngle = attr.padAngle,
+          chartTitleText = attr.chartTitleText,
+          animationTime = attr.animationTime,
+          enableAnimation = attr.enableAnimation,
+          getDetail = attr.getDetail,
+          enablePieLabel = attr.enablePieLabel,
+          marginBottom = attr.marginBottom,
+          marginLeft = attr.marginLeft,
+          marginRight = attr.marginRight,
+          marginTop = attr.marginTop,
+          enableLegend = attr.enableLegend;
+      if (outerRadius === undefined) outerRadius = Math.min(width, height) / 3;
+      if (labelRadius === undefined) labelRadius = innerRadius * 0.2 + outerRadius * 0.8;
+      if (stroke === undefined) stroke = innerRadius > 0 ? "none" : "white";
+      if (padAngle === undefined) padAngle = stroke === "none" ? 1 / outerRadius : 0;
+      var name = d3.map(data, getName),
+          value = d3.map(d3.map(data, getValue), function (d) {
+        return Number(d);
+      });
+      var detail = undefined;
+      if (typeof getDetail === "function") detail = d3.map(data, getDetail);else if (_typeof(getDetail) === "object") detail = getDetail;
+      if (nameDomain === undefined) nameDomain = new d3.InternSet(name.filter(function (d) {
+        return d != "";
+      }));
+      var I = d3.range(name.length).filter(function (i) {
+        return !isNaN(value[i]) && nameDomain.has(name[i]);
+      }),
+          fontSize = (width + height) / 100 + "px";
+
+      if (tooltipTitle === undefined) {
+        tooltipTitle = function tooltipTitle(i) {
+          return "".concat(name[i], "\n").concat(value[i]);
+        };
+      }
+
+      var divData = d3.pie().padAngle(padAngle).sort(null).value(function (i) {
+        return value[i];
+      })(I);
+      name.push("all");
+      I.push(name.length - 1);
+      if (color === undefined) color = d3.quantize(function (t) {
+        return d3.interpolateSpectral(t * 0.8 + 0.1);
+      }, name.length);
+      var colorScale = d3.scaleOrdinal(name, color);
+      var arcs = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius),
+          arcLabel = d3.arc().innerRadius(labelRadius).outerRadius(labelRadius);
+      var svg = this.svg.attr("width", width).attr("height", height).attr("overflow", "visible").attr("viewBox", [0, 0, width, height]);
+      var pie = svg.append("g").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+      pie.attr("stroke", stroke).attr("strokeWidth", strokeWidth).attr("strokeLinejoin", strokeLinejoin).selectAll("path").data(divData).join("path").attr("class", function (d) {
+        return "all pie_" + name[d.data];
+      }).attr("fill", function (d) {
+        return colorScale(name[d.data]);
+      }).attr("d", arcs);
+      var pieLabel = svg.append("g").attr("text-anchor", "middle").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+
+      if (enablePieLabel) {
+        pieLabel.selectAll("text").data(divData).join("text").style("font-size", fontSize).attr("class", function (d) {
+          return "all pieLabelText_" + name[d.data];
+        }).attr("transform", function (d) {
+          return "translate(".concat(arcLabel.centroid(d), ")");
+        }).selectAll("tspan").data(function (d) {
+          var lines = "".concat(tooltipTitle(d.data)).split(/\n/);
+          return d.endAngle - d.startAngle > 0.25 ? lines : lines.slice(0, 0);
+        }).join("tspan").attr("x", 0).attr("y", function (_, i) {
+          return "".concat(i * 1.1, "em");
+        }).attr("font-weight", function (_, i) {
+          return i ? null : "bold";
+        }).text(function (d) {
+          return d;
+        });
+      }
+
+      var chartTitle = svg.append("g");
+      chartTitle.call(function (g) {
+        return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-size", "20px").style("font-weight", 550).attr("text-anchor", "middle").text(chartTitleText);
+      });
+
+      if (enableAnimation) {
+        pie.selectAll("path").attr("fill", "rgba(0, 0, 0, 0)").transition().attrTween("d", function (d) {
+          var f = d3.interpolate(d.startAngle, d.endAngle);
+          return function (t) {
+            d.endAngle = f(t);
+            return arcs(d);
+          };
+        }).attr("fill", function (d) {
+          return colorScale(name[d.data]);
+        }).duration(animationTime);
+
+        if (enablePieLabel) {
+          pieLabel.selectAll("tspan").transition().textTween(function (d) {
+            if (isNaN(Number(d))) {
+              return function (t) {
+                return d;
+              };
+            }
+
+            ;
+            var formatValue = d3.format(format);
+            var f = d3.interpolate(0, d);
+            return function (t) {
+              return formatValue(f(t));
+            };
+          }).duration(animationTime);
+        }
+      }
+
+      var selectedOne = false;
+      var tooltip = svg.append("g").attr("pointer-events", "none");
+
+      function showTooltip(_, d) {
+        if (selectedOne) return;
+        tooltip.style("display", null);
+        var p = arcLabel.centroid(d);
+        tooltip.attr("transform", "translate(".concat(p[0] + width / 2, ", ").concat(p[1] + height / 2, ")"));
+        pieLabel.select(".pieLabelText_" + name[d.data]).style("opacity", 0);
+        var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "rgba(224, 224, 224, 1)").attr("color", "black");
+        var text = tooltip.selectAll("text").data([,]).join("text").attr("id", "tooltip-text").style("font-size", fontSize).call(function (text) {
+          return text.selectAll("tspan").data("".concat(tooltipTitle(d.data)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
+            return "".concat(i * 1.1, "em");
+          }).attr("font-weight", function (_, i) {
+            return i ? null : "bold";
+          }).text(function (d) {
+            return d;
+          });
+        });
+        var textBox = text.node().getBBox();
+        text.attr("transform", "translate(".concat(-textBox.width / 2, ", ").concat(-textBox.height + 5, ")"));
+        path.attr("d", "M".concat(-textBox.width / 2 - 10, ",5H-5l5,5l5,-5H").concat(textBox.width / 2 + 10, "v").concat(-textBox.height - 20, "h-").concat(textBox.width + 20, "z"));
+      }
+
+      function hideTooltip(_, d) {
+        tooltip.style("display", "none");
+        pieLabel.select(".pieLabelText_" + name[d.data]).style("opacity", 1);
+      }
+
+      function hoverPie(_, d) {
+        if (!selectedOne) {
+          var scale = 0.2;
+          var hoverArc = d3.arc().innerRadius(innerRadius * scale).outerRadius(outerRadius * scale);
+          pie.select(".pie_" + name[d.data]).transition().ease(d3.easeLinear).attr("transform", "translate(".concat(hoverArc.centroid(d), ")")).duration(500);
+        }
+      }
+
+      function noHoverPie(_, d) {
+        if (!selectedOne) {
+          pie.select(".pie_" + name[d.data]).transition().ease(d3.easeLinear).attr("transform", "translate(0, 0)").duration(500);
+        }
+      }
+
+      setTimeout(function () {
+        pie.selectAll("path").on("mouseover.tooltip", showTooltip).on("mouseleave.tooltip", hideTooltip).on("mouseover.hover", hoverPie).on("mouseleave.hover", noHoverPie);
+      }, animationTime);
+
+      if (enableLegend) {
+        var highlight = function highlight(_, i) {
+          if (!(name[i] === "all") && !selectedOne) {
+            pie.selectAll(".all").style("opacity", 0.2);
+            pieLabel.selectAll(".all").style("opacity", 0.2);
+            pie.select(".pie_" + name[i]).style("opacity", 1);
+            pieLabel.select(".pieLabelText_" + name[i]).style("opacity", 1);
+          }
+        };
+
+        var noHighlight = function noHighlight() {
+          if (!selectedOne) {
+            pie.selectAll(".all").style("opacity", 1);
+            pieLabel.selectAll(".all").style("opacity", 1);
+          }
+        };
+
+        var selectOne = function selectOne(_, i) {
+          selectedOne = true;
+          var scale = 2,
+              newArc = d3.arc().innerRadius(innerRadius * scale).outerRadius(outerRadius * scale),
+              deltaY = (outerRadius - innerRadius) * scale / 2,
+              angle = divData[i],
+              rotation = -1 * ((angle.startAngle + (angle.endAngle - angle.startAngle) / 2) * 180 / Math.PI),
+              newFontSize = Number(fontSize.slice(0, -2)) * scale + "px";
+          pie.selectAll(".all").transition().ease(d3.easeLinear).attr("transform", "translate(0, 0) rotate(0)").attr("d", arcs).style("opacity", 0.2).duration(250).transition().attr("d", null).duration(250);
+          pieLabel.selectAll("text").transition().style("font-size", "0").duration(500);
+          pie.select(".pie_" + name[i]).transition().ease(d3.easeLinear).attr("transform", "translate(0, ".concat(deltaY, ") rotate(").concat(rotation, ")")).attr("d", newArc).style("opacity", 1).duration(500);
+          pieLabel.select(".pieLabelText_" + name[i]).transition().attr("transform", "translate(0, 0)").style("font-size", newFontSize).style("opacity", 1).duration(500);
+
+          if (!(detail === undefined)) {
+            selectedDetail.select("text").attr("transform", "translate(0, ".concat(deltaY + 20, ")")).transition().style("font-size", newFontSize).text(detail[i]).duration(500);
+          }
+        };
+
+        var selectAll = function selectAll() {
+          pie.selectAll(".all").transition().ease(d3.easeLinear).attr("transform", "translate(0, 0) rotate(0)").style("opacity", 1).duration(250).transition().attr("d", arcs).duration(250);
+          pieLabel.selectAll("text").transition().attr("transform", function (d) {
+            return "translate(".concat(arcLabel.centroid(d), ")");
+          }).style("font-size", fontSize).style("opacity", 1).duration(500);
+
+          if (!(detail === undefined)) {
+            selectedDetail.select("text").transition().style("font-size", 0).text("").duration(500);
+          }
+
+          setTimeout(function () {
+            return selectedOne = false;
+          }, 600);
+        };
+
+        var legend = svg.append("g").attr("transform", "translate(".concat(width - marginRight + 25 + 20, ", ").concat(marginTop, ")")).style("cursor", "pointer");
+        legend.selectAll("circle").data(I).join("circle").attr("class", function (i) {
+          return "legend_" + name[i];
+        }).attr("cx", 0).attr("cy", function (_, i) {
+          return i * 20 * 1.1;
+        }).attr("r", 10).attr("fill", function (i) {
+          return colorScale(name[i]);
+        });
+        legend.selectAll("text").data(I).join("text").attr("class", function (i) {
+          return "legend_" + name[i];
+        }).attr("x", 20).attr("y", function (_, i) {
+          return i * 20 * 1.1 + 4;
+        }).attr("text-anchor", "start").style("font-size", "12px").style("font-weight", 300).text(function (i) {
+          return name[i];
+        });
+        setTimeout(function () {
+          divData.map(function (d) {
+            legend.select(".legend_" + name[d.data]).on("mouseover", highlight).on("mouseleave", noHighlight).on("click", selectOne);
+          });
+          legend.select(".legend_all").on("click", selectAll);
+        }, animationTime);
+        var selectedDetail = svg.append("g").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+        selectedDetail.append("text").attr("text-anchor", "middle");
+      }
+    }
+  }]);
+
+  return D3PieChart;
+}();
