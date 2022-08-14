@@ -3,8 +3,6 @@ stages:
 
 react-d3-component:
   stage: build
-  tags:
-    - "oNDrGfkx"
   only:
     - d3v7
   cache:
