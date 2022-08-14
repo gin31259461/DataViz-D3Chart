@@ -1,13 +1,19 @@
+stages:
+  - build
+
 react-d3-component:
+  stage: build
+  tags:
+    - "shell"
+  only:
+    - d3v7
   cache:
     paths:
       - node_modules
   script:
     - npm install 
     - npm run styleguide:build
-    - mv styleguide d3v7-chart 
+    - mv styleguide react-d3-chart 
   artifacts:
     paths:
-      - d3v7-chart
-  only:
-    - d3v7
+      - react-d3-chart
