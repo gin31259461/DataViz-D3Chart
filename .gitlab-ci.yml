@@ -2,10 +2,12 @@ pages:
   cache:
     paths:
       - node_modules
+  tags:
+    - "shell"
   script:
     - npm install 
     - npm run styleguide:build
-    - mv styleguide public 
+    - mv styleguide d3v7-chart 
   artifacts:
     paths:
       - d3v7-chart
