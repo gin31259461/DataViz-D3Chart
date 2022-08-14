@@ -3,19 +3,19 @@
 let data = [{
     count: 2167,
     text: "A",
-    detail: "d"
+    detail: "A -----"
   }, {
     count: 3267,
     text: "B",
-    detail: "dd"
+    detail: "B -----"
   }, {
     count: 3167,
     text: "C",
-    detail: "ddd"
+    detail: "C -----"
   }, {
     count: 5167,
     text: "D",
-    detail: "dddd"
+    detail: "D -----"
 }];
 
 <PieChart

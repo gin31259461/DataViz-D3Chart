@@ -10,22 +10,25 @@ class PieChart extends Component {
 
   static propTypes = {
     data: PropTypes.array.isRequired,
-    getName: PropTypes.func, // function to fetch x-axis data
-    getValue: PropTypes.func, // function to fetch y-axis data
+    /** function to fetch x-axis data */
+    getName: PropTypes.func, 
+    /** function to fetch y-axis data */
+    getValue: PropTypes.func, 
+    /** function to fetch each piece detail of pie */
     getDetail: PropTypes.oneOfType [
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string)
-    ], // function to fetch each piece of pie
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
+    ], 
+    width: PropTypes.number,
+    height: PropTypes.number,
     nameDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
     color: PropTypes.oneOfType [
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string)
     ], // chart color
     chartTitleText: PropTypes.string,
-    format: PropTypes.string, // value format
-    tooltipTitle: PropTypes.func, // function for tooltip title
+    format: PropTypes.string,
+    tooltipTitle: PropTypes.func,
     marginTop: PropTypes.number,
     marginRight: PropTypes.number,
     marginBottom: PropTypes.number,
@@ -37,7 +40,7 @@ class PieChart extends Component {
     strokeWidth: PropTypes.number,
     strokeLinejoin: PropTypes.string,
     padAngle: PropTypes.number,
-    animationTime: PropTypes.number, // ms
+    animationTime: PropTypes.number,
     enableAnimation: PropTypes.bool,
     enablePieLabel: PropTypes.bool,
     enableLegend: PropTypes.bool

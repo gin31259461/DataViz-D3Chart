@@ -10,15 +10,20 @@ class BarChartStacked extends Component {
 
   static propTypes = {
     data: PropTypes.array.isRequired,
-    getX: PropTypes.func, // function to fetch x-axis data
-    keysOfGroups: PropTypes.arrayOf(PropTypes.string), // fetch y-axis data
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
-    xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    /** function to fetch x-axis data */
+    getX: PropTypes.func, 
+    /** fetch y-axis data */
+    keysOfGroups: PropTypes.arrayOf(PropTypes.string),
+    width: PropTypes.number,
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string, 
+    /** function of tooltip title */
+    tooltipTitle: PropTypes.func, 
+    xAxisText: PropTypes.string,
+    yAxisText: PropTypes.string,
+    /** rotate x axis ticks text, recommend range[30 - 45] */
+    xAxisTicksTextRotation: PropTypes.number, 
     xPadding: PropTypes.number,
     marginTop: PropTypes.number,
     marginRight: PropTypes.number,
@@ -27,12 +32,12 @@ class BarChartStacked extends Component {
     color: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string) 
-    ]), // bar color
+    ]),
     xDomain: [PropTypes.number, PropTypes.number],
     yDomain: [PropTypes.number, PropTypes.number],
     xRange: [PropTypes.number, PropTypes.number],
     yRange: [PropTypes.number, PropTypes.number],
-    animationTime: PropTypes.number, // ms
+    animationTime: PropTypes.number,
     enableAnimation: PropTypes.bool,
     enableBarValue: PropTypes.bool,
     enableXAxis: PropTypes.bool,

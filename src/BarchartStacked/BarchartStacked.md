@@ -81,5 +81,6 @@ let data_group =  [
   xAxisText = {"x"}
   yAxisText = {"y"}
   xAxisTicksTextRotation = {45}
-></BarChartStacked>,
+></BarChartStacked>
+
 ```
