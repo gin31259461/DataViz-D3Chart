@@ -4,7 +4,7 @@ stages:
 react-d3-component:
   stage: build
   tags:
-    - "shell"
+    - "oNDrGfkx"
   only:
     - d3v7
   cache:
