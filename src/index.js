@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 export {BarChart} from "./BarChart/BarChart";
 export {LineChart} from "./LineChart/LineChart";
 export {PieChart} from "./PieChart/PieChart";
