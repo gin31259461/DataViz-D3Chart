@@ -1,6 +1,6 @@
 # IQS 前端圖表component
 
-[Docs & Demo](./styleguide/index.html)
+[Docs & Demo](http://react_component.gitlabpage.wke.csie.ncnu.edu.tw/Chart_Component/)
 
 ## Installation
 ```
