@@ -9,54 +9,80 @@ class PieChart extends Component {
   }
 
   static propTypes = {
+    /** data of this chart*/
     data: PropTypes.array.isRequired,
-    getName: PropTypes.func, // function to fetch x-axis data
-    getValue: PropTypes.func, // function to fetch y-axis data
+    /** function to fetch pieces name of pie */
+    getName: PropTypes.func,
+    /** function to fetch pieces value of pie */
+    getValue: PropTypes.func,
+    /** function to fetch pieces detail of pie, or give string array */
     getDetail: PropTypes.oneOfType [
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string)
     ], // function to fetch each piece of pie
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    nameDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
-    color: PropTypes.oneOfType [
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string)
-    ], // chart color
+    /** width if this chart */
+    width: PropTypes.number,
+    /** height of this chart */
+    height: PropTypes.number,
+    /** pieces domain */
+    nameDomain: PropTypes.arrayOf(PropTypes.string),
+    /** color array to render pie */
+    color: PropTypes.arrayOf(PropTypes.string),
+    /** title of this chart */
     chartTitleText: PropTypes.string,
+    /** format pieces value of pie */
     format: PropTypes.string, // value format
-    tooltipTitle: PropTypes.func, // function for tooltip title
+    /** give function to show tip of pieces of pie */
+    tooltipTitle: PropTypes.func,
+    /** font size of this chart */
+    textSize: PropTypes.number,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
+    /** inner radius for pie*/
     innerRadius: PropTypes.number,
+    /** outer radius for pie*/
     outerRadius: PropTypes.number,
+    /** position for label of pie*/
     labelRadius: PropTypes.number,
+    /** pie stroke color */
     stroke: PropTypes.string,
+    /** pie stroke width */
     strokeWidth: PropTypes.number,
+    /** pie stroke line join */
     strokeLinejoin: PropTypes.string,
+    /** padding angle between consecutive arcs */
     padAngle: PropTypes.number,
+    /** animation time of this chart */
     animationTime: PropTypes.number, // ms
+    /** enable animation of this chart */
     enableAnimation: PropTypes.bool,
+    /** enable label of pie of this chart */
     enablePieLabel: PropTypes.bool,
+    /** enable legend of this chart */
     enableLegend: PropTypes.bool
   };
 
   static defaultProps = {
-    getName: d => d.name, // function to fetch x-axis data
-    getValue: d => d.value, // function to fetch y-axis data
+    getName: d => d.name,
+    getValue: d => d.value,
     getDetail: undefined,
-    width: 500, // chart width
-    height: 300, // chart height
+    width: 500, 
+    height: 300,
     nameDomain: undefined,
-    color: undefined, // chart color
+    color: undefined, 
     chartTitleText: "",
-    format: ",.0f", // value format
-    tooltipTitle: undefined, // function for tooltip title
+    format: ",.0f",
+    tooltipTitle: undefined,
+    textSize: undefined,
     marginTop: 40,
     marginRight: 0,
-    marginBottom: 0,
+    marginBottom: 40,
     marginLeft: 0,
     innerRadius: 0,
     outerRadius: undefined,
@@ -94,11 +120,11 @@ class D3PieChart {
     let {
       getName, getValue, width, height, nameDomain, color, format, tooltipTitle,
       innerRadius, outerRadius, labelRadius, stroke, strokeWidth, strokeLinejoin,
-      padAngle, chartTitleText, animationTime, enableAnimation, getDetail,
+      padAngle, chartTitleText, animationTime, enableAnimation, getDetail, textSize,
       enablePieLabel, marginBottom, marginLeft, marginRight, marginTop, enableLegend
     } = attr;
 
-    if (outerRadius === undefined) outerRadius = Math.min(width, height) / 3;
+    if (outerRadius === undefined) outerRadius = Math.min(width - marginLeft - marginRight, height - marginTop - marginBottom) / 2;
     if (labelRadius === undefined) labelRadius = (innerRadius * 0.2 + outerRadius * 0.8);
     if (stroke === undefined) stroke = innerRadius > 0 ? "none" :"white";
     if (padAngle === undefined) padAngle = stroke === "none" ? 1 / outerRadius :0;
@@ -117,9 +143,13 @@ class D3PieChart {
     if (nameDomain === undefined)
       nameDomain = new d3.InternSet(name.filter(d => d != ""));
 
-    const
-      I = d3.range(name.length).filter(i => !isNaN(value[i]) && nameDomain.has(name[i])),
-      fontSize = (width + height) / 100 + "px";
+    const I = d3.range(name.length).filter(i => !isNaN(value[i]) && nameDomain.has(name[i]));
+
+    let fontSize = new String();
+    if (textSize === undefined)
+      fontSize = (width + height) / 70 + "px";
+    else
+      fontSize = textSize + "px";
 
     // title function.
     if (tooltipTitle === undefined) {
@@ -149,7 +179,8 @@ class D3PieChart {
       .attr("viewBox", [0, 0, width, height]);
     
     // construct arc
-    const pie = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+    const pie = svg.append("g")
+      .attr("transform", `translate(${marginLeft + (width - marginLeft - marginRight) / 2}, ${marginTop + (height - marginTop - marginBottom) / 2})`);
     pie
       .attr("stroke", stroke)
       .attr("strokeWidth", strokeWidth)
@@ -163,7 +194,7 @@ class D3PieChart {
     
     const pieLabel =  svg.append("g")
       .attr("text-anchor", "middle")
-      .attr("transform", `translate(${width / 2}, ${height / 2})`);
+      .attr("transform", `translate(${marginLeft + (width - marginLeft - marginRight) / 2}, ${marginTop + (height - marginTop - marginBottom) / 2})`);
 
     if (enablePieLabel) {
       pieLabel
@@ -357,7 +388,7 @@ class D3PieChart {
         }
       }
 
-      const selectedDetail = svg.append("g").attr("transform", `translate(${width / 2}, ${height / 2})`);
+      const selectedDetail = svg.append("g").attr("transform", `translate(${marginLeft + (width - marginLeft - marginRight) / 2}, ${height - marginBottom / 2})`);
       selectedDetail
         .append("text")
         .attr("text-anchor", "middle");
@@ -365,7 +396,7 @@ class D3PieChart {
       function selectOne(_, i) {
         selectedOne = true;
         const
-          scale = 2,
+          scale = 1,
           newArc = d3.arc().innerRadius(innerRadius * scale).outerRadius(outerRadius * scale),
           deltaY = (outerRadius - innerRadius) * scale / 2,
           angle = divData[i],
@@ -386,23 +417,40 @@ class D3PieChart {
           .transition()
           .style("font-size", "0")
           .duration(500);
-        pie.select(".pie_" + name[i])
-          .transition()
-          .ease(d3.easeLinear)
-          .attr("transform", `translate(0, ${deltaY}) rotate(${rotation})`)
-          .attr("d", newArc)
-          .style("opacity", 1)
-          .duration(500);
-        pieLabel.select(".pieLabelText_" + name[i])
-          .transition()
-          .attr("transform", `translate(0, 0)`)
-          .style("font-size", newFontSize)
-          .style("opacity", 1)
-          .duration(500);
+        if ((angle.endAngle - angle.startAngle) < Math.PI) {
+          pie.select(".pie_" + name[i])
+            .transition()
+            .ease(d3.easeLinear)
+            .attr("transform", `translate(0, ${deltaY}) rotate(${rotation})`)
+            .attr("d", newArc)
+            .style("opacity", 1)
+            .duration(500);
+          pieLabel.select(".pieLabelText_" + name[i])
+            .transition()
+            .attr("transform", `translate(0, 0)`)
+            .style("font-size", newFontSize)
+            .style("opacity", 1)
+            .duration(500);
+        }
+        else if ((angle.endAngle - angle.startAngle) > Math.PI) {
+          pie.select(".pie_" + name[i])
+            .transition()
+            .ease(d3.easeLinear)
+            .attr("transform", `rotate(${rotation})`)
+            .attr("d", newArc)
+            .style("opacity", 1)
+            .duration(500);
+          pieLabel.select(".pieLabelText_" + name[i])
+            .transition()
+            .attr("transform", `translate(0, ${-deltaY})`)
+            .style("font-size", newFontSize)
+            .style("opacity", 1)
+            .duration(500);
+        }
         
         if (!(detail === undefined)) {
           selectedDetail.select("text")
-            .attr("transform", `translate(0, ${deltaY + 20})`)
+            .style("font-size", 0)
             .transition()
             .style("font-size", newFontSize)
             .text(detail[i])

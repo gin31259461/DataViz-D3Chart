@@ -94,11 +94,12 @@ _defineProperty(PieChart, "propTypes", {
   getDetail: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
   width: _propTypes["default"].number,
   height: _propTypes["default"].number,
-  nameDomain: _propTypes["default"].arrayOf([_propTypes["default"].number, _propTypes["default"].number]),
-  color: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  nameDomain: _propTypes["default"].arrayOf(_propTypes["default"].string),
+  color: _propTypes["default"].arrayOf(_propTypes["default"].string),
   chartTitleText: _propTypes["default"].string,
   format: _propTypes["default"].string,
   tooltipTitle: _propTypes["default"].func,
+  textSize: _propTypes["default"].number,
   marginTop: _propTypes["default"].number,
   marginRight: _propTypes["default"].number,
   marginBottom: _propTypes["default"].number,
@@ -131,9 +132,10 @@ _defineProperty(PieChart, "defaultProps", {
   chartTitleText: "",
   format: ",.0f",
   tooltipTitle: undefined,
+  textSize: undefined,
   marginTop: 40,
   marginRight: 0,
-  marginBottom: 0,
+  marginBottom: 40,
   marginLeft: 0,
   innerRadius: 0,
   outerRadius: undefined,
@@ -179,13 +181,14 @@ var D3PieChart = function () {
           animationTime = attr.animationTime,
           enableAnimation = attr.enableAnimation,
           getDetail = attr.getDetail,
+          textSize = attr.textSize,
           enablePieLabel = attr.enablePieLabel,
           marginBottom = attr.marginBottom,
           marginLeft = attr.marginLeft,
           marginRight = attr.marginRight,
           marginTop = attr.marginTop,
           enableLegend = attr.enableLegend;
-      if (outerRadius === undefined) outerRadius = Math.min(width, height) / 3;
+      if (outerRadius === undefined) outerRadius = Math.min(width - marginLeft - marginRight, height - marginTop - marginBottom) / 2;
       if (labelRadius === undefined) labelRadius = innerRadius * 0.2 + outerRadius * 0.8;
       if (stroke === undefined) stroke = innerRadius > 0 ? "none" : "white";
       if (padAngle === undefined) padAngle = stroke === "none" ? 1 / outerRadius : 0;
@@ -200,8 +203,9 @@ var D3PieChart = function () {
       }));
       var I = d3.range(name.length).filter(function (i) {
         return !isNaN(value[i]) && nameDomain.has(name[i]);
-      }),
-          fontSize = (width + height) / 100 + "px";
+      });
+      var fontSize = new String();
+      if (textSize === undefined) fontSize = (width + height) / 70 + "px";else fontSize = textSize + "px";
 
       if (tooltipTitle === undefined) {
         tooltipTitle = function tooltipTitle(i) {
@@ -221,13 +225,13 @@ var D3PieChart = function () {
       var arcs = d3.arc().innerRadius(innerRadius).outerRadius(outerRadius),
           arcLabel = d3.arc().innerRadius(labelRadius).outerRadius(labelRadius);
       var svg = this.svg.attr("width", width).attr("height", height).attr("overflow", "visible").attr("viewBox", [0, 0, width, height]);
-      var pie = svg.append("g").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+      var pie = svg.append("g").attr("transform", "translate(".concat(marginLeft + (width - marginLeft - marginRight) / 2, ", ").concat(marginTop + (height - marginTop - marginBottom) / 2, ")"));
       pie.attr("stroke", stroke).attr("strokeWidth", strokeWidth).attr("strokeLinejoin", strokeLinejoin).selectAll("path").data(divData).join("path").attr("class", function (d) {
         return "all pie_" + name[d.data];
       }).attr("fill", function (d) {
         return colorScale(name[d.data]);
       }).attr("d", arcs);
-      var pieLabel = svg.append("g").attr("text-anchor", "middle").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+      var pieLabel = svg.append("g").attr("text-anchor", "middle").attr("transform", "translate(".concat(marginLeft + (width - marginLeft - marginRight) / 2, ", ").concat(marginTop + (height - marginTop - marginBottom) / 2, ")"));
 
       if (enablePieLabel) {
         pieLabel.selectAll("text").data(divData).join("text").style("font-size", fontSize).attr("class", function (d) {
@@ -346,7 +350,7 @@ var D3PieChart = function () {
 
         var selectOne = function selectOne(_, i) {
           selectedOne = true;
-          var scale = 2,
+          var scale = 1,
               newArc = d3.arc().innerRadius(innerRadius * scale).outerRadius(outerRadius * scale),
               deltaY = (outerRadius - innerRadius) * scale / 2,
               angle = divData[i],
@@ -354,11 +358,17 @@ var D3PieChart = function () {
               newFontSize = Number(fontSize.slice(0, -2)) * scale + "px";
           pie.selectAll(".all").transition().ease(d3.easeLinear).attr("transform", "translate(0, 0) rotate(0)").attr("d", arcs).style("opacity", 0.2).duration(250).transition().attr("d", null).duration(250);
           pieLabel.selectAll("text").transition().style("font-size", "0").duration(500);
-          pie.select(".pie_" + name[i]).transition().ease(d3.easeLinear).attr("transform", "translate(0, ".concat(deltaY, ") rotate(").concat(rotation, ")")).attr("d", newArc).style("opacity", 1).duration(500);
-          pieLabel.select(".pieLabelText_" + name[i]).transition().attr("transform", "translate(0, 0)").style("font-size", newFontSize).style("opacity", 1).duration(500);
+
+          if (angle.endAngle - angle.startAngle < Math.PI) {
+            pie.select(".pie_" + name[i]).transition().ease(d3.easeLinear).attr("transform", "translate(0, ".concat(deltaY, ") rotate(").concat(rotation, ")")).attr("d", newArc).style("opacity", 1).duration(500);
+            pieLabel.select(".pieLabelText_" + name[i]).transition().attr("transform", "translate(0, 0)").style("font-size", newFontSize).style("opacity", 1).duration(500);
+          } else if (angle.endAngle - angle.startAngle > Math.PI) {
+            pie.select(".pie_" + name[i]).transition().ease(d3.easeLinear).attr("transform", "rotate(".concat(rotation, ")")).attr("d", newArc).style("opacity", 1).duration(500);
+            pieLabel.select(".pieLabelText_" + name[i]).transition().attr("transform", "translate(0, ".concat(-deltaY, ")")).style("font-size", newFontSize).style("opacity", 1).duration(500);
+          }
 
           if (!(detail === undefined)) {
-            selectedDetail.select("text").attr("transform", "translate(0, ".concat(deltaY + 20, ")")).transition().style("font-size", newFontSize).text(detail[i]).duration(500);
+            selectedDetail.select("text").style("font-size", 0).transition().style("font-size", newFontSize).text(detail[i]).duration(500);
           }
         };
 
@@ -398,7 +408,7 @@ var D3PieChart = function () {
           });
           legend.select(".legend_all").on("click", selectAll);
         }, animationTime);
-        var selectedDetail = svg.append("g").attr("transform", "translate(".concat(width / 2, ", ").concat(height / 2, ")"));
+        var selectedDetail = svg.append("g").attr("transform", "translate(".concat(marginLeft + (width - marginLeft - marginRight) / 2, ", ").concat(height - marginBottom / 2, ")"));
         selectedDetail.append("text").attr("text-anchor", "middle");
       }
     }
