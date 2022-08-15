@@ -193,7 +193,6 @@ class D3BarChartGroup {
         .join("rect")
           .attr("class", "all _" + d.group)
           .attr("fill", d => colorScale(d.group))
-          .style("cursor", "pointer")
           .attr("width", barWidth)
           .attr("height", d => yScale(0) - yScale(d.y))
           .attr("x", d => xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding) 

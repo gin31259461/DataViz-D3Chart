@@ -306,7 +306,7 @@ var D3LineChartMulti = function () {
       }
 
       if (enableTooltip) {
-        lineNode.selectAll("circle").style("cursor", "pointer").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
+        lineNode.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
       }
 
       if (enableAnimation) {

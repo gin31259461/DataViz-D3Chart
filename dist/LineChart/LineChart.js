@@ -223,7 +223,7 @@ var D3LineChart = function () {
       }),
           I = d3.range(x.length);
       if (xDomain === undefined) xDomain = d3.extent(x);
-      if (yDomain === undefined) yDomain = [0, d3.max(y)];
+      if (yDomain === undefined) yDomain = [0, d3.max(y) * 1.2];
       var xScale = xType(xDomain, xRange),
           yScale = yType(yDomain, yRange),
           xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),

@@ -53,14 +53,17 @@ let data = [{
   }
 ];
 
-<BarChartStacked
+<BubbleChart
   data = {data}
-  getX = {d => d.text}
-  keysOfGroups = {['salary_avghigh','salary_avglow','salary_avg']}
-  chartTitleText = {"BarChartStacked"}
+  getX = {d => d.salary_avglow}
+  getY = {d => d.salary_avghigh}
+  getZ = {d => d.salary_avg}
+  getC = {d => d.text}
+  getT = {d => d.text}
   xAxisText = {"x"}
   yAxisText = {"y"}
-  xAxisTicksTextRotation = {45}
-></BarChartStacked>
+  xType = {"scaleLinear"}
+  chartTitleText = {"BubbleChart"}
+></BubbleChart>
 
 ```

@@ -99,7 +99,7 @@ class D3BarChart {
       y = d3.map(d3.map(data, getY), d => Number(d));
     
     if(xDomain === undefined) xDomain = x.filter( d => d != "");
-    if(yDomain === undefined) yDomain = [0, d3.max(y)];
+    if(yDomain === undefined) yDomain = [0, d3.max(y) * 1.2];
 
     // unique domain
     xDomain = new d3.InternSet(xDomain);
@@ -168,7 +168,6 @@ class D3BarChart {
       .data(I)
       .join("rect")
         .attr("fill", i => colorScale(x[i]))
-        .style("cursor", "pointer")
         .attr("width", xScale.bandwidth() / 2)
         .attr("height", i => yScale(0) - yScale(y[i]))
         .attr("x", i => xScale(x[i]) + xScale.bandwidth()/4) 

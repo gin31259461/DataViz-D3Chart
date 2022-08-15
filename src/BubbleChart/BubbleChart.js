@@ -69,8 +69,8 @@ class BubbleChart extends Component {
     xDomain: undefined,
     yDomain: undefined,
     zDomain: undefined,
-    xDomainScale: 1,
-    zDomainScale: 1,
+    xDomainScale: 1.2,
+    zDomainScale: 1.2,
     xRange: undefined,
     yRange: undefined,
     zRange: undefined,
@@ -129,7 +129,7 @@ class D3BubbleChart {
       else if(xType === "scaleLinear")
         xDomain = [0, d3.max(x) * xDomainScale];
 
-    if (yDomain === undefined) yDomain = [d3.min(y) * 0.8, d3.max(y) * 1.1];
+    if (yDomain === undefined) yDomain = [d3.min(y) * 0.8, d3.max(y) * 1.2];
     if (zDomain === undefined) zDomain = [0, d3.max(z) * zDomainScale];
 
     let xScale = undefined;
@@ -206,7 +206,6 @@ class D3BubbleChart {
       .data(I)
       .join("circle")
       .attr("class", i => "bubbles _" + c[i] + " bubble_" + x[i])
-      .style("cursor", "pointer")
       .attr("fill", i => cScale(c[i]))
       .attr("stroke", "black")
       .attr("stroke-width", "0.5px")

@@ -188,7 +188,7 @@ var D3BarChart = function () {
       if (xDomain === undefined) xDomain = x.filter(function (d) {
         return d != "";
       });
-      if (yDomain === undefined) yDomain = [0, d3.max(y)];
+      if (yDomain === undefined) yDomain = [0, d3.max(y) * 1.2];
       xDomain = new d3.InternSet(xDomain);
       var I = d3.range(x.length).filter(function (i) {
         return xDomain.has(x[i]);
@@ -228,7 +228,7 @@ var D3BarChart = function () {
       var bar = svg.append("g");
       bar.selectAll("rect").data(I).join("rect").attr("fill", function (i) {
         return colorScale(x[i]);
-      }).style("cursor", "pointer").attr("width", xScale.bandwidth() / 2).attr("height", function (i) {
+      }).attr("width", xScale.bandwidth() / 2).attr("height", function (i) {
         return yScale(0) - yScale(y[i]);
       }).attr("x", function (i) {
         return xScale(x[i]) + xScale.bandwidth() / 4;

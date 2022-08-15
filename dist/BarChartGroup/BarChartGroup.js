@@ -254,7 +254,7 @@ var D3BarChartGroup = function () {
       groupData.map(function (d, i) {
         createBar.data(d.value).join("rect").attr("class", "all _" + d.group).attr("fill", function (d) {
           return colorScale(d.group);
-        }).style("cursor", "pointer").attr("width", barWidth).attr("height", function (d) {
+        }).attr("width", barWidth).attr("height", function (d) {
           return yScale(0) - yScale(d.y);
         }).attr("x", function (d) {
           return xScale(d.x) + xScale.bandwidth() / 4 + i * barWidth + i * barPadding;

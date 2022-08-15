@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import * as d3 from "d3"; 
 import PropTypes from "prop-types";
 
-class LineChart extends Component {
+class AreaChart extends Component {
 
   constructor(props) {
     super(props)
@@ -21,19 +21,21 @@ class LineChart extends Component {
     timeParse: PropTypes.string, // give format string of time, base on strptime strftime of c standard library
     formatTimeType: PropTypes.func, // parse string time to format time, timeParse(formatTime)(data)
     lineDefined: PropTypes.func,
-    curveType: PropTypes.object, // method of interplate between point
+    curveType: PropTypes.func, // method of interplate between point
     xType: PropTypes.func,
     yType: PropTypes.func,
     marginTop: PropTypes.number,
     marginRight: PropTypes.number,
     marginBottom: PropTypes.number,
     marginLeft: PropTypes.number,
-    xDomain: [PropTypes.number, PropTypes.number],
-    yDomain: [PropTypes.number, PropTypes.number],
-    xRange: [PropTypes.number, PropTypes.number],
-    yRange: [PropTypes.number, PropTypes.number],
+    xDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
+    yDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
+    xRange: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
+    yRange: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
     lineNodeRadius: PropTypes.number,
-    color: PropTypes.string,
+    strokeColor: PropTypes.string,
+    areaColor: PropTypes.string,
+    areaOpacity: PropTypes.number, // range [0 - 1]
     strokeLinecap: PropTypes.string,
     strokeLinejoin: PropTypes.string,
     strokeWidth: PropTypes.number,
@@ -44,21 +46,22 @@ class LineChart extends Component {
     enableTooltip: PropTypes.bool,
     enableXAxis: PropTypes.bool,
     enableYAxis: PropTypes.bool,
+    enableLinePath: PropTypes.bool
   };
 
   static defaultProps = {
-    getX: d => d.x, // function to fetch x-axis data
-    getY: d => d.y, // function to fetch y-axis data
-    width: 500, // chart width
-    height: 300, // chart height
-    chartTitleText: "", // title of chart
-    tooltipTitle: undefined, // function of tooltip title
-    xAxisText: "", // x axis label
-    yAxisText: "", // y axis label
-    timeParse: "%Y-%m-%d", // give format string of time, base on strptime strftime of c standard library
+    getX: d => d.x,
+    getY: d => d.y,
+    width: 500, 
+    height: 300, 
+    chartTitleText: "", 
+    tooltipTitle: undefined, 
+    xAxisText: "", 
+    yAxisText: "", 
+    timeParse: "%Y-%m-%d", 
     lineDefined: undefined,
-    formatTimeType: d3.timeParse, // parse string time to format time, timeParse(formatTime)(data)
-    curveType: d3.curveLinear, // method of interplate between point
+    formatTimeType: d3.timeParse, 
+    curveType: d3.curveLinear, 
     xType: d3.scaleTime,
     yType: d3.scaleLinear,
     marginTop: 40,
@@ -70,23 +73,26 @@ class LineChart extends Component {
     xRange: undefined,
     yRange: undefined,
     lineNodeRadius: 5,
-    color: "steelblue",
+    strokeColor: "steelblue",
+    areaColor: "steelblue",
+    areaOpacity: 0.5,
     strokeLinecap: "round",
     strokeLinejoin: "round",
     strokeWidth: 1.5,
     strokeOpacity: 1,
-    animationTime: 2000,
+    animationTime: 1000,
     enableAnimation: true,
     enableLineNode: true,
     enableTooltip: true,
     enableXAxis: true,
     enableYAxis: true,
+    enableLinePath: true
   };
 
   componentDidMount(){
     const {data, ...attr} = this.props;
-    const element = this.element, line = new D3LineChart(element); 
-    line.render(data, attr);
+    const element = this.element, area = new D3AreaChart(element); 
+    area.render(data, attr);
   }
 
   render() {
@@ -95,7 +101,7 @@ class LineChart extends Component {
 
 };
 
-class D3LineChart {
+class D3AreaChart {
   
   constructor(element) {
     this.svg = d3.select(element);
@@ -106,7 +112,8 @@ class D3LineChart {
     let {
       getX, getY, width, height, chartTitleText, tooltipTitle, xAxisText, yAxisText,
       timeParse, lineDefined, marginTop, marginRight, marginBottom, marginLeft, 
-      xDomain, yDomain, xRange, yRange, lineNodeRadius, color, xType, yType, formatTimeType, curveType,
+      xDomain, yDomain, xRange, yRange, lineNodeRadius, strokeColor, areaColor,
+      xType, yType, formatTimeType, curveType, enableLinePath, areaOpacity,
       strokeLinecap, strokeLinejoin, strokeWidth, strokeOpacity, animationTime,
       enableAnimation, enableLineNode, enableTooltip, enableXAxis, enableYAxis,
     } = attr;
@@ -128,9 +135,9 @@ class D3LineChart {
     const
       xScale = xType(xDomain, xRange),
       yScale = yType(yDomain, yRange),
+      fontSize = (width + height) / 100 + "px",
       xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),
-      yAxisType = d3.axisLeft(yScale).ticks(height / 40),
-      fontSize = (width + height) / 100 + "px";
+      yAxisType = d3.axisLeft(yScale).ticks(height / 40);
 
     if (lineDefined === undefined) lineDefined = (_, i) => !isNaN(x[i]) && !isNaN(y[i]);
     const defined = d3.map(data, lineDefined); // bool set of each point
@@ -141,6 +148,19 @@ class D3LineChart {
       .curve(curveType)
       .x(i => xScale(x[i]))
       .y(i => yScale(y[i]));
+
+    const 
+      area0 = d3.area()
+        .x(i => xScale(x[i]))
+        .y0(height - marginBottom)
+        .y(height - marginBottom),
+      area = d3.area()
+        .defined(i => defined[i])
+        .curve(curveType)
+        .x(i => xScale(x[i]))
+        .y0(yScale(0))
+        .y1(i => yScale(y[i]));
+     
 
     if(tooltipTitle === undefined)
       tooltipTitle = i => {
@@ -207,17 +227,27 @@ class D3LineChart {
     // draw line path
     // path attribute "d" need a "data series"
 
-    const linePath = svg.append("g");
-    linePath
+    const areaPath = svg.append("g");
+    areaPath
       .append("path")
       .datum(I)
-        .attr("fill", "none")
-        .attr("stroke", color)
-        .attr("stroke-width", strokeWidth)
-        .attr("stroke-linecap", strokeLinecap)
-        .attr("stroke-linejoin", strokeLinejoin)
-        .attr("stroke-opacity", strokeOpacity)
-        .attr("d", line); 
+      .attr("fill", areaColor)
+      .style("opacity", areaOpacity)
+      .attr("d", area);
+
+    const linePath = svg.append("g");
+    if (enableLinePath) {
+      linePath
+        .append("path")
+        .datum(I)
+          .attr("fill", "none")
+          .attr("stroke", strokeColor)
+          .attr("stroke-width", strokeWidth)
+          .attr("stroke-linecap", strokeLinecap)
+          .attr("stroke-linejoin", strokeLinejoin)
+          .attr("stroke-opacity", strokeOpacity)
+          .attr("d", line); 
+    }
     
     const lineNode = svg.append("g");
     if (enableLineNode) {
@@ -228,27 +258,42 @@ class D3LineChart {
           .attr("cx", i => xScale(x[i]))
           .attr("cy", i => yScale(y[i]))
           .attr("r", lineNodeRadius)
-          .attr("fill", color);
+          .attr("fill", "white")
+          .attr("stroke", strokeColor)
+          .attr("stroke-width", strokeWidth);
     }
 
     // animation
     if (enableAnimation) {
-      const pathLenth = linePath.select("path").node().getTotalLength();
-      linePath
-        .attr("stroke-dasharray", pathLenth + " " + pathLenth)
-        .attr("stroke-dashoffset", pathLenth)
+
+      areaPath
+        .selectAll("path")
+        .attr("fill", "rgba(0, 0, 0, 0)")
+        .attr("d", area0)
         .transition()
-        .ease(d3.easeLinear)
-        .attr("stroke-dashoffset", 0)
+        .attr("fill", areaColor)
+        .attr("d", area)
         .duration(animationTime);
-      
-      lineNode
-        .selectAll("circle")
-        .style("opacity", 0)
-        .transition()
-        .ease(d3.easeLinear)
-        .style("opacity", 1)
-        .duration(animationTime)
+
+      if (enableLinePath) {
+        const pathLenth = linePath.select("path").node().getTotalLength();
+        linePath
+          .attr("stroke-dasharray", pathLenth + " " + pathLenth)
+          .attr("stroke-dashoffset", pathLenth)
+          .transition()
+          .ease(d3.easeLinear)
+          .attr("stroke-dashoffset", 0)
+          .duration(animationTime).delay(animationTime);
+      }
+      if (enableLineNode) {
+        lineNode
+          .selectAll("circle")
+          .style("opacity", 0)
+          .transition()
+          .ease(d3.easeLinear)
+          .style("opacity", 1)
+          .duration(animationTime).delay(animationTime);
+      } 
     }
 
     // tooltip
@@ -293,4 +338,4 @@ class D3LineChart {
   }
 };
 
-export {LineChart};
+export {AreaChart};

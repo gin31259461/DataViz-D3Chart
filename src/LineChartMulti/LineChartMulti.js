@@ -252,7 +252,6 @@ class D3LineChartMulti {
 
     if (enableTooltip) {
       lineNode.selectAll("circle")
-        .style("cursor", "pointer")
         .on("mouseover", showTooltip)
         .on("mouseleave", hideTooltip)
     }

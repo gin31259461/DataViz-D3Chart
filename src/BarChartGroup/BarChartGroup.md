@@ -53,14 +53,14 @@ let data = [{
   }
 ];
 
-<BarChartStacked
+<BarChartGroup
   data = {data}
   getX = {d => d.text}
   keysOfGroups = {['salary_avghigh','salary_avglow','salary_avg']}
-  chartTitleText = {"BarChartStacked"}
+  chartTitleText = {"BarChartGroup"}
   xAxisText = {"x"}
   yAxisText = {"y"}
   xAxisTicksTextRotation = {45}
-></BarChartStacked>
+></BarChartGroup>
 
 ```

@@ -3,20 +3,21 @@
 let data = [{
     count: 2167,
     text: "A",
-    detail: "A -----"
+    detail: "A detail"
   }, {
     count: 3267,
     text: "B",
-    detail: "B -----"
+    detail: "B detail"
   }, {
     count: 3167,
     text: "C",
-    detail: "C -----"
+    detail: "C detail"
   }, {
     count: 5167,
     text: "D",
-    detail: "D -----"
-}];
+    detail: "D detail"
+  }
+];
 
 <PieChart
   data = {data}

@@ -9,3 +9,4 @@ export {BarChartStacked} from "./BarChartStacked/BarChartStacked";
 export {LineChartMulti} from "./LineChartMulti/LineChartMulti";
 export {ScatterPlot} from "./ScatterPlot/ScatterPlot";
 export {ScatterPlotGroup} from "./ScatterPlotGroup/ScatterPlotGroup";
+export {DonutChart} from "./DonutChart/DonutChart";
