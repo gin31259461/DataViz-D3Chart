@@ -101,24 +101,23 @@ _defineProperty(BubbleChart, "propTypes", {
   xAxisText: _propTypes["default"].string,
   yAxisText: _propTypes["default"].string,
   zMaxRadius: _propTypes["default"].number,
-  color: _propTypes["default"].objectOf[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  color: _propTypes["default"].arrayOf(_propTypes["default"].string),
   xType: _propTypes["default"].string,
   marginTop: _propTypes["default"].number,
   marginRight: _propTypes["default"].number,
   marginBottom: _propTypes["default"].number,
   marginLeft: _propTypes["default"].number,
-  xDomain: [_propTypes["default"].number, _propTypes["default"].number],
-  yDomain: [_propTypes["default"].number, _propTypes["default"].number],
-  zDomain: [_propTypes["default"].number, _propTypes["default"].number],
+  xDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  yDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  zDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
   xDomainScale: _propTypes["default"].number,
   zDomainScale: _propTypes["default"].number,
-  xRange: [_propTypes["default"].number, _propTypes["default"].number],
-  yRange: [_propTypes["default"].number, _propTypes["default"].number],
-  zRange: [_propTypes["default"].number, _propTypes["default"].number],
+  xRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  yRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  zRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
   animationTime: _propTypes["default"].number,
   enableAnimation: _propTypes["default"].bool,
   enableLegend: _propTypes["default"].bool,
-  enableTooltip: _propTypes["default"].bool,
   enableXAxis: _propTypes["default"].bool,
   enableYAxis: _propTypes["default"].bool
 });
@@ -163,7 +162,6 @@ _defineProperty(BubbleChart, "defaultProps", {
   animationTime: 2000,
   enableAnimation: true,
   enableLegend: true,
-  enableTooltip: true,
   enableXAxis: true,
   enableYAxis: true
 });
@@ -207,7 +205,6 @@ var D3BubbleChart = function () {
           animationTime = attr.animationTime,
           enableAnimation = attr.enableAnimation,
           enableLegend = attr.enableLegend,
-          enableTooltip = attr.enableTooltip,
           enableXAxis = attr.enableXAxis,
           enableYAxis = attr.enableYAxis;
       if (xRange === undefined) xRange = [marginLeft, width - marginRight];
@@ -281,11 +278,7 @@ var D3BubbleChart = function () {
       });else if (xType === "scaleLinear") bubbles.selectAll(".bubbles").data(I).attr("cx", function (i) {
         return xScale(x[i]);
       });
-
-      if (enableTooltip) {
-        bubbles.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
-      }
-
+      bubbles.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
       var chartTitle = svg.append("g");
       chartTitle.call(function (g) {
         return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-size", "20px").style("font-weight", 550).attr("text-anchor", "middle").text(chartTitleText);

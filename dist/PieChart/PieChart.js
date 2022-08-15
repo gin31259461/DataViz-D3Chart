@@ -91,7 +91,7 @@ _defineProperty(PieChart, "propTypes", {
   data: _propTypes["default"].array.isRequired,
   getName: _propTypes["default"].func,
   getValue: _propTypes["default"].func,
-  getDetail: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  getDetail: _propTypes["default"].oneOfType([_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string)]),
   width: _propTypes["default"].number,
   height: _propTypes["default"].number,
   nameDomain: _propTypes["default"].arrayOf(_propTypes["default"].string),
@@ -124,7 +124,9 @@ _defineProperty(PieChart, "defaultProps", {
   getValue: function getValue(d) {
     return d.value;
   },
-  getDetail: undefined,
+  getDetail: function getDetail(d) {
+    return d.detail;
+  },
   width: 500,
   height: 300,
   nameDomain: undefined,
