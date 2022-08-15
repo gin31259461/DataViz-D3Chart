@@ -9,43 +9,81 @@ class AreaChart extends Component {
   }
 
   static propTypes = {
+    /** data for chart */
     data: PropTypes.array.isRequired,
-    getX: PropTypes.func, // function to fetch x-axis data
-    getY: PropTypes.func, // function to fetch y-axis data
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
-    timeParse: PropTypes.string, // give format string of time, base on strptime strftime of c standard library
-    formatTimeType: PropTypes.func, // parse string time to format time, timeParse(formatTime)(data)
+    /** function to fetch x-axis data */
+    getX: PropTypes.func,
+    /** function to fetch y-axis data */
+    getY: PropTypes.func,
+    /** width of chart */
+    width: PropTypes.number,
+    /** height of chart */
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string,
+    /** tip text for chart */
+    tooltipTitle: PropTypes.func,
+    /** x-axis label */
+    xAxisText: PropTypes.string,
+    /** y-axis label */
+    yAxisText: PropTypes.string,
+    /** give format string of time, base on strptime strftime of c standard library */
+    timeParse: PropTypes.string, 
+    /** parse string time to format time, formatTimeType(timeParse)(data) */
+    formatTimeType: PropTypes.func, 
+    /** function to define boolean between points */
     lineDefined: PropTypes.func,
-    curveType: PropTypes.func, // method of interplate between point
+    /** method of interplate between point */
+    curveType: PropTypes.func,
+    /** x data map type */
     xType: PropTypes.func,
+    /** y data map type */
     yType: PropTypes.func,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
-    xDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
-    yDomain: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
-    xRange: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
-    yRange: PropTypes.arrayOf([PropTypes.number, PropTypes.number]),
+    /** domain of x data [start, end] */
+    xDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y data [start, end] */
+    yDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of x scale range [start, end] */
+    xRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y scale range [start, end] */
+    yRange: PropTypes.arrayOf(PropTypes.number),
+    /** dot radius */
     lineNodeRadius: PropTypes.number,
+    /** line color */
     strokeColor: PropTypes.string,
+    /** area color */
     areaColor: PropTypes.string,
+    /** area opacity */
     areaOpacity: PropTypes.number, // range [0 - 1]
+    /** linecap of line */
     strokeLinecap: PropTypes.string,
+    /** linejoin of line */
     strokeLinejoin: PropTypes.string,
+    /** line width */
     strokeWidth: PropTypes.number,
+    /** line opacity */
     strokeOpacity: PropTypes.number,
-    animationTime: PropTypes.number, // ms
+    /** chart animation time (ms) */
+    animationTime: PropTypes.number,
+    /** enable chart animation */
     enableAnimation: PropTypes.bool,
+    /** enable dots */
     enableLineNode: PropTypes.bool,
+    /** enable to show tip */
     enableTooltip: PropTypes.bool,
+    /** enable x-axis */
     enableXAxis: PropTypes.bool,
+    /** enable y-axis */
     enableYAxis: PropTypes.bool,
+    /** enable line of area */
     enableLinePath: PropTypes.bool
   };
 

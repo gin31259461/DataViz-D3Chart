@@ -9,36 +9,61 @@ class ScatterPlotGroup extends Component {
   }
 
   static propTypes = {
+    /** data for chart */
     data: PropTypes.array.isRequired,
-    getX: PropTypes.func, // function to fetch x-axis data
-    keysOfGroups: PropTypes.array, // array to map y keys of group
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
+    /** function to fetch x-axis data */
+    getX: PropTypes.func,
+    /** array to map keys of group */
+    keysOfGroups: PropTypes.array,
+    /** width of chart */
+    width: PropTypes.number,
+    /** height of chart */
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string,
+    /** tip text for chart */
+    tooltipTitle: PropTypes.func,
+    /** x-axis label */
+    xAxisText: PropTypes.string,
+    /** y-axis label */
+    yAxisText: PropTypes.string,
+    /** x-axis ticks rotate angle */
     xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    /** method for x data map */
     xType: PropTypes.func,
+    /** method for y data map */
     yType: PropTypes.func,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
-    xDomain: [PropTypes.number, PropTypes.number],
-    yDomain: [PropTypes.number, PropTypes.number],
-    xRange: [PropTypes.number, PropTypes.number],
-    yRange: [PropTypes.number, PropTypes.number],
+    /** domain of x data [start, end] */
+    /** domain of x data [start, end] */
+    xDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y data [start, end] */
+    yDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of x scale range [start, end] */
+    xRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y scale range [start, end] */
+    yRange: PropTypes.arrayOf(PropTypes.number),
+    /** dot radius */
     dotRadius: PropTypes.number,
-    dotColor: PropTypes.oneOfType [
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string)   
-    ],
-    animationTime: PropTypes.number, // ms
+    dotColor: PropTypes.arrayOf(PropTypes.string),
+    /** chart animation time (ms) */
+    animationTime: PropTypes.number,
+    /** enable chart animation */
     enableAnimation: PropTypes.bool,
+    /** enable to show tip */
     enableTooltip: PropTypes.bool,
+    /** enable x-axis */
     enableXAxis: PropTypes.bool,
+    /** enable y-axis */
     enableYAxis: PropTypes.bool,
+    /** enable legend of chart */
     enableLegend: PropTypes.bool
   };
 

@@ -9,41 +9,69 @@ class BubbleChart extends Component {
   }
 
   static propTypes = {
+    /** data for chart */
     data: PropTypes.array.isRequired,
+    /** function to fetch x-axis data */
     getX: PropTypes.func, // function to fetch x-axis data
+    /** function to fetch y-axis data */
     getY: PropTypes.func, // function to fetch y-axis data
+    /** function to fetch bubble radius data */
     getZ: PropTypes.func, // function to fetch bubbles scale data 
-    getC: PropTypes.func, // function to fetch color scale data
-    getT: PropTypes.func, // function to fetch tooltip text data
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
+    /** function to fetch bubble group data */
+    getC: PropTypes.func,
+    /** function to fetch tooltip text data */
+    getT: PropTypes.func,
+    /** width of chart */
+    width: PropTypes.number,
+    /** height of chart */
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string,
+    /** tip text for chart */
+    tooltipTitle: PropTypes.func, 
+    /** x-axis label */
+    xAxisText: PropTypes.string,
+    /** y-axis label */
+    yAxisText: PropTypes.string,
+    /** bubble radius maximum */
     zMaxRadius: PropTypes.number,
-    color: PropTypes.objectOf [
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string)
-    ], // function for color
+    /** color array to render bubble group */
+    color: PropTypes.arrayOf(PropTypes.string),
+    /** method if x data map */
     xType: PropTypes.string,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
-    xDomain: [PropTypes.number, PropTypes.number],
-    yDomain: [PropTypes.number, PropTypes.number],
-    zDomain: [PropTypes.number, PropTypes.number],
+    /** domain of x data [start, end] */
+    xDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y data [start, end] */
+    yDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of z data [start, end] */
+    zDomain: PropTypes.arrayOf(PropTypes.number),
+    /** scale for x-domain */
     xDomainScale: PropTypes.number,
+    /** scale for z-domain */
     zDomainScale: PropTypes.number,
-    xRange: [PropTypes.number, PropTypes.number],
-    yRange: [PropTypes.number, PropTypes.number],
-    zRange: [PropTypes.number, PropTypes.number],
+    /** domain of x scale range [start, end] */
+    xRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y scale range [start, end] */
+    yRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of z scale range [start, end] */
+    zRange: PropTypes.arrayOf(PropTypes.number),
+    /** chart animation time (ms) */
     animationTime: PropTypes.number, // ms
+    /** enable chart animation */
     enableAnimation: PropTypes.bool,
+    /** enable legend of chart */
     enableLegend: PropTypes.bool,
-    enableTooltip: PropTypes.bool,
+    /** enable x-axis */
     enableXAxis: PropTypes.bool,
+    /** enable y-axis */
     enableYAxis: PropTypes.bool,
   };
 
@@ -77,7 +105,6 @@ class BubbleChart extends Component {
     animationTime: 2000,
     enableAnimation: true,
     enableLegend: true,
-    enableTooltip: true,
     enableXAxis: true,
     enableYAxis: true,
   };
@@ -107,7 +134,7 @@ class D3BubbleChart {
       xAxisText, yAxisText, zMaxRadius, color, xType, marginTop, marginRight,
       marginBottom, marginLeft, xDomain, yDomain, zDomain, xDomainScale, zDomainScale,
       xRange, yRange, zRange, animationTime, 
-      enableAnimation, enableLegend, enableTooltip, enableXAxis, enableYAxis,
+      enableAnimation, enableLegend, enableXAxis, enableYAxis,
     } = attr;
 
     if (xRange === undefined) xRange = [marginLeft, width - marginRight];
@@ -224,12 +251,10 @@ class D3BubbleChart {
         .data(I)
           .attr("cx", i => xScale(x[i]));
 
-    if (enableTooltip) {
-      bubbles
-        .selectAll("circle")
-        .on("mouseover", showTooltip)
-        .on("mouseleave", hideTooltip);
-    }
+    bubbles
+      .selectAll("circle")
+      .on("mouseover", showTooltip)
+      .on("mouseleave", hideTooltip);
 
     const chartTitle = svg.append("g");
     chartTitle

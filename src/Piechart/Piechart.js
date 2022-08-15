@@ -16,10 +16,10 @@ class PieChart extends Component {
     /** function to fetch pieces value of pie */
     getValue: PropTypes.func,
     /** function to fetch pieces detail of pie, or give string array */
-    getDetail: PropTypes.oneOfType [
+    getDetail: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string)
-    ], // function to fetch each piece of pie
+    ]), // function to fetch each piece of pie
     /** width if this chart */
     width: PropTypes.number,
     /** height of this chart */
@@ -71,7 +71,7 @@ class PieChart extends Component {
   static defaultProps = {
     getName: d => d.name,
     getValue: d => d.value,
-    getDetail: undefined,
+    getDetail: d => d.detail,
     width: 500, 
     height: 300,
     nameDomain: undefined,

@@ -9,32 +9,53 @@ class BarChart extends Component {
   }
 
   static propTypes = {
+    /** data for chart */
     data: PropTypes.array.isRequired,
-    getX: PropTypes.func, // function to fetch x-axis data
-    getY: PropTypes.func, // function to fetch y-axis data
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
+    /** function to fetch x-axis data */
+    getX: PropTypes.func,
+    /** function to fetch y-axis data */
+    getY: PropTypes.func,
+    /** width of chart */
+    width: PropTypes.number,
+    /** height of chart */
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string,
+    /** tip text for chart */
+    tooltipTitle: PropTypes.func,
+    /** x-axis label */
+    xAxisText: PropTypes.string,
+    /** y-axis label */
+    yAxisText: PropTypes.string,
+    /** padding between band */
     xPadding: PropTypes.number,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
-    color: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string) 
-    ]), // bar color
-    xDomain: [PropTypes.number, PropTypes.number],
-    yDomain: [PropTypes.number, PropTypes.number],
-    xRange: [PropTypes.number, PropTypes.number],
-    yRange: [PropTypes.number, PropTypes.number],
+    /** color array to render bar */
+    color: PropTypes.arrayOf(PropTypes.string),
+    /** domain of x data [start, end] */
+    xDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y data [start, end] */
+    yDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of x scale range [start, end] */
+    xRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y scale range [start, end] */
+    yRange: PropTypes.arrayOf(PropTypes.number),
+    /** chart animation time (ms) */
     animationTime: PropTypes.number, // ms
+    /** enable chart animation */
     enableAnimation: PropTypes.bool,
+    /** enable show bar value */
     enableBarValue: PropTypes.bool,
+    /** enable x-axis */
     enableXAxis: PropTypes.bool,
+    /** enable y-axis */
     enableYAxis: PropTypes.bool,
   };
 

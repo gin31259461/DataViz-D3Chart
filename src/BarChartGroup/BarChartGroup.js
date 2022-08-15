@@ -9,34 +9,57 @@ class BarChartGroup extends Component {
   }
 
   static propTypes = {
+    /** data for chart */
     data: PropTypes.array.isRequired,
+    /** function to fetch x-axis data */
     getX: PropTypes.func, // function to fetch x-axis data
-    keysOfGroups: PropTypes.arrayOf(PropTypes.string), // fetch y-axis data
-    width: PropTypes.number, // chart width
-    height: PropTypes.number, // chart height
-    chartTitleText: PropTypes.string, // title of chart
-    tooltipTitle: PropTypes.func, // function of tooltip title
-    xAxisText: PropTypes.string, // x axis label
-    yAxisText: PropTypes.string, // y axis label
-    xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    /** array to map keys of group */
+    keysOfGroups: PropTypes.arrayOf(PropTypes.string),
+    /** width of chart */
+    width: PropTypes.number,
+    /** height of chart */
+    height: PropTypes.number,
+    /** title of chart */
+    chartTitleText: PropTypes.string,
+    /** tip text for chart */
+    tooltipTitle: PropTypes.func,
+    /** x-axis label */
+    xAxisText: PropTypes.string,
+    /** y-axis label */
+    yAxisText: PropTypes.string,
+    /** x-axis ticks rotate angle */
+    xAxisTicksTextRotation: PropTypes.number,
+    /** padding between band */
     xPadding: PropTypes.number,
+    /** margin top */
     marginTop: PropTypes.number,
+    /** margin right */
     marginRight: PropTypes.number,
+    /** margin bottom */
     marginBottom: PropTypes.number,
+    /** margin left */
     marginLeft: PropTypes.number,
-    color: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.arrayOf(PropTypes.string) 
-    ]), // bar color
-    xDomain: [PropTypes.number, PropTypes.number],
-    yDomain: [PropTypes.number, PropTypes.number],
-    xRange: [PropTypes.number, PropTypes.number],
-    yRange: [PropTypes.number, PropTypes.number],
+    /** domain of x data [start, end] */
+    xDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y data [start, end] */
+    yDomain: PropTypes.arrayOf(PropTypes.number),
+    /** domain of x scale range [start, end] */
+    xRange: PropTypes.arrayOf(PropTypes.number),
+    /** domain of y scale range [start, end] */
+    yRange: PropTypes.arrayOf(PropTypes.number),
+    /** array to render bar groups */
+    color: PropTypes.arrayOf(PropTypes.string),
+    /** chart animation time (ms) */
     animationTime: PropTypes.number, // ms
+    /** enable chart animation */
     enableAnimation: PropTypes.bool,
+    /** enable show bar value */
     enableBarValue: PropTypes.bool,
+    /** enable x-axis */
     enableXAxis: PropTypes.bool,
+    /** enable y-axis */
     enableYAxis: PropTypes.bool,
+    /** enable legend of chart */
     enableLegend: PropTypes.bool,
   };
 
