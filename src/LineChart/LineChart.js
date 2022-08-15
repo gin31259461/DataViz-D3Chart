@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import * as d3 from "d3"; 
 import PropTypes from "prop-types";
 
-class ScatterPlot extends Component {
+class LineChart extends Component {
 
   constructor(props) {
     super(props)
@@ -18,9 +18,11 @@ class ScatterPlot extends Component {
     tooltipTitle: PropTypes.func, // function of tooltip title
     xAxisText: PropTypes.string, // x axis label
     yAxisText: PropTypes.string, // y axis label
-    xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    timeParse: PropTypes.string, // give format string of time, base on strptime strftime of c standard library
+    formatTimeType: PropTypes.func, // parse string time to format time, timeParse(formatTime)(data)
+    lineDefined: PropTypes.func,
+    curveType: PropTypes.object, // method of interplate between point
     xType: PropTypes.func,
-    xPadding: PropTypes.number,
     yType: PropTypes.func,
     marginTop: PropTypes.number,
     marginRight: PropTypes.number,
@@ -30,10 +32,15 @@ class ScatterPlot extends Component {
     yDomain: [PropTypes.number, PropTypes.number],
     xRange: [PropTypes.number, PropTypes.number],
     yRange: [PropTypes.number, PropTypes.number],
-    dotRadius: PropTypes.number,
+    lineNodeRadius: PropTypes.number,
     color: PropTypes.string,
+    strokeLinecap: PropTypes.string,
+    strokeLinejoin: PropTypes.string,
+    strokeWidth: PropTypes.number,
+    strokeOpacity: PropTypes.number,
     animationTime: PropTypes.number, // ms
     enableAnimation: PropTypes.bool,
+    enableLineNode: PropTypes.bool,
     enableTooltip: PropTypes.bool,
     enableXAxis: PropTypes.bool,
     enableYAxis: PropTypes.bool,
@@ -48,9 +55,11 @@ class ScatterPlot extends Component {
     tooltipTitle: undefined, // function of tooltip title
     xAxisText: "", // x axis label
     yAxisText: "", // y axis label
-    xAxisTicksTextRotation: 0,
-    xType: d3.scaleBand,
-    xPadding: 0.1,
+    timeParse: "%Y-%m-%d", // give format string of time, base on strptime strftime of c standard library
+    lineDefined: undefined,
+    formatTimeType: d3.timeParse, // parse string time to format time, timeParse(formatTime)(data)
+    curveType: d3.curveLinear, // method of interplate between point
+    xType: d3.scaleTime,
     yType: d3.scaleLinear,
     marginTop: 40,
     marginRight: 40,
@@ -60,10 +69,15 @@ class ScatterPlot extends Component {
     yDomain: undefined,
     xRange: undefined,
     yRange: undefined,
-    dotRadius: 5,
+    lineNodeRadius: 5,
     color: "steelblue",
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    strokeWidth: 1.5,
+    strokeOpacity: 1,
     animationTime: 2000,
     enableAnimation: true,
+    enableLineNode: true,
     enableTooltip: true,
     enableXAxis: true,
     enableYAxis: true,
@@ -71,8 +85,8 @@ class ScatterPlot extends Component {
 
   componentDidMount(){
     const {data, ...attr} = this.props;
-    const element = this.element, scatter = new D3ScatterPlot(element); 
-    scatter.render(data, attr);
+    const element = this.element, line = new D3LineChart(element); 
+    line.render(data, attr);
   }
 
   render() {
@@ -81,7 +95,7 @@ class ScatterPlot extends Component {
 
 };
 
-class D3ScatterPlot {
+class D3LineChart {
   
   constructor(element) {
     this.svg = d3.select(element);
@@ -91,34 +105,46 @@ class D3ScatterPlot {
 
     let {
       getX, getY, width, height, chartTitleText, tooltipTitle, xAxisText, yAxisText,
-      marginTop, marginRight, marginBottom, marginLeft, xAxisTicksTextRotation,
-      xDomain, yDomain, xRange, yRange, dotRadius, color, xType, xPadding, yType,
-      animationTime, enableAnimation, enableTooltip, enableXAxis, enableYAxis,
+      timeParse, lineDefined, marginTop, marginRight, marginBottom, marginLeft, 
+      xDomain, yDomain, xRange, yRange, lineNodeRadius, color, xType, yType, formatTimeType, curveType,
+      strokeLinecap, strokeLinejoin, strokeWidth, strokeOpacity, animationTime,
+      enableAnimation, enableLineNode, enableTooltip, enableXAxis, enableYAxis,
     } = attr;
 
     if (xRange === undefined) xRange = [marginLeft, width - marginRight];
     if (yRange === undefined) yRange = [height - marginBottom, marginTop];
 
-    const
-      x = d3.map(data, getX),
-      y = d3.map(d3.map(data, getY), d => Number(d));
-
-    if (xDomain === undefined) xDomain = x.filter(d => d != "");
-    if (yDomain === undefined) yDomain = [0, d3.max(y) * 1.2];
-
-    xDomain = new d3.InternSet(xDomain);
-    const I = d3.range(x.length).filter(i => xDomain.has(x[i]));
+    let x = [];
+    if (xType === d3.scaleTime)
+      x = d3.map(d3.map(data, getX), d => formatTimeType(timeParse)(d));
 
     const
-      xScale = xType(xDomain, xRange).padding(xPadding),
+      y = d3.map(d3.map(data, getY), d => Number(d)),
+      I = d3.range(x.length);
+
+    if (xDomain === undefined) xDomain = d3.extent(x);
+    if (yDomain === undefined) yDomain = [0, d3.max(y)];
+
+    const
+      xScale = xType(xDomain, xRange),
       yScale = yType(yDomain, yRange),
-      xAxisType = d3.axisBottom(xScale).tickSizeOuter(0),
+      xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),
       yAxisType = d3.axisLeft(yScale).ticks(height / 40),
       fontSize = (width + height) / 100 + "px";
 
+    if (lineDefined === undefined) lineDefined = (_, i) => !isNaN(x[i]) && !isNaN(y[i]);
+    const defined = d3.map(data, lineDefined); // bool set of each point
+
+    // require index data
+    const line = d3.line()
+      .defined(i => defined[i])
+      .curve(curveType)
+      .x(i => xScale(x[i]))
+      .y(i => yScale(y[i]));
+
     if(tooltipTitle === undefined)
       tooltipTitle = i => {
-        return `x: ${(x[i])}\ny: ${y[i]}`;
+        return `x: ${d3.timeFormat("%Y-%m-%d")(x[i])}\ny: ${y[i]}`;
       };
 
     const svg = this.svg
@@ -126,6 +152,13 @@ class D3ScatterPlot {
       .attr("height", height)
       .attr("viewBox", [0, 0, width, height])
       .attr("overflow", "visible");
+
+    if (enableTooltip) {
+      svg
+        .on("pointerenter pointermove", showTooltip)
+        .on("pointerleave", hideTooltip)
+        .on("touchstart", event => event.preventDefault());
+    }
 
     if (enableYAxis) {
       const yAxis = svg.append("g").attr("transform", `translate(${marginLeft}, 0)`);
@@ -150,16 +183,6 @@ class D3ScatterPlot {
       const xAxis = svg.append("g").attr("transform", `translate(0, ${height - marginBottom})`);
       xAxis
         .call(xAxisType)
-        .call(g => g.selectAll(".tick line").clone()
-          .attr("y2", -(height - marginTop - marginBottom) )
-          .attr("stroke-opacity", 0.1)
-        );
-      if (xAxisTicksTextRotation != 0)
-        xAxis
-          .selectAll("text")
-            .attr("text-anchor", "start")
-            .attr("transform", d => `rotate(${xAxisTicksTextRotation})`)
-      xAxis
         .call(g => g.append("text")
           .attr("x", width - marginRight + 25) 
           .attr("y", 15)
@@ -167,45 +190,64 @@ class D3ScatterPlot {
           .attr("style", "12px")
           .text(xAxisText)
         );
+      
+      const chartTitle = svg.append("g");
+      chartTitle
+        .call(g => g.append("text")
+          .attr("x", marginLeft + (width - marginRight - marginLeft) / 2)
+          .attr("y", marginTop / 2)
+          .attr("fill", "black")
+          .style("font-size", "20px")
+          .style("font-weight", 550)
+          .attr("text-anchor", "middle")
+          .text(chartTitleText)
+        );
     }
 
-    const chartTitle = svg.append("g");
-    chartTitle
-      .call(g => g.append("text")
-        .attr("x", marginLeft + (width - marginRight - marginLeft) / 2)
-        .attr("y", marginTop / 2)
-        .attr("fill", "black")
-        .style("font-size", "20px")
-        .style("font-weight", 550)
-        .attr("text-anchor", "middle")
-        .text(chartTitleText)
-      );
+    // draw line path
+    // path attribute "d" need a "data series"
 
-    const dot = svg.append("g");
-      dot
+    const linePath = svg.append("g");
+    linePath
+      .append("path")
+      .datum(I)
+        .attr("fill", "none")
+        .attr("stroke", color)
+        .attr("stroke-width", strokeWidth)
+        .attr("stroke-linecap", strokeLinecap)
+        .attr("stroke-linejoin", strokeLinejoin)
+        .attr("stroke-opacity", strokeOpacity)
+        .attr("d", line); 
+    
+    const lineNode = svg.append("g");
+    if (enableLineNode) {
+      lineNode
         .selectAll("circle")
         .data(I)
         .join("circle")
-          .attr("cx", i => xScale(x[i]) + xScale.bandwidth() / 2)
+          .attr("cx", i => xScale(x[i]))
           .attr("cy", i => yScale(y[i]))
-          .attr("r", dotRadius)
-          .attr("fill", color)
-          .attr("stroke", "black");
-
-    if (enableTooltip) {
-      dot
-        .selectAll("circle")
-        .on("mouseover", showTooltip)
-        .on("mouseleave", hideTooltip);
+          .attr("r", lineNodeRadius)
+          .attr("fill", color);
     }
 
     // animation
     if (enableAnimation) {
-      dot
-        .selectAll("circle")
-        .attr("r", 0)
+      const pathLenth = linePath.select("path").node().getTotalLength();
+      linePath
+        .attr("stroke-dasharray", pathLenth + " " + pathLenth)
+        .attr("stroke-dashoffset", pathLenth)
         .transition()
-        .attr("r", dotRadius)
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
+        .duration(animationTime);
+      
+      lineNode
+        .selectAll("circle")
+        .style("opacity", 0)
+        .transition()
+        .ease(d3.easeLinear)
+        .style("opacity", 1)
         .duration(animationTime)
     }
 
@@ -213,9 +255,11 @@ class D3ScatterPlot {
     const tooltip = svg.append("g")
       .style("pointer-events", "none");
 
-    function showTooltip(_, i) {
+    function showTooltip(event) {
+      // return the index of the value closest to the given value in an array of numbers
+      const i = d3.bisectCenter(x, xScale.invert(d3.pointer(event)[0]));
       tooltip.style("display", null);
-      tooltip.attr("transform", `translate(${xScale(x[i]) + xScale.bandwidth() / 2}, ${yScale(y[i]) - 10})`);
+      tooltip.attr("transform", `translate(${xScale(x[i])}, ${yScale(y[i])})`);
 
       const path = tooltip.selectAll("path")
         .data([,])
@@ -240,8 +284,8 @@ class D3ScatterPlot {
 
       const textBox = text.node().getBBox(); 
       tooltip.selectAll("path").attr("d", null);
-      text.attr("transform", `translate(${-textBox.width / 2}, ${-textBox.height + 5})`);
-      path.attr("d", `M${-textBox.width / 2 - 10},5H-5l5,5l5,-5H${textBox.width / 2 + 10}v${-textBox.height - 20}h-${textBox.width + 20}z`);
+      text.attr("transform", `translate(${-textBox.width / 2},${15 - textBox.y})`);
+      path.attr("d", `M${-textBox.width / 2 - 10},5H-5l5,-5l5,5H${textBox.width / 2 + 10}v${textBox.height + 20}h-${textBox.width + 20}z`);
     }
     function hideTooltip() {
       tooltip.style("display", "none");
@@ -249,4 +293,4 @@ class D3ScatterPlot {
   }
 };
 
-export {ScatterPlot};
+export {LineChart};

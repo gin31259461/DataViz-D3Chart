@@ -5,7 +5,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ScatterPlotGroup = void 0;
+exports.AreaChartGroup = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -47,18 +47,18 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var ScatterPlotGroup = function (_Component) {
-  _inherits(ScatterPlotGroup, _Component);
+var AreaChartGroup = function (_Component) {
+  _inherits(AreaChartGroup, _Component);
 
-  var _super = _createSuper(ScatterPlotGroup);
+  var _super = _createSuper(AreaChartGroup);
 
-  function ScatterPlotGroup(props) {
-    _classCallCheck(this, ScatterPlotGroup);
+  function AreaChartGroup(props) {
+    _classCallCheck(this, AreaChartGroup);
 
     return _super.call(this, props);
   }
 
-  _createClass(ScatterPlotGroup, [{
+  _createClass(AreaChartGroup, [{
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this$props = this.props,
@@ -66,8 +66,8 @@ var ScatterPlotGroup = function (_Component) {
           attr = _objectWithoutProperties(_this$props, _excluded);
 
       var element = this.element,
-          scatter = new D3ScatterPlotGroup(element);
-      scatter.render(data, attr);
+          area = new D3AreaChartGroup(element);
+      area.render(data, attr);
     }
   }, {
     key: "render",
@@ -82,12 +82,12 @@ var ScatterPlotGroup = function (_Component) {
     }
   }]);
 
-  return ScatterPlotGroup;
+  return AreaChartGroup;
 }(_react.Component);
 
-exports.ScatterPlotGroup = ScatterPlotGroup;
+exports.AreaChartGroup = AreaChartGroup;
 
-_defineProperty(ScatterPlotGroup, "propTypes", {
+_defineProperty(AreaChartGroup, "propTypes", {
   data: _propTypes["default"].array.isRequired,
   getX: _propTypes["default"].func,
   keysOfGroups: _propTypes["default"].array,
@@ -97,7 +97,9 @@ _defineProperty(ScatterPlotGroup, "propTypes", {
   tooltipTitle: _propTypes["default"].func,
   xAxisText: _propTypes["default"].string,
   yAxisText: _propTypes["default"].string,
-  xAxisTicksTextRotation: _propTypes["default"].number,
+  timeParse: _propTypes["default"].string,
+  formatTimeType: _propTypes["default"].func,
+  curveType: _propTypes["default"].object,
   xType: _propTypes["default"].func,
   yType: _propTypes["default"].func,
   marginTop: _propTypes["default"].number,
@@ -108,17 +110,25 @@ _defineProperty(ScatterPlotGroup, "propTypes", {
   yDomain: [_propTypes["default"].number, _propTypes["default"].number],
   xRange: [_propTypes["default"].number, _propTypes["default"].number],
   yRange: [_propTypes["default"].number, _propTypes["default"].number],
-  dotRadius: _propTypes["default"].number,
-  dotColor: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  lineNodeRadius: _propTypes["default"].number,
+  strokeColor: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  areaColor: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
+  areaOpacity: _propTypes["default"].number,
+  strokeLinecap: _propTypes["default"].string,
+  strokeLinejoin: _propTypes["default"].string,
+  strokeWidth: _propTypes["default"].number,
+  strokeOpacity: _propTypes["default"].number,
   animationTime: _propTypes["default"].number,
   enableAnimation: _propTypes["default"].bool,
+  enableLineNode: _propTypes["default"].bool,
   enableTooltip: _propTypes["default"].bool,
   enableXAxis: _propTypes["default"].bool,
   enableYAxis: _propTypes["default"].bool,
+  enableLinePath: _propTypes["default"].bool,
   enableLegend: _propTypes["default"].bool
 });
 
-_defineProperty(ScatterPlotGroup, "defaultProps", {
+_defineProperty(AreaChartGroup, "defaultProps", {
   getX: function getX(d) {
     return d.x;
   },
@@ -129,8 +139,10 @@ _defineProperty(ScatterPlotGroup, "defaultProps", {
   tooltipTitle: undefined,
   xAxisText: "",
   yAxisText: "",
-  xAxisTicksTextRotation: 0,
-  xType: d3.scaleBand,
+  timeParse: "%Y-%m-%d",
+  formatTimeType: d3.timeParse,
+  curveType: d3.curveLinear,
+  xType: d3.scaleTime,
   yType: d3.scaleLinear,
   marginTop: 40,
   marginRight: 40,
@@ -140,26 +152,34 @@ _defineProperty(ScatterPlotGroup, "defaultProps", {
   yDomain: undefined,
   xRange: undefined,
   yRange: undefined,
-  dotRadius: 5,
-  dotColor: undefined,
+  lineNodeRadius: 5,
+  strokeColor: undefined,
+  areaColor: undefined,
+  areaOpacity: 0.6,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  strokeWidth: 1.5,
+  strokeOpacity: 1,
   animationTime: 1000,
   enableAnimation: true,
+  enableLineNode: true,
   enableTooltip: true,
   enableXAxis: true,
   enableYAxis: true,
+  enableLinePath: true,
   enableLegend: true
 });
 
 ;
 
-var D3ScatterPlotGroup = function () {
-  function D3ScatterPlotGroup(element) {
-    _classCallCheck(this, D3ScatterPlotGroup);
+var D3AreaChartGroup = function () {
+  function D3AreaChartGroup(element) {
+    _classCallCheck(this, D3AreaChartGroup);
 
     this.svg = d3.select(element);
   }
 
-  _createClass(D3ScatterPlotGroup, [{
+  _createClass(D3AreaChartGroup, [{
     key: "render",
     value: function render(data, attr) {
       var getX = attr.getX,
@@ -170,6 +190,7 @@ var D3ScatterPlotGroup = function () {
           tooltipTitle = attr.tooltipTitle,
           xAxisText = attr.xAxisText,
           yAxisText = attr.yAxisText,
+          timeParse = attr.timeParse,
           marginTop = attr.marginTop,
           marginRight = attr.marginRight,
           marginBottom = attr.marginBottom,
@@ -178,22 +199,31 @@ var D3ScatterPlotGroup = function () {
           yDomain = attr.yDomain,
           xRange = attr.xRange,
           yRange = attr.yRange,
-          dotRadius = attr.dotRadius,
-          dotColor = attr.dotColor,
+          lineNodeRadius = attr.lineNodeRadius,
+          strokeColor = attr.strokeColor,
+          areaColor = attr.areaColor,
           xType = attr.xType,
           yType = attr.yType,
+          formatTimeType = attr.formatTimeType,
+          curveType = attr.curveType,
+          enableLinePath = attr.enableLinePath,
+          areaOpacity = attr.areaOpacity,
+          strokeLinecap = attr.strokeLinecap,
+          strokeLinejoin = attr.strokeLinejoin,
+          strokeWidth = attr.strokeWidth,
+          strokeOpacity = attr.strokeOpacity,
           animationTime = attr.animationTime,
-          xAxisTicksTextRotation = attr.xAxisTicksTextRotation,
           enableAnimation = attr.enableAnimation,
-          enabledot = attr.enabledot,
+          enableLineNode = attr.enableLineNode,
           enableTooltip = attr.enableTooltip,
           enableXAxis = attr.enableXAxis,
           enableYAxis = attr.enableYAxis,
           enableLegend = attr.enableLegend;
       if (xRange === undefined) xRange = [marginLeft, width - marginRight];
       if (yRange === undefined) yRange = [height - marginBottom, marginTop];
-      var x = d3.map(data, getX).filter(function (d) {
-        return d != "";
+      var x = [];
+      if (xType === d3.scaleTime) x = d3.map(d3.map(data, getX), function (d) {
+        return formatTimeType(timeParse)(d);
       });
       var groupData = keysOfGroups.map(function (k) {
         var newData = [];
@@ -211,7 +241,7 @@ var D3ScatterPlotGroup = function () {
         };
       });
       keysOfGroups.push("all");
-      if (xDomain === undefined) xDomain = x;
+      if (xDomain === undefined) xDomain = d3.extent(x);
       if (yDomain === undefined) yDomain = [0, d3.max(data, function (d) {
         return d3.max(keysOfGroups, function (k) {
           return d[k];
@@ -222,8 +252,28 @@ var D3ScatterPlotGroup = function () {
           fontSize = (width + height) / 100 + "px",
           xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),
           yAxisType = d3.axisLeft(yScale).ticks(height / 40);
+      var line = d3.line().defined(function (d) {
+        return d.defined;
+      }).curve(curveType).x(function (d) {
+        return xScale(d.x);
+      }).y(function (d) {
+        return yScale(d.y);
+      }),
+          line0 = d3.line().x(function (d) {
+        return xScale(d.x);
+      }).y(height - marginBottom),
+          area0 = d3.area().x(function (d) {
+        return xScale(d.x);
+      }).y0(height - marginBottom).y(height - marginBottom),
+          area = d3.area().defined(function (d) {
+        return d.defined;
+      }).curve(curveType).x(function (d) {
+        return xScale(d.x);
+      }).y0(yScale(0)).y1(function (d) {
+        return yScale(d.y);
+      });
       if (tooltipTitle === undefined) tooltipTitle = function tooltipTitle(d) {
-        return "group: ".concat(d.group, "\nx: ").concat(d.x, "\ny: ").concat(d.y);
+        return "group: ".concat(d.group, "\nx: ").concat(d3.timeFormat("%Y-%m-%d")(d.x), "\ny: ").concat(d.y);
       };
       var svg = this.svg.attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("overflow", "visible");
 
@@ -241,12 +291,6 @@ var D3ScatterPlotGroup = function () {
       if (enableXAxis) {
         var xAxis = svg.append("g").attr("transform", "translate(0, ".concat(height - marginBottom, ")"));
         xAxis.call(xAxisType).call(function (g) {
-          return g.selectAll(".tick line").clone().attr("y2", -(height - marginTop - marginBottom)).attr("stroke-opacity", 0.1);
-        });
-        if (xAxisTicksTextRotation != 0) xAxis.selectAll("text").attr("text-anchor", "start").attr("transform", function (d) {
-          return "rotate(".concat(xAxisTicksTextRotation, ")");
-        });
-        xAxis.call(function (g) {
           return g.append("text").attr("x", width - marginRight + 25).attr("y", 15).attr("fill", "black").attr("style", "12px").text(xAxisText);
         });
       }
@@ -255,33 +299,79 @@ var D3ScatterPlotGroup = function () {
       chartTitle.call(function (g) {
         return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-size", "20px").style("font-weight", 550).attr("text-anchor", "middle").text(chartTitleText);
       });
-      if (dotColor === undefined) dotColor = d3.quantize(function (t) {
+      if (areaColor === undefined) areaColor = d3.quantize(function (t) {
         return d3.interpolateSpectral(t * 0.8 + 0.1);
       }, keysOfGroups.length);
-      var dotColorScale = d3.scaleOrdinal(keysOfGroups, dotColor);
-      var dot = svg.append("g");
-      var createDot = dot.selectAll("circle");
-      groupData.map(function (d, i) {
-        createDot.data(d.value).join("circle").attr("class", "all _" + d.group).attr("cx", function (d) {
-          return xScale(d.x) + xScale.bandwidth() / 2;
-        }).attr("cy", function (d) {
-          return yScale(d.y);
-        }).attr("r", dotRadius).attr("fill", dotColorScale(d.group)).attr("stroke", "black");
+      if (strokeColor === undefined) strokeColor = areaColor;
+      var areaColorScale = d3.scaleOrdinal(keysOfGroups, areaColor),
+          strokeColorScale = d3.scaleOrdinal(keysOfGroups, strokeColor);
+      var areaPath = svg.append("g"),
+          linePath = svg.append("g"),
+          lineNode = svg.append("g");
+
+      if (enableLinePath) {
+        linePath.selectAll("path").data(groupData).join("path").attr("class", function (d) {
+          return "all _" + d.group;
+        }).attr("fill", "none").attr("stroke", function (d) {
+          return strokeColorScale(d.group);
+        }).attr("stroke-width", strokeWidth).attr("stroke-linecap", strokeLinecap).attr("stroke-linejoin", strokeLinejoin).attr("stroke-opacity", strokeOpacity).attr("d", function (d) {
+          return line(d.value);
+        });
+      }
+
+      areaPath.selectAll("path").data(groupData).join("path").attr("class", function (d) {
+        return "all _" + d.group;
+      }).attr("fill", function (d) {
+        return areaColorScale(d.group);
+      }).style("opacity", areaOpacity).attr("d", function (d) {
+        return area(d.value);
       });
 
+      if (enableLineNode) {
+        var createNode = lineNode.selectAll("circle");
+        groupData.map(function (d, i) {
+          createNode.data(d.value).join("circle").attr("class", "all _" + d.group).attr("cx", function (d) {
+            return xScale(d.x);
+          }).attr("cy", function (d) {
+            return yScale(d.y);
+          }).attr("r", lineNodeRadius).attr("fill", "white").attr("stroke", strokeColorScale(d.group)).attr("stroke-width", strokeWidth);
+        });
+      }
+
       if (enableTooltip) {
-        dot.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
+        lineNode.selectAll("circle").style("cursor", "pointer").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
       }
 
       if (enableAnimation) {
-        dot.selectAll("circle").attr("r", 0).transition().attr("r", dotRadius).duration(animationTime);
+        areaPath.selectAll("path").attr("fill", "rgba(0, 0, 0, 0)").attr("d", function (d) {
+          return area0(d.value);
+        }).transition().attr("fill", function (d) {
+          return areaColorScale(d.group);
+        }).attr("d", function (d) {
+          return area(d.value);
+        }).duration(animationTime);
+
+        if (enableLinePath) {
+          var pathLenth = linePath.selectAll("path").nodes().map(function (node) {
+            return node.getTotalLength();
+          });
+          linePath.selectAll("path").data(pathLenth).attr("stroke-dasharray", function (d) {
+            return d + " " + d;
+          }).attr("stroke-dashoffset", function (d) {
+            return d;
+          }).transition().ease(d3.easeLinear).attr("stroke-dashoffset", 0).duration(animationTime).delay(animationTime);
+        }
+
+        if (enableLineNode) {
+          lineNode.selectAll("circle").style("opacity", 0).transition().ease(d3.easeLinear).style("opacity", 1).duration(animationTime).delay(animationTime);
+        }
       }
 
       var tooltip = svg.append("g").style("pointer-events", "none");
 
       function showTooltip(_, d) {
         tooltip.style("display", null);
-        tooltip.attr("transform", "translate(".concat(xScale(d.x) + xScale.bandwidth() / 2, ", ").concat(yScale(d.y) - 10, ")"));
+        tooltip.attr("transform", "translate(".concat(xScale(d.x), ", ").concat(yScale(d.y) - 10, ")"));
         var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "rgba(224, 224, 224, 1)").attr("color", "black");
         var text = tooltip.selectAll("text").data([,]).join("text").style("font-size", fontSize).call(function (text) {
           return text.selectAll("tspan").data("".concat(tooltipTitle(d)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
@@ -311,7 +401,7 @@ var D3ScatterPlotGroup = function () {
         }).attr("cx", 0).attr("cy", function (_, i) {
           return i * 20 * 1.1;
         }).attr("r", 10).attr("fill", function (d) {
-          return dotColorScale(d);
+          return areaColorScale(d);
         });
         legend.selectAll("text").data(keysOfGroups).join("text").attr("class", function (d) {
           return "legend_" + d;
@@ -330,34 +420,54 @@ var D3ScatterPlotGroup = function () {
 
       function highlight(_, d) {
         if (!(d === "all") && !selectedOne) {
-          dot.selectAll(".all").style("opacity", 0.2);
-          dot.selectAll("._" + d).style("opacity", 1);
+          linePath.selectAll(".all").style("opacity", 0.2);
+          lineNode.selectAll(".all").style("opacity", 0.2);
+          areaPath.selectAll(".all").style("opacity", 0.2);
+          linePath.selectAll("._" + d).style("opacity", strokeOpacity);
+          lineNode.selectAll("._" + d).style("opacity", strokeOpacity);
+          areaPath.selectAll("._" + d).style("opacity", areaOpacity);
         }
       }
 
       function noHighlight() {
-        dot.selectAll(".all").style("opacity", 1);
+        linePath.selectAll(".all").style("opacity", strokeOpacity);
+        lineNode.selectAll(".all").style("opacity", strokeOpacity);
+        areaPath.selectAll(".all").style("opacity", areaOpacity);
       }
 
       function selectOne(_, d) {
         selectedOne = true;
         groupData.map(function (data) {
           if (!(data.group === d) && !(d === "all")) {
-            dot.selectAll("._" + data.group).transition().attr("r", 0).duration(500);
+            linePath.select("._" + data.group).transition().attr("d", line0(data.value)).duration(500);
+            lineNode.selectAll("._" + data.group).transition().attr("cy", yScale(0)).attr("r", 0).duration(500);
+            areaPath.select("._" + data.group).transition().attr("d", area0(data.value)).duration(500);
           } else if (data.group === d) {
-            dot.selectAll("._" + data.group).transition().attr("r", dotRadius).duration(500);
+            linePath.select("._" + data.group).transition().attr("d", line(data.value)).duration(500);
+            lineNode.selectAll("._" + data.group).transition().attr("cy", function (d) {
+              return yScale(d.y);
+            }).attr("r", lineNodeRadius).duration(500);
+            areaPath.select("._" + data.group).transition().attr("d", area(data.value)).duration(500);
           }
         });
       }
 
       function selectAll() {
         selectedOne = false;
-        dot.selectAll(".all").transition().attr("r", dotRadius).duration(500);
+        linePath.selectAll(".all").data(groupData).transition().attr("d", function (d) {
+          return line(d.value);
+        }).duration(500);
+        lineNode.selectAll(".all").transition().attr("cy", function (d) {
+          return yScale(d.y);
+        }).attr("r", lineNodeRadius).duration(500);
+        areaPath.selectAll(".all").transition().attr("d", function (d) {
+          return area(d.value);
+        }).duration(500);
       }
     }
   }]);
 
-  return D3ScatterPlotGroup;
+  return D3AreaChartGroup;
 }();
 
 ;

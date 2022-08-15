@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import * as d3 from "d3"; 
 import PropTypes from "prop-types";
 
-class ScatterPlotGroup extends Component {
+class LineChartMulti extends Component {
 
   constructor(props) {
     super(props)
@@ -18,7 +18,9 @@ class ScatterPlotGroup extends Component {
     tooltipTitle: PropTypes.func, // function of tooltip title
     xAxisText: PropTypes.string, // x axis label
     yAxisText: PropTypes.string, // y axis label
-    xAxisTicksTextRotation: PropTypes.number, // rotate x axis ticks text, recommend range[30 - 45]
+    timeParse: PropTypes.string, // give format string of time, base on strptime strftime of c standard library
+    formatTimeType: PropTypes.func, // parse string time to format time, timeParse(formatTime)(data)
+    curveType: PropTypes.object, // method of interplate between point
     xType: PropTypes.func,
     yType: PropTypes.func,
     marginTop: PropTypes.number,
@@ -29,13 +31,18 @@ class ScatterPlotGroup extends Component {
     yDomain: [PropTypes.number, PropTypes.number],
     xRange: [PropTypes.number, PropTypes.number],
     yRange: [PropTypes.number, PropTypes.number],
-    dotRadius: PropTypes.number,
-    dotColor: PropTypes.oneOfType [
+    lineNodeRadius: PropTypes.number,
+    strokeColor: PropTypes.oneOfType [
       PropTypes.func,
       PropTypes.arrayOf(PropTypes.string)   
     ],
+    strokeLinecap: PropTypes.string,
+    strokeLinejoin: PropTypes.string,
+    strokeWidth: PropTypes.number,
+    strokeOpacity: PropTypes.number,
     animationTime: PropTypes.number, // ms
     enableAnimation: PropTypes.bool,
+    enableLineNode: PropTypes.bool,
     enableTooltip: PropTypes.bool,
     enableXAxis: PropTypes.bool,
     enableYAxis: PropTypes.bool,
@@ -51,8 +58,10 @@ class ScatterPlotGroup extends Component {
     tooltipTitle: undefined,
     xAxisText: "",
     yAxisText: "",
-    xAxisTicksTextRotation: 0,
-    xType: d3.scaleBand,
+    timeParse: "%Y-%m-%d",
+    formatTimeType: d3.timeParse,
+    curveType: d3.curveLinear,
+    xType: d3.scaleTime,
     yType: d3.scaleLinear,
     marginTop: 40,
     marginRight: 40,
@@ -62,10 +71,15 @@ class ScatterPlotGroup extends Component {
     yDomain: undefined,
     xRange: undefined,
     yRange: undefined,
-    dotRadius: 5,
-    dotColor: undefined,
+    lineNodeRadius: 5,
+    strokeColor: undefined,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    strokeWidth: 1.5,
+    strokeOpacity: 1,
     animationTime: 1000,
     enableAnimation: true,
+    enableLineNode: true,
     enableTooltip: true,
     enableXAxis: true,
     enableYAxis: true,
@@ -74,8 +88,8 @@ class ScatterPlotGroup extends Component {
 
   componentDidMount(){
     const {data, ...attr} = this.props;
-    const element = this.element, scatter = new D3ScatterPlotGroup(element); 
-    scatter.render(data, attr);
+    const element = this.element, line = new D3LineChartMulti(element); 
+    line.render(data, attr);
   }
 
   render() {
@@ -83,7 +97,7 @@ class ScatterPlotGroup extends Component {
   }
 };
 
-class D3ScatterPlotGroup {
+class D3LineChartMulti {
   
   constructor(element) {
     this.svg = d3.select(element);
@@ -93,15 +107,19 @@ class D3ScatterPlotGroup {
 
     let {
       getX, keysOfGroups, width, height, chartTitleText, tooltipTitle, xAxisText, yAxisText,
-      marginTop, marginRight, marginBottom, marginLeft, xDomain, yDomain, xRange, yRange,
-      dotRadius, dotColor, xType, yType, animationTime, xAxisTicksTextRotation,
-      enableAnimation, enabledot, enableTooltip, enableXAxis, enableYAxis, enableLegend
+      timeParse, marginTop, marginRight, marginBottom, marginLeft, 
+      xDomain, yDomain, xRange, yRange, lineNodeRadius, strokeColor,
+      xType, yType, formatTimeType, curveType,
+      strokeLinecap, strokeLinejoin, strokeWidth, strokeOpacity, animationTime,
+      enableAnimation, enableLineNode, enableTooltip, enableXAxis, enableYAxis, enableLegend
     } = attr;
 
     if (xRange === undefined) xRange = [marginLeft, width - marginRight];
     if (yRange === undefined) yRange = [height - marginBottom, marginTop];
 
-    const x = d3.map(data, getX).filter(d => d != "");
+    let x = [];
+    if (xType === d3.scaleTime)
+      x = d3.map(d3.map(data, getX), d => formatTimeType(timeParse)(d));
 
     // map groups
     const groupData = keysOfGroups.map(k => {
@@ -118,7 +136,7 @@ class D3ScatterPlotGroup {
     });
     keysOfGroups.push("all");
 
-    if (xDomain === undefined) xDomain = x;
+    if (xDomain === undefined) xDomain = d3.extent(x);
     if (yDomain === undefined) yDomain = [0, d3.max(data, d => d3.max(keysOfGroups, k => d[k])) * 1.2];
 
     const
@@ -128,9 +146,20 @@ class D3ScatterPlotGroup {
       xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),
       yAxisType = d3.axisLeft(yScale).ticks(height / 40);
 
+    // d: groupData -> value
+    const
+      line = d3.line()
+        .defined(d => d.defined)
+        .curve(curveType)
+        .x(d => xScale(d.x))
+        .y(d => yScale(d.y)),
+      line0 = d3.line()
+        .x(d => xScale(d.x))
+        .y(height - marginBottom);
+
     if(tooltipTitle === undefined)
       tooltipTitle = d => {
-        return `group: ${d.group}\nx: ${d.x}\ny: ${d.y}`;
+        return `group: ${d.group}\nx: ${d3.timeFormat("%Y-%m-%d")(d.x)}\ny: ${d.y}`;
       };
 
     const svg = this.svg
@@ -162,16 +191,6 @@ class D3ScatterPlotGroup {
       const xAxis = svg.append("g").attr("transform", `translate(0, ${height - marginBottom})`);
       xAxis
         .call(xAxisType)
-        .call(g => g.selectAll(".tick line").clone()
-          .attr("y2", -(height - marginTop - marginBottom) )
-          .attr("stroke-opacity", 0.1)
-        );
-      if (xAxisTicksTextRotation != 0)
-        xAxis
-          .selectAll("text")
-            .attr("text-anchor", "start")
-            .attr("transform", d => `rotate(${xAxisTicksTextRotation})`)
-      xAxis
         .call(g => g.append("text")
           .attr("x", width - marginRight + 25) 
           .attr("y", 15)
@@ -193,40 +212,72 @@ class D3ScatterPlotGroup {
         .text(chartTitleText)
       );
 
-    if (dotColor === undefined)
-      dotColor = d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1) , keysOfGroups.length);
+    if (strokeColor === undefined)
+      strokeColor = d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1) , keysOfGroups.length);
 
-    const dotColorScale = d3.scaleOrdinal(keysOfGroups, dotColor);
+    const strokeColorScale = d3.scaleOrdinal(keysOfGroups, strokeColor);
 
-    const dot = svg.append("g");
+    const 
+      linePath = svg.append("g"),
+      lineNode = svg.append("g");
 
-    const createDot = dot.selectAll("circle");
-    groupData.map( (d, i) => {
-      createDot
-        .data(d.value)
-        .join("circle")
-          .attr("class", "all _" + d.group)
-          .attr("cx", d => xScale(d.x) + xScale.bandwidth() / 2)
-          .attr("cy", d => yScale(d.y))
-          .attr("r", dotRadius)
-          .attr("fill", dotColorScale(d.group))
-          .attr("stroke", "black")
-    })
+    linePath
+      .selectAll("path")
+      .data(groupData)
+      .join("path")
+        .attr("class", d => "all _" + d.group)
+        .attr("fill", "none")
+        .attr("stroke", d => strokeColorScale(d.group))
+        .attr("stroke-width", strokeWidth)
+        .attr("stroke-linecap", strokeLinecap)
+        .attr("stroke-linejoin", strokeLinejoin)
+        .attr("stroke-opacity", strokeOpacity)
+        .attr("d", d => line(d.value)); 
+    
+    if (enableLineNode) {
+      const createNode = lineNode.selectAll("circle");
+      groupData.map( (d, i) => {
+        createNode
+          .data(d.value)
+          .join("circle")
+            .attr("class", "all _" + d.group)
+            .attr("cx", d => xScale(d.x))
+            .attr("cy", d => yScale(d.y))
+            .attr("r", lineNodeRadius)
+            .attr("fill", "white")
+            .attr("stroke", strokeColorScale(d.group))
+            .attr("stroke-width", strokeWidth);
+      })
+    }
 
     if (enableTooltip) {
-      dot.selectAll("circle")
+      lineNode.selectAll("circle")
+        .style("cursor", "pointer")
         .on("mouseover", showTooltip)
         .on("mouseleave", hideTooltip)
     }
 
     // animation
     if (enableAnimation) {
-      dot
-        .selectAll("circle")
-        .attr("r", 0)
+      const pathLenth = linePath.selectAll("path").nodes().map(node => node.getTotalLength());
+      linePath
+        .selectAll("path")
+        .data(pathLenth)
+          .attr("stroke-dasharray", d => d + " " + d)
+          .attr("stroke-dashoffset", d => d)
         .transition()
-        .attr("r", dotRadius)
-        .duration(animationTime);
+        .ease(d3.easeLinear)
+        .attr("stroke-dashoffset", 0)
+        .duration(animationTime).delay(animationTime);
+      if (enableLineNode) {
+        lineNode
+          .selectAll("circle")
+            .style("opacity", 0)
+          .transition()
+          .ease(d3.easeLinear)
+          .style("opacity", 1)
+          .duration(animationTime).delay(animationTime);
+      } 
     }
 
     // tooltip
@@ -235,7 +286,7 @@ class D3ScatterPlotGroup {
 
     function showTooltip(_, d) {
       tooltip.style("display", null);
-      tooltip.attr("transform", `translate(${xScale(d.x) + xScale.bandwidth() / 2}, ${yScale(d.y) - 10})`);
+      tooltip.attr("transform", `translate(${xScale(d.x)}, ${yScale(d.y) - 10})`);
 
       const path = tooltip.selectAll("path")
         .data([,])
@@ -282,7 +333,7 @@ class D3ScatterPlotGroup {
           .attr("cx", 0)
           .attr("cy", (_, i) => i * 20 * 1.1)
           .attr("r", 10)
-          .attr("fill", d => dotColorScale(d))
+          .attr("fill", d => strokeColorScale(d))
       legend
         .selectAll("text")
         .data(keysOfGroups)
@@ -307,38 +358,54 @@ class D3ScatterPlotGroup {
 
     function highlight(_, d) {
       if (!(d === "all") && !selectedOne) {
-        dot.selectAll(".all").style("opacity", 0.2);
-        dot.selectAll("._" + d).style("opacity", 1);
+        linePath.selectAll(".all").style("opacity", 0.2);
+        lineNode.selectAll(".all").style("opacity", 0.2);
+        linePath.selectAll("._" + d).style("opacity", strokeOpacity);
+        lineNode.selectAll("._" + d).style("opacity", strokeOpacity);
       }
     }
     function noHighlight() {
-      dot.selectAll(".all").style("opacity", 1);
+      linePath.selectAll(".all").style("opacity", strokeOpacity);
+      lineNode.selectAll(".all").style("opacity", strokeOpacity);
     }
     function selectOne(_, d) {
       selectedOne = true;
       groupData.map(data => {
         if (!(data.group === d) && !(d === "all")) {
-          dot.selectAll("._" + data.group)
+          linePath.select("._" + data.group)
+            .transition()
+            .attr("stroke-width", 0)
+            .duration(500);
+          lineNode.selectAll("._" + data.group)
             .transition()
             .attr("r", 0)
             .duration(500);
         }
         else if (data.group === d) {
-          dot.selectAll("._" + data.group)
+          linePath.select("._" + data.group)
             .transition()
-            .attr("r", dotRadius)
+            .attr("stroke-width", strokeWidth)
+            .duration(500);
+          lineNode.selectAll("._" + data.group)
+            .transition()
+            .attr("r", lineNodeRadius)
             .duration(500);
         }
       });
     }
     function selectAll() {
       selectedOne = false;
-      dot.selectAll(".all")
+      linePath.selectAll(".all")
+        .data(groupData)
         .transition()
-        .attr("r", dotRadius)
+        .attr("stroke-width", strokeWidth)
+        .duration(500);
+      lineNode.selectAll(".all")
+        .transition()
+        .attr("r", lineNodeRadius)
         .duration(500);
     }
   }
 };
 
-export {ScatterPlotGroup};
+export {LineChartMulti};

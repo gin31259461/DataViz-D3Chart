@@ -1,7 +1,6 @@
 # IQS 前端圖表component
 
-[Docs & Demo](http://react_component.gitlabpage.wke.csie.ncnu.edu.tw/Chart_Component/)
-
+[Docs & Demo](./styleguide/index.html)
 
 ## Installation
 ```
@@ -11,7 +10,7 @@
 ## 支援版本
     
 * react v16
-* d3 v4
+* d3 v7
 
 ## Usage example
 ```js

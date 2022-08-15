@@ -5,7 +5,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.ScatterPlotGroup = void 0;
+exports.BarChart = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -47,18 +47,18 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var ScatterPlotGroup = function (_Component) {
-  _inherits(ScatterPlotGroup, _Component);
+var BarChart = function (_Component) {
+  _inherits(BarChart, _Component);
 
-  var _super = _createSuper(ScatterPlotGroup);
+  var _super = _createSuper(BarChart);
 
-  function ScatterPlotGroup(props) {
-    _classCallCheck(this, ScatterPlotGroup);
+  function BarChart(props) {
+    _classCallCheck(this, BarChart);
 
     return _super.call(this, props);
   }
 
-  _createClass(ScatterPlotGroup, [{
+  _createClass(BarChart, [{
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this$props = this.props,
@@ -66,8 +66,8 @@ var ScatterPlotGroup = function (_Component) {
           attr = _objectWithoutProperties(_this$props, _excluded);
 
       var element = this.element,
-          scatter = new D3ScatterPlotGroup(element);
-      scatter.render(data, attr);
+          bar = new D3BarChart(element);
+      bar.render(data, attr);
     }
   }, {
     key: "render",
@@ -82,148 +82,128 @@ var ScatterPlotGroup = function (_Component) {
     }
   }]);
 
-  return ScatterPlotGroup;
+  return BarChart;
 }(_react.Component);
 
-exports.ScatterPlotGroup = ScatterPlotGroup;
+exports.BarChart = BarChart;
 
-_defineProperty(ScatterPlotGroup, "propTypes", {
+_defineProperty(BarChart, "propTypes", {
   data: _propTypes["default"].array.isRequired,
   getX: _propTypes["default"].func,
-  keysOfGroups: _propTypes["default"].array,
+  getY: _propTypes["default"].func,
   width: _propTypes["default"].number,
   height: _propTypes["default"].number,
   chartTitleText: _propTypes["default"].string,
   tooltipTitle: _propTypes["default"].func,
   xAxisText: _propTypes["default"].string,
   yAxisText: _propTypes["default"].string,
-  xAxisTicksTextRotation: _propTypes["default"].number,
-  xType: _propTypes["default"].func,
-  yType: _propTypes["default"].func,
+  xPadding: _propTypes["default"].number,
   marginTop: _propTypes["default"].number,
   marginRight: _propTypes["default"].number,
   marginBottom: _propTypes["default"].number,
   marginLeft: _propTypes["default"].number,
+  color: _propTypes["default"].oneOfType([_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string)]),
   xDomain: [_propTypes["default"].number, _propTypes["default"].number],
   yDomain: [_propTypes["default"].number, _propTypes["default"].number],
   xRange: [_propTypes["default"].number, _propTypes["default"].number],
   yRange: [_propTypes["default"].number, _propTypes["default"].number],
-  dotRadius: _propTypes["default"].number,
-  dotColor: _propTypes["default"].oneOfType[(_propTypes["default"].func, _propTypes["default"].arrayOf(_propTypes["default"].string))],
   animationTime: _propTypes["default"].number,
   enableAnimation: _propTypes["default"].bool,
-  enableTooltip: _propTypes["default"].bool,
+  enableBarValue: _propTypes["default"].bool,
   enableXAxis: _propTypes["default"].bool,
-  enableYAxis: _propTypes["default"].bool,
-  enableLegend: _propTypes["default"].bool
+  enableYAxis: _propTypes["default"].bool
 });
 
-_defineProperty(ScatterPlotGroup, "defaultProps", {
+_defineProperty(BarChart, "defaultProps", {
   getX: function getX(d) {
     return d.x;
   },
-  keysOfGroups: ["y"],
+  getY: function getY(d) {
+    return d.y;
+  },
   width: 500,
   height: 300,
   chartTitleText: "",
   tooltipTitle: undefined,
   xAxisText: "",
   yAxisText: "",
-  xAxisTicksTextRotation: 0,
-  xType: d3.scaleBand,
-  yType: d3.scaleLinear,
+  xPadding: 0.1,
   marginTop: 40,
   marginRight: 40,
-  marginBottom: 20,
+  marginBottom: 30,
   marginLeft: 60,
+  color: undefined,
   xDomain: undefined,
   yDomain: undefined,
   xRange: undefined,
   yRange: undefined,
-  dotRadius: 5,
-  dotColor: undefined,
-  animationTime: 1000,
+  animationTime: 2000,
   enableAnimation: true,
-  enableTooltip: true,
+  enableBarValue: true,
   enableXAxis: true,
-  enableYAxis: true,
-  enableLegend: true
+  enableYAxis: true
 });
 
 ;
 
-var D3ScatterPlotGroup = function () {
-  function D3ScatterPlotGroup(element) {
-    _classCallCheck(this, D3ScatterPlotGroup);
+var D3BarChart = function () {
+  function D3BarChart(element) {
+    _classCallCheck(this, D3BarChart);
 
     this.svg = d3.select(element);
   }
 
-  _createClass(D3ScatterPlotGroup, [{
+  _createClass(D3BarChart, [{
     key: "render",
     value: function render(data, attr) {
       var getX = attr.getX,
-          keysOfGroups = attr.keysOfGroups,
+          getY = attr.getY,
           width = attr.width,
           height = attr.height,
           chartTitleText = attr.chartTitleText,
           tooltipTitle = attr.tooltipTitle,
           xAxisText = attr.xAxisText,
           yAxisText = attr.yAxisText,
+          xPadding = attr.xPadding,
           marginTop = attr.marginTop,
           marginRight = attr.marginRight,
           marginBottom = attr.marginBottom,
           marginLeft = attr.marginLeft,
-          xDomain = attr.xDomain,
-          yDomain = attr.yDomain,
+          animationTime = attr.animationTime,
+          color = attr.color,
           xRange = attr.xRange,
           yRange = attr.yRange,
-          dotRadius = attr.dotRadius,
-          dotColor = attr.dotColor,
-          xType = attr.xType,
-          yType = attr.yType,
-          animationTime = attr.animationTime,
-          xAxisTicksTextRotation = attr.xAxisTicksTextRotation,
+          xDomain = attr.xDomain,
+          yDomain = attr.yDomain,
           enableAnimation = attr.enableAnimation,
-          enabledot = attr.enabledot,
-          enableTooltip = attr.enableTooltip,
+          enableBarValue = attr.enableBarValue,
           enableXAxis = attr.enableXAxis,
-          enableYAxis = attr.enableYAxis,
-          enableLegend = attr.enableLegend;
+          enableYAxis = attr.enableYAxis;
       if (xRange === undefined) xRange = [marginLeft, width - marginRight];
       if (yRange === undefined) yRange = [height - marginBottom, marginTop];
-      var x = d3.map(data, getX).filter(function (d) {
+      var x = d3.map(data, getX),
+          y = d3.map(d3.map(data, getY), function (d) {
+        return Number(d);
+      });
+      if (xDomain === undefined) xDomain = x.filter(function (d) {
         return d != "";
       });
-      var groupData = keysOfGroups.map(function (k) {
-        var newData = [];
-        d3.map(data, function (d, i) {
-          newData.push({
-            "x": x[i],
-            "y": d[k],
-            "group": k,
-            "defined": !isNaN(x[i]) && !isNaN(d[k])
-          });
-        });
-        return {
-          "group": k,
-          "value": newData
-        };
+      if (yDomain === undefined) yDomain = [0, d3.max(y)];
+      xDomain = new d3.InternSet(xDomain);
+      var I = d3.range(x.length).filter(function (i) {
+        return xDomain.has(x[i]);
       });
-      keysOfGroups.push("all");
-      if (xDomain === undefined) xDomain = x;
-      if (yDomain === undefined) yDomain = [0, d3.max(data, function (d) {
-        return d3.max(keysOfGroups, function (k) {
-          return d[k];
-        });
-      }) * 1.2];
-      var xScale = xType(xDomain, xRange),
-          yScale = yType(yDomain, yRange),
-          fontSize = (width + height) / 100 + "px",
-          xAxisType = d3.axisBottom(xScale).ticks(width / 80).tickSizeOuter(0),
-          yAxisType = d3.axisLeft(yScale).ticks(height / 40);
-      if (tooltipTitle === undefined) tooltipTitle = function tooltipTitle(d) {
-        return "group: ".concat(d.group, "\nx: ").concat(d.x, "\ny: ").concat(d.y);
+      var xScale = d3.scaleBand(xDomain, xRange).padding(xPadding),
+          yScale = d3.scaleLinear(yDomain, yRange),
+          xAxisType = d3.axisBottom(xScale).tickSizeOuter(0),
+          yAxisType = d3.axisLeft(yScale).ticks(height / 40),
+          fontSize = (width + height) / 100 + "px";
+      if (color === undefined) color = d3.quantize(function (t) {
+        return d3.interpolateSpectral(t * 0.8 + 0.1);
+      }, xDomain.size);else color = settings.color;
+      var colorScale = d3.scaleOrdinal(xDomain, color);
+      if (tooltipTitle === undefined) tooltipTitle = function tooltipTitle(i) {
+        return "x: ".concat(x[i], "\ny: ").concat(y[i]);
       };
       var svg = this.svg.attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("overflow", "visible");
 
@@ -234,57 +214,79 @@ var D3ScatterPlotGroup = function () {
         }).call(function (g) {
           return g.selectAll(".tick line").clone().attr('x2', width - marginLeft - marginRight).attr("stroke-opacity", 0.1);
         }).call(function (g) {
-          return g.append("text").attr("x", -20).attr("y", marginTop - 25).attr("fill", "black").attr("style", "12px").attr("text-anchor", "start").text(yAxisText);
+          return g.append("text").attr("x", -20).attr("y", marginTop - 25).attr("fill", "black").attr("text-anchor", "start").style("font-size", "12px").text(yAxisText);
         });
       }
 
       if (enableXAxis) {
         var xAxis = svg.append("g").attr("transform", "translate(0, ".concat(height - marginBottom, ")"));
         xAxis.call(xAxisType).call(function (g) {
-          return g.selectAll(".tick line").clone().attr("y2", -(height - marginTop - marginBottom)).attr("stroke-opacity", 0.1);
+          return g.append("text").attr("x", width - marginRight + 25).attr("y", 15).attr("fill", "black").style("font-size", "12px").text(xAxisText);
         });
-        if (xAxisTicksTextRotation != 0) xAxis.selectAll("text").attr("text-anchor", "start").attr("transform", function (d) {
-          return "rotate(".concat(xAxisTicksTextRotation, ")");
-        });
-        xAxis.call(function (g) {
-          return g.append("text").attr("x", width - marginRight + 25).attr("y", 15).attr("fill", "black").attr("style", "12px").text(xAxisText);
+      }
+
+      var bar = svg.append("g");
+      bar.selectAll("rect").data(I).join("rect").attr("fill", function (i) {
+        return colorScale(x[i]);
+      }).style("cursor", "pointer").attr("width", xScale.bandwidth() / 2).attr("height", function (i) {
+        return yScale(0) - yScale(y[i]);
+      }).attr("x", function (i) {
+        return xScale(x[i]) + xScale.bandwidth() / 4;
+      }).attr("y", function (i) {
+        return yScale(y[i]);
+      }).on("mouseover", showTooltip).on("mouseleave", hideTooltip);
+      var barValue = svg.append("g");
+
+      if (enableBarValue) {
+        barValue.selectAll("text").data(I).join("text").text(function (i) {
+          return y[i];
+        }).attr("class", function (i) {
+          return "barValue_" + i;
+        }).style("font-size", fontSize).attr("text-anchor", "middle").attr("x", function (i) {
+          return xScale(x[i]) + xScale.bandwidth() / 2;
+        }).attr("y", function (i) {
+          return yScale(y[i]) - 2;
         });
       }
 
       var chartTitle = svg.append("g");
       chartTitle.call(function (g) {
-        return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-size", "20px").style("font-weight", 550).attr("text-anchor", "middle").text(chartTitleText);
+        return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-weight", 550).style("font-size", "20px").attr("text-anchor", "middle").text(chartTitleText);
       });
-      if (dotColor === undefined) dotColor = d3.quantize(function (t) {
-        return d3.interpolateSpectral(t * 0.8 + 0.1);
-      }, keysOfGroups.length);
-      var dotColorScale = d3.scaleOrdinal(keysOfGroups, dotColor);
-      var dot = svg.append("g");
-      var createDot = dot.selectAll("circle");
-      groupData.map(function (d, i) {
-        createDot.data(d.value).join("circle").attr("class", "all _" + d.group).attr("cx", function (d) {
-          return xScale(d.x) + xScale.bandwidth() / 2;
-        }).attr("cy", function (d) {
-          return yScale(d.y);
-        }).attr("r", dotRadius).attr("fill", dotColorScale(d.group)).attr("stroke", "black");
-      });
-
-      if (enableTooltip) {
-        dot.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
-      }
 
       if (enableAnimation) {
-        dot.selectAll("circle").attr("r", 0).transition().attr("r", dotRadius).duration(animationTime);
+        bar.selectAll("rect").data(I).attr("y", height - marginBottom).attr("height", 0).attr("fill", "rgba(0, 0, 0, 0)").transition().attr("y", function (i) {
+          return yScale(y[i]);
+        }).attr("height", function (i) {
+          return yScale(0) - yScale(y[i]);
+        }).attr("fill", function (i) {
+          return colorScale(x[i]);
+        }).duration(animationTime);
+
+        if (enableBarValue) {
+          barValue.selectAll("text").transition().attrTween("y", function (i) {
+            var f = d3.interpolate(yScale(0), yScale(y[i]) - 2);
+            return function (t) {
+              return f(t);
+            };
+          }).textTween(function (i) {
+            var f = d3.interpolate(0, y[i]);
+            return function (t) {
+              return "".concat(d3.format(".0f")(f(t)));
+            };
+          }).duration(animationTime);
+        }
       }
 
-      var tooltip = svg.append("g").style("pointer-events", "none");
+      var tooltip = svg.append("g").attr("pointer-events", "none");
 
-      function showTooltip(_, d) {
+      function showTooltip(_, i) {
         tooltip.style("display", null);
-        tooltip.attr("transform", "translate(".concat(xScale(d.x) + xScale.bandwidth() / 2, ", ").concat(yScale(d.y) - 10, ")"));
+        tooltip.attr("transform", "translate(".concat(xScale(x[i]) + xScale.bandwidth() / 2, ", ").concat(yScale(y[i]) - 10, ")"));
+        barValue.select(".barValue_" + i).style("opacity", 0);
         var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "rgba(224, 224, 224, 1)").attr("color", "black");
         var text = tooltip.selectAll("text").data([,]).join("text").style("font-size", fontSize).call(function (text) {
-          return text.selectAll("tspan").data("".concat(tooltipTitle(d)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
+          return text.selectAll("tspan").data("".concat(tooltipTitle(i)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
             return "".concat(i * 1.1, "em");
           }).attr("font-weight", function (_, i) {
             return i ? null : "bold";
@@ -293,71 +295,18 @@ var D3ScatterPlotGroup = function () {
           });
         });
         var textBox = text.node().getBBox();
-        tooltip.selectAll("path").attr("d", null);
         text.attr("transform", "translate(".concat(-textBox.width / 2, ", ").concat(-textBox.height + 5, ")"));
         path.attr("d", "M".concat(-textBox.width / 2 - 10, ",5H-5l5,5l5,-5H").concat(textBox.width / 2 + 10, "v").concat(-textBox.height - 20, "h-").concat(textBox.width + 20, "z"));
       }
 
-      function hideTooltip() {
+      function hideTooltip(_, i) {
         tooltip.style("display", "none");
-      }
-
-      var selectedOne = false;
-
-      if (enableLegend) {
-        var legend = svg.append("g").attr("transform", "translate(".concat(width - marginRight + 25 + 20, ", ").concat(marginTop, ")")).style("cursor", "pointer");
-        legend.selectAll("circle").data(keysOfGroups).join("circle").attr("class", function (d) {
-          return "legend_" + d;
-        }).attr("cx", 0).attr("cy", function (_, i) {
-          return i * 20 * 1.1;
-        }).attr("r", 10).attr("fill", function (d) {
-          return dotColorScale(d);
-        });
-        legend.selectAll("text").data(keysOfGroups).join("text").attr("class", function (d) {
-          return "legend_" + d;
-        }).attr("x", 20).attr("y", function (_, i) {
-          return i * 20 * 1.1 + 4;
-        }).attr("text-anchor", "start").style("font-size", "12px").style("font-weight", 300).text(function (d) {
-          return d;
-        });
-        setTimeout(function () {
-          keysOfGroups.slice(0, -1).map(function (d) {
-            legend.select(".legend_" + d).on("mouseover", highlight).on("mouseleave", noHighlight).on("click", selectOne);
-          });
-          legend.select(".legend_all").on("click", selectAll);
-        }, animationTime * 2);
-      }
-
-      function highlight(_, d) {
-        if (!(d === "all") && !selectedOne) {
-          dot.selectAll(".all").style("opacity", 0.2);
-          dot.selectAll("._" + d).style("opacity", 1);
-        }
-      }
-
-      function noHighlight() {
-        dot.selectAll(".all").style("opacity", 1);
-      }
-
-      function selectOne(_, d) {
-        selectedOne = true;
-        groupData.map(function (data) {
-          if (!(data.group === d) && !(d === "all")) {
-            dot.selectAll("._" + data.group).transition().attr("r", 0).duration(500);
-          } else if (data.group === d) {
-            dot.selectAll("._" + data.group).transition().attr("r", dotRadius).duration(500);
-          }
-        });
-      }
-
-      function selectAll() {
-        selectedOne = false;
-        dot.selectAll(".all").transition().attr("r", dotRadius).duration(500);
+        barValue.select(".barValue_" + i).style("opacity", 1);
       }
     }
   }]);
 
-  return D3ScatterPlotGroup;
+  return D3BarChart;
 }();
 
 ;
