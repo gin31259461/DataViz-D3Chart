@@ -152,8 +152,6 @@ _defineProperty(PieChart, "defaultProps", {
   enableLegend: true
 });
 
-;
-
 var D3PieChart = function () {
   function D3PieChart(element) {
     _classCallCheck(this, D3PieChart);
@@ -191,7 +189,7 @@ var D3PieChart = function () {
           marginTop = attr.marginTop,
           enableLegend = attr.enableLegend;
       if (outerRadius === undefined) outerRadius = Math.min(width - marginLeft - marginRight, height - marginTop - marginBottom) / 2;
-      if (labelRadius === undefined) labelRadius = innerRadius * 0.2 + outerRadius * 0.8;
+      if (labelRadius === undefined) labelRadius = innerRadius * 0.3 + outerRadius * 0.7;
       if (stroke === undefined) stroke = innerRadius > 0 ? "none" : "white";
       if (padAngle === undefined) padAngle = stroke === "none" ? 1 / outerRadius : 0;
       var name = d3.map(data, getName),
@@ -242,7 +240,9 @@ var D3PieChart = function () {
           return "translate(".concat(arcLabel.centroid(d), ")");
         }).selectAll("tspan").data(function (d) {
           var lines = "".concat(tooltipTitle(d.data)).split(/\n/);
-          return d.endAngle - d.startAngle > 0.25 ? lines : lines.slice(0, 0);
+          return d.endAngle - d.startAngle > 0.25 && d3.max(lines.map(function (d) {
+            return String(d).length;
+          })) < outerRadius / fontSize.slice(0, -2) ? lines : lines.slice(0, 0);
         }).join("tspan").attr("x", 0).attr("y", function (_, i) {
           return "".concat(i * 1.1, "em");
         }).attr("font-weight", function (_, i) {
@@ -276,7 +276,6 @@ var D3PieChart = function () {
               };
             }
 
-            ;
             var formatValue = d3.format(format);
             var f = d3.interpolate(0, d);
             return function (t) {
