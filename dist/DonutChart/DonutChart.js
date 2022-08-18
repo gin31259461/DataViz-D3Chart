@@ -152,8 +152,6 @@ _defineProperty(DonutChart, "defaultProps", {
   enableLegend: true
 });
 
-;
-
 var D3DonutChart = function () {
   function D3DonutChart(element) {
     _classCallCheck(this, D3DonutChart);
@@ -206,8 +204,8 @@ var D3DonutChart = function () {
       var I = d3.range(name.length).filter(function (i) {
         return !isNaN(value[i]) && nameDomain.has(name[i]);
       });
-      var pieDefined = new Array(I.length);
-      var fontSize = new String();
+      var pieDefined = new Array(I.length),
+          fontSize = new String();
       if (textSize === undefined) fontSize = (width + height) / 70 + "px";else fontSize = textSize + "px";
 
       if (tooltipTitle === undefined) {
@@ -240,26 +238,41 @@ var D3DonutChart = function () {
         }).attr("d", arcs);
       }
 
+      function pieAnimation(animationTime) {
+        pie.selectAll("path").attr("fill", "rgba(0, 0, 0, 0)").transition().attrTween("d", function (d) {
+          var f = d3.interpolate(d.startAngle, d.endAngle);
+          return function (t) {
+            d.endAngle = f(t);
+            return arcs(d);
+          };
+        }).attr("fill", function (d) {
+          return colorScale(name[d.data]);
+        }).duration(animationTime);
+      }
+
+      function pieTransformAnimation(animationTime) {
+        pie.selectAll("path").transition().attrTween("d", function (d) {
+          var Start = d3.interpolate(currentDivData[d.data].startAngle, d.startAngle),
+              End = d3.interpolate(currentDivData[d.data].endAngle, d.endAngle);
+          currentDivData[d.data].startAngle = d.startAngle;
+          currentDivData[d.data].endAngle = d.endAngle;
+          return function (t) {
+            d.startAngle = Start(t);
+            d.endAngle = End(t);
+            return arcs(d);
+          };
+        }).duration(animationTime);
+      }
+
       createPie(divData);
       var pieLabel = svg.append("g").attr("text-anchor", "middle").attr("transform", "translate(".concat(pieCentroid, ")"));
-
-      function pieLabelTspan() {
-        pieLabel.selectAll("text").selectAll("tspan").data(function (d) {
-          var lines = "".concat(tooltipTitle(d.data)).split(/\n/);
-          return d.endAngle - d.startAngle > 0.25 ? lines : lines.slice(0, 0);
-        }).join("tspan").attr("x", 0).attr("y", function (_, i) {
-          return "".concat(i * 1.1, "em");
-        }).attr("font-weight", function (_, i) {
-          return i ? null : "bold";
-        }).text(function (d) {
-          return d;
-        });
-      }
+      console.log(fontSize);
 
       function pieLabelLine(data) {
         pieLabel.selectAll("polyline").data(data).join("polyline").transition().attr("class", function (d) {
-          return "all pieLabelLine" + name[d.data];
+          return "all pieLabelLine_" + name[d.data];
         }).attr("stroke", pieLabelStrokeColor).style("fill", "none").attr("stroke-width", pieLabelStrokeWidth).attr("points", function (d) {
+          if (d.endAngle - d.startAngle < Number(fontSize.slice(0, -2)) * 4 / 100) return [];
           var p1 = arcs.centroid(d),
               p2 = arcLabel.centroid(d),
               p3 = arcLabel.centroid(d),
@@ -271,7 +284,10 @@ var D3DonutChart = function () {
       }
 
       function pieLabelText(data) {
-        pieLabel.selectAll("text").data(data).join("text").style("font-size", fontSize).attr("class", function (d) {
+        pieLabel.selectAll("text").data(data).join("text").style("font-size", fontSize).attr("text-anchor", function (d) {
+          var midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+          return midAngle < Math.PI ? "start" : "end";
+        }).attr("class", function (d) {
           return "all pieLabelText_" + name[d.data];
         }).attr("transform", function (d) {
           var p = arcLabel.centroid(d),
@@ -281,22 +297,23 @@ var D3DonutChart = function () {
         });
       }
 
+      function pieLabelTspan() {
+        pieLabel.selectAll("text").selectAll("tspan").data(function (d) {
+          var lines = "".concat(tooltipTitle(d.data)).split(/\n/);
+          return d.endAngle - d.startAngle > Number(fontSize.slice(0, -2)) * 4 / 100 ? lines : lines.slice(0, 0);
+        }).join("tspan").attr("x", 0).attr("y", function (_, i) {
+          return "".concat(i * 1.1, "em");
+        }).attr("font-weight", function (_, i) {
+          return i ? null : "bold";
+        }).text(function (d) {
+          return d;
+        });
+      }
+
       if (enablePieLabel) {
         pieLabelLine(divData);
         pieLabelText(divData);
         pieLabelTspan();
-      }
-
-      function pieAnimation(animationTime) {
-        pie.selectAll("path").attr("fill", "rgba(0, 0, 0, 0)").transition().attrTween("d", function (d) {
-          var f = d3.interpolate(d.startAngle, d.endAngle);
-          return function (t) {
-            d.endAngle = f(t);
-            return arcs(d);
-          };
-        }).attr("fill", function (d) {
-          return colorScale(name[d.data]);
-        }).duration(animationTime);
       }
 
       var chartTitle = svg.append("g");
@@ -316,7 +333,6 @@ var D3DonutChart = function () {
               };
             }
 
-            ;
             var formatValue = d3.format(format);
             var f = d3.interpolate(0, d);
             return function (t) {
@@ -331,7 +347,9 @@ var D3DonutChart = function () {
       function showTooltip(_, d) {
         var p = arcs.centroid(d);
         tooltip.style("display", null);
-        tooltip.attr("transform", "translate(".concat(p[0] + pieCentroid[0], ", ").concat(p[1] + pieCentroid[1], ")"));
+        tooltip.attr("transform", "translate(".concat(p[0] + pieCentroid[0], ", ").concat(p[1] + pieCentroid[1] - 10, ")"));
+        pieLabel.select(".pieLabelText_" + name[d.data]).style("opacity", 0);
+        pieLabel.select(".pieLabelLine_" + name[d.data]).style("opacity", 0);
         var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "rgba(224, 224, 224, 1)").attr("color", "black");
         var text = tooltip.selectAll("text").data([,]).join("text").attr("id", "tooltip-text").style("font-size", fontSize).call(function (text) {
           return text.selectAll("tspan").data("".concat(tooltipTitle(d.data)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
@@ -350,6 +368,7 @@ var D3DonutChart = function () {
       function hideTooltip(_, d) {
         tooltip.style("display", "none");
         pieLabel.select(".pieLabelText_" + name[d.data]).style("opacity", 1);
+        pieLabel.select(".pieLabelLine_" + name[d.data]).style("opacity", 1);
       }
 
       function setToolTop() {
@@ -367,27 +386,13 @@ var D3DonutChart = function () {
             pieLabel.selectAll(".all").style("opacity", 0.2);
             pie.select(".pie_" + name[i]).style("opacity", 1);
             pieLabel.select(".pieLabelText_" + name[i]).style("opacity", 1);
-            pieLabel.select(".pieLabelLine" + name[i]).style("opacity", 1);
+            pieLabel.select(".pieLabelLine_" + name[i]).style("opacity", 1);
           }
         };
 
         var noHighlight = function noHighlight() {
           pie.selectAll(".all").style("opacity", 1);
           pieLabel.selectAll(".all").style("opacity", 1);
-        };
-
-        var pieTransformAnimation = function pieTransformAnimation(animationTime) {
-          pie.selectAll("path").transition().attrTween("d", function (d) {
-            var Start = d3.interpolate(currentDivData[d.data].startAngle, d.startAngle),
-                End = d3.interpolate(currentDivData[d.data].endAngle, d.endAngle);
-            currentDivData[d.data].startAngle = d.startAngle;
-            currentDivData[d.data].endAngle = d.endAngle;
-            return function (t) {
-              d.startAngle = Start(t);
-              d.endAngle = End(t);
-              return arcs(d);
-            };
-          }).duration(animationTime);
         };
 
         var selectOne = function selectOne(_, i) {
