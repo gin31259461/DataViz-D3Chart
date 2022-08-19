@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import * as d3 from "d3";
 import PropTypes from "prop-types";
 
-class DonutChart extends Component {
+class DonutChart extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -275,7 +275,6 @@ class D3DonutChart {
       .attr("text-anchor", "middle")
       .attr("transform", `translate(${pieCentroid})`);
 
-    console.log(fontSize);
     function pieLabelLine(data) {
       pieLabel
         .selectAll("polyline")
