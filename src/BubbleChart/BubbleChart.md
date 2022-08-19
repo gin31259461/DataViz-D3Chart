@@ -1,69 +1,90 @@
-``` jsx
+```jsx
 
-let data = [{
-    text: "電視業",
-    salary_avghigh: 85,
-    salary_avglow: 65,
-    salary_avg: 75,
-  }, {
-    text: "其他機械製造修配業",
-    salary_avghigh: 67,
-    salary_avglow: 52,
-    salary_avg: 59,
-  }, {
-    text: "人身保險業",
-    salary_avghigh: 62,
-    salary_avglow: 31,
-    salary_avg: 46,
-  }, {
-    text: "紡紗業",
-    salary_avghigh: 59,
-    salary_avglow: 41,
-    salary_avg: 50,
-  }, {
-    text: "不動產經營業",
-    salary_avghigh: 59,
-    salary_avglow: 45,
-    salary_avg: 52,
-  }, {
-    text: "金屬加工用機械製造修配業",
-    salary_avghigh: 53,
-    salary_avglow: 38,
-    salary_avg: 45,
-  }, {
-    text: "家用電器製造業",
-    salary_avghigh: 52,
-    salary_avglow: 45,
-    salary_avg: 48,
-  }, {
-    text: "其他運輸輔助業",
-    salary_avghigh: 52,
-    salary_avglow: 50,
-    salary_avg: 51,
-  }, {
-    text: "普通航空業",
-    salary_avghigh: 51,
-    salary_avglow: 49,
-    salary_avg: 50,
-  }, {
-    text: "印染整理業",
-    salary_avghigh: 51,
-    salary_avglow: 36,
-    salary_avg: 43,
-  }
+let data = [
+  {
+    count: 2167,
+    text: "A",
+    group: "group1",
+  },
+  {
+    count: 3267,
+    text: "B",
+    group: "group2",
+  },
+  {
+    count: 3167,
+    text: "C",
+    group: "group3",
+  },
+  {
+    count: 5167,
+    text: "D",
+    group: "group4",
+  },
+  {
+    count: 1697,
+    text: "E",
+    group: "group1",
+  },
+  {
+    count: 7167,
+    text: "F",
+    group: "group4",
+  },
+  {
+    count: 6187,
+    text: "G",
+    group: "group4",
+  },
+  {
+    count: 10167,
+    text: "H",
+    group: "group3",
+  },
+  {
+    count: 7367,
+    text: "I",
+    group: "group2",
+  },
+  {
+    count: 7367,
+    text: "J",
+    group: "group2",
+  },
+  {
+    count: 367,
+    text: "K",
+    group: "group1",
+  },
+  {
+    count: 767,
+    text: "L",
+    group: "group3",
+  },
+  {
+    count: 67,
+    text: "M",
+    group: "group3",
+  },
+  
+  {
+    count: 77,
+    text: "N",
+    group: "group1",
+  },
+  {
+    count: 27367,
+    text: "O",
+    group: "group5",
+  },
 ];
 
 <BubbleChart
-  data = {data}
-  getX = {d => d.salary_avglow}
-  getY = {d => d.salary_avghigh}
-  getZ = {d => d.salary_avg}
-  getC = {d => d.text}
-  getT = {d => d.text}
-  xAxisText = {"x"}
-  yAxisText = {"y"}
-  xType = {"scaleLinear"}
-  chartTitleText = {"BubbleChart"}
-></BubbleChart>
+  data={data}
+  getName={d => d.text}
+  getValue={d => d.count}
+  getGroup={d => d.group}
+  chartTitleText={"BubbleChart"}
+></BubbleChart>;
 
 ```
