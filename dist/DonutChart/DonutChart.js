@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.DonutChart = void 0;
 
-var _react = _interopRequireWildcard(require("react"));
+var _react = _interopRequireDefault(require("react"));
 
 var d3 = _interopRequireWildcard(require("d3"));
 
@@ -15,11 +15,11 @@ var _propTypes = _interopRequireDefault(require("prop-types"));
 
 var _excluded = ["data"];
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -47,8 +47,8 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var DonutChart = function (_Component) {
-  _inherits(DonutChart, _Component);
+var DonutChart = function (_React$Component) {
+  _inherits(DonutChart, _React$Component);
 
   var _super = _createSuper(DonutChart);
 
@@ -83,7 +83,7 @@ var DonutChart = function (_Component) {
   }]);
 
   return DonutChart;
-}(_react.Component);
+}(_react["default"].Component);
 
 exports.DonutChart = DonutChart;
 
@@ -266,7 +266,6 @@ var D3DonutChart = function () {
 
       createPie(divData);
       var pieLabel = svg.append("g").attr("text-anchor", "middle").attr("transform", "translate(".concat(pieCentroid, ")"));
-      console.log(fontSize);
 
       function pieLabelLine(data) {
         pieLabel.selectAll("polyline").data(data).join("polyline").transition().attr("class", function (d) {

@@ -39,6 +39,12 @@ Object.defineProperty(exports, "BubbleChart", {
     return _BubbleChart.BubbleChart;
   }
 });
+Object.defineProperty(exports, "BubblePlot", {
+  enumerable: true,
+  get: function get() {
+    return _BubblePlot.BubblePlot;
+  }
+});
 Object.defineProperty(exports, "DonutChart", {
   enumerable: true,
   get: function get() {
@@ -82,7 +88,7 @@ var _LineChart = require("./LineChart/LineChart");
 
 var _PieChart = require("./PieChart/PieChart");
 
-var _BubbleChart = require("./BubbleChart/BubbleChart");
+var _BubblePlot = require("./BubbleChart/BubblePlot");
 
 var _AreaChart = require("./AreaChart/AreaChart");
 
@@ -99,3 +105,5 @@ var _ScatterPlot = require("./ScatterPlot/ScatterPlot");
 var _ScatterPlotGroup = require("./ScatterPlotGroup/ScatterPlotGroup");
 
 var _DonutChart = require("./DonutChart/DonutChart");
+
+var _BubbleChart = require("./BubbleChart/BubbleChart");

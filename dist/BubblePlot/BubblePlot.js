@@ -5,21 +5,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.BubbleChart = void 0;
+exports.BubblePlot = void 0;
 
-var _react = _interopRequireDefault(require("react"));
-
-var d3 = _interopRequireWildcard(require("d3"));
+var _react = _interopRequireWildcard(require("react"));
 
 var _propTypes = _interopRequireDefault(require("prop-types"));
 
+var d3 = _interopRequireWildcard(require("d3"));
+
 var _excluded = ["data"];
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
 
@@ -47,18 +47,18 @@ function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.g
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var BubbleChart = function (_React$Component) {
-  _inherits(BubbleChart, _React$Component);
+var BubblePlot = function (_Component) {
+  _inherits(BubblePlot, _Component);
 
-  var _super = _createSuper(BubbleChart);
+  var _super = _createSuper(BubblePlot);
 
-  function BubbleChart(props) {
-    _classCallCheck(this, BubbleChart);
+  function BubblePlot(props) {
+    _classCallCheck(this, BubblePlot);
 
     return _super.call(this, props);
   }
 
-  _createClass(BubbleChart, [{
+  _createClass(BubblePlot, [{
     key: "componentDidMount",
     value: function componentDidMount() {
       var _this$props = this.props,
@@ -66,7 +66,7 @@ var BubbleChart = function (_React$Component) {
           attr = _objectWithoutProperties(_this$props, _excluded);
 
       var element = this.element,
-          bubble = new D3BubbleChart(element);
+          bubble = new D3BubblePlot(element);
       bubble.render(data, attr);
     }
   }, {
@@ -82,196 +82,238 @@ var BubbleChart = function (_React$Component) {
     }
   }]);
 
-  return BubbleChart;
-}(_react["default"].Component);
+  return BubblePlot;
+}(_react.Component);
 
-exports.BubbleChart = BubbleChart;
+exports.BubblePlot = BubblePlot;
 
-_defineProperty(BubbleChart, "propTypes", {
+_defineProperty(BubblePlot, "propTypes", {
   data: _propTypes["default"].array.isRequired,
-  getName: _propTypes["default"].func,
-  getValue: _propTypes["default"].func,
-  getGroup: _propTypes["default"].func,
-  groups: _propTypes["default"].array,
-  padding: _propTypes["default"].number,
-  fontSize: _propTypes["default"].string,
+  getX: _propTypes["default"].func,
+  getY: _propTypes["default"].func,
+  getZ: _propTypes["default"].func,
+  getC: _propTypes["default"].func,
+  getT: _propTypes["default"].func,
   width: _propTypes["default"].number,
   height: _propTypes["default"].number,
   chartTitleText: _propTypes["default"].string,
   tooltipTitle: _propTypes["default"].func,
-  bubbleLabel: _propTypes["default"].func,
+  xAxisText: _propTypes["default"].string,
+  yAxisText: _propTypes["default"].string,
+  zMaxRadius: _propTypes["default"].number,
+  color: _propTypes["default"].arrayOf(_propTypes["default"].string),
+  xType: _propTypes["default"].string,
   marginTop: _propTypes["default"].number,
   marginRight: _propTypes["default"].number,
   marginBottom: _propTypes["default"].number,
   marginLeft: _propTypes["default"].number,
-  color: _propTypes["default"].arrayOf(_propTypes["default"].string),
-  stroke: _propTypes["default"].string,
-  strokeWidth: _propTypes["default"].number,
-  strokeOpacity: _propTypes["default"].number,
-  fillOpacity: _propTypes["default"].number,
+  xDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  yDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  zDomain: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  xDomainScale: _propTypes["default"].number,
+  zDomainScale: _propTypes["default"].number,
+  xRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  yRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
+  zRange: _propTypes["default"].arrayOf(_propTypes["default"].number),
   animationTime: _propTypes["default"].number,
   enableAnimation: _propTypes["default"].bool,
-  enableLegend: _propTypes["default"].bool
+  enableLegend: _propTypes["default"].bool,
+  enableXAxis: _propTypes["default"].bool,
+  enableYAxis: _propTypes["default"].bool
 });
 
-_defineProperty(BubbleChart, "defaultProps", {
-  getName: function getName(d) {
-    return d.name;
+_defineProperty(BubblePlot, "defaultProps", {
+  getX: function getX(d) {
+    return d.x;
   },
-  getValue: function getValue(d) {
-    return d.value;
+  getY: function getY(d) {
+    return d.y;
   },
-  getGroup: undefined,
-  groups: ["group1"],
+  getZ: function getZ(d) {
+    return d.z;
+  },
+  getC: function getC(d) {
+    return d.color;
+  },
+  getT: function getT(d) {
+    return d.tip;
+  },
   width: 500,
   height: 300,
-  padding: 5,
-  fontSize: undefined,
   chartTitleText: "",
   tooltipTitle: undefined,
-  bubbleLabel: undefined,
-  marginTop: 60,
-  marginRight: 40,
-  marginBottom: 0,
-  marginLeft: 0,
-  color: ["steelblue"],
-  stroke: "black",
-  strokeWidth: 0.5,
-  strokeOpacity: 1,
-  fillOpacity: 1,
-  animationTime: 500,
+  xAxisText: "",
+  yAxisText: "",
+  zMaxRadius: 30,
+  color: undefined,
+  xType: "scaleLinear",
+  marginTop: 40,
+  marginRight: 120,
+  marginBottom: 20,
+  marginLeft: 60,
+  xDomain: undefined,
+  yDomain: undefined,
+  zDomain: undefined,
+  xDomainScale: 1.2,
+  zDomainScale: 1.2,
+  xRange: undefined,
+  yRange: undefined,
+  zRange: undefined,
+  animationTime: 2000,
   enableAnimation: true,
   enableLegend: true,
-  enableTooltip: true
+  enableXAxis: true,
+  enableYAxis: true
 });
 
-;
-
-var D3BubbleChart = function () {
-  function D3BubbleChart(element) {
-    _classCallCheck(this, D3BubbleChart);
+var D3BubblePlot = function () {
+  function D3BubblePlot(element) {
+    _classCallCheck(this, D3BubblePlot);
 
     this.svg = d3.select(element);
   }
 
-  _createClass(D3BubbleChart, [{
+  _createClass(D3BubblePlot, [{
     key: "render",
     value: function render(data, attr) {
-      var getName = attr.getName,
-          getValue = attr.getValue,
-          getGroup = attr.getGroup,
-          groups = attr.groups,
+      var getX = attr.getX,
+          getY = attr.getY,
+          getZ = attr.getZ,
+          getC = attr.getC,
+          getT = attr.getT,
           width = attr.width,
           height = attr.height,
-          padding = attr.padding,
-          fontSize = attr.fontSize,
           chartTitleText = attr.chartTitleText,
           tooltipTitle = attr.tooltipTitle,
-          bubbleLabel = attr.bubbleLabel,
+          xAxisText = attr.xAxisText,
+          yAxisText = attr.yAxisText,
+          zMaxRadius = attr.zMaxRadius,
+          color = attr.color,
+          xType = attr.xType,
           marginTop = attr.marginTop,
           marginRight = attr.marginRight,
           marginBottom = attr.marginBottom,
           marginLeft = attr.marginLeft,
-          color = attr.color,
-          stroke = attr.stroke,
-          strokeWidth = attr.strokeWidth,
-          strokeOpacity = attr.strokeOpacity,
-          fillOpacity = attr.fillOpacity,
+          xDomain = attr.xDomain,
+          yDomain = attr.yDomain,
+          zDomain = attr.zDomain,
+          xDomainScale = attr.xDomainScale,
+          zDomainScale = attr.zDomainScale,
+          xRange = attr.xRange,
+          yRange = attr.yRange,
+          zRange = attr.zRange,
           animationTime = attr.animationTime,
           enableAnimation = attr.enableAnimation,
-          enableLegend = attr.enableLegend;
-      var name = d3.map(data, getName),
-          value = d3.map(d3.map(data, getValue), function (d) {
+          enableLegend = attr.enableLegend,
+          enableXAxis = attr.enableXAxis,
+          enableYAxis = attr.enableYAxis;
+      if (xRange === undefined) xRange = [marginLeft, width - marginRight];
+      if (yRange === undefined) yRange = [height - marginBottom, marginTop];
+      if (zRange === undefined) zRange = [5, zMaxRadius];
+      var x = d3.map(data, getX),
+          y = d3.map(data, getY),
+          z = d3.map(d3.map(data, getZ), function (d) {
         return Number(d);
       }),
-          I = d3.range(name.length).filter(function (i) {
-        return name[i] != "";
-      });
-      var group = [];
+          c = d3.map(data, getC),
+          t = d3.map(data, getT),
+          cUnique = new d3.InternSet(c),
+          I = d3.range(x.length);
+      if (xDomain === undefined) if (xType === "scaleBand") xDomain = x;else if (xType === "scaleLinear") xDomain = [0, d3.max(x) * xDomainScale];
+      if (yDomain === undefined) yDomain = [d3.min(y) * 0.8, d3.max(y) * 1.2];
+      if (zDomain === undefined) zDomain = [0, d3.max(z) * zDomainScale];
+      var xScale = undefined;
+      if (xType === "scaleBand") xScale = d3.scaleBand(xDomain, xRange);else if (xType === "scaleLinear") xScale = d3.scaleLinear(xDomain, xRange);
+      var yScale = d3.scaleLinear(yDomain, yRange),
+          zScale = d3.scaleLinear(zDomain, zRange),
+          fontSize = (width + height) / 100 + "px";
+      if (color === undefined) color = d3.quantize(function (t) {
+        return d3.interpolateSpectral(t * 0.8 + 0.1);
+      }, cUnique.size);
+      var cScale = d3.scaleOrdinal().domain(cUnique).range(color);
+      if (tooltipTitle === undefined) tooltipTitle = function tooltipTitle(i) {
+        return "".concat(t[i]);
+      };
+      var svg = this.svg.attr("width", width).attr("height", height).attr("overflow", "visible").attr("viewBox", [0, 0, width, height]);
 
-      if (getGroup === undefined) {
-        group = new Array(name.length);
-        group.map(function (d, i) {
-          group[i] = groups[0];
+      var highlightGroup = function highlightGroup(_, d) {
+        bubbles.selectAll(".bubbles").style("opacity", 0.2);
+        bubbles.selectAll("._" + d).style("opacity", 1);
+      };
+
+      var noHighlight = function noHighlight(_, d) {
+        bubbles.selectAll(".bubbles").style("opacity", 1);
+      };
+
+      if (enableXAxis) {
+        var xAxis = svg.append("g").attr("transform", "translate(0, ".concat(height - marginBottom, ")"));
+        xAxis.call(d3.axisBottom(xScale).tickSizeOuter(0)).call(function (g) {
+          return g.append("text").attr("x", width - marginRight + 25).attr("y", 15).attr("fill", "black").attr("style", "12px").text(xAxisText);
         });
-      } else {
-        group = d3.map(data, getGroup);
-        groups = new d3.InternSet(group);
-        color = d3.quantize(function (t) {
-          return d3.interpolateSpectral(t * 0.8 + 0.1);
-        }, groups.size);
       }
 
-      var colorScale = d3.scaleOrdinal(groups, color);
-      if (fontSize === undefined) fontSize = (width + height) / 70 + "px";
-      if (bubbleLabel === undefined) bubbleLabel = function bubbleLabel(i) {
-        return [name[i], value[i]];
-      };
-      if (tooltipTitle === undefined) tooltipTitle = function tooltipTitle(i) {
-        return "".concat(name[i], "\n").concat(value[i]);
-      };
-      var svg = this.svg.attr("width", width).attr("height", height).attr("viewBox", [0, 0, width, height]).attr("overflow", "visible");
-      var pack = d3.pack().size([width - marginLeft - marginRight, height - marginTop - marginBottom]).padding(padding),
-          rootNode = d3.hierarchy({
-        children: I
-      }),
-          nodes = pack(rootNode.sum(function (i) {
-        return value[i];
-      })).children;
-      var bubbles = svg.append("g").attr("transform", "translate(".concat(marginLeft, ", ").concat(marginTop, ")"));
-      bubbles.selectAll("g").data(I).join("g").append("circle").attr("class", function (i) {
-        return "all bubble_" + i + " _" + group[i];
-      }).attr("cx", function (i) {
-        return nodes[i].x;
+      if (enableYAxis) {
+        var yAxis = svg.append("g").attr("transform", "translate(".concat(marginLeft, ", 0)"));
+        yAxis.call(d3.axisLeft(yScale).ticks(height / 40).tickSizeOuter(0)).call(function (g) {
+          return g.selectAll(".domain").remove();
+        }).call(function (g) {
+          return g.selectAll(".tick line").clone().attr("x2", width - marginLeft - marginRight).attr("stroke-opacity", 0.1);
+        }).call(function (g) {
+          return g.append("text").attr("x", -20).attr("y", marginTop - 25).attr("fill", "black").attr("style", "12px").attr("text-anchor", "start").text(yAxisText);
+        });
+      }
+
+      var bubbles = svg.append("g");
+      bubbles.selectAll("circle").data(I).join("circle").attr("class", function (i) {
+        return "bubbles _" + c[i] + " bubble_" + x[i];
+      }).attr("fill", function (i) {
+        return cScale(c[i]);
+      }).attr("stroke", "black").attr("stroke-width", "0.5px").attr("cx", function (i) {
+        return xScale(x[i]);
       }).attr("cy", function (i) {
-        return nodes[i].y;
-      }).attr("r", function (i) {
-        return nodes[i].r;
-      }).attr("stroke", stroke).attr("stroke-width", strokeWidth).attr("stroke-opacity", strokeOpacity).attr("fill-opacity", fillOpacity).attr("fill", function (i) {
-        return colorScale(group[i]);
+        return yScale(y[i]);
+      }).attr("r", 0);
+      if (xType === "scaleBand") bubbles.selectAll(".bubbles").data(I).attr("cx", function (i) {
+        return xScale(x[i]) + xScale.bandwidth() / 2;
+      });else if (xType === "scaleLinear") bubbles.selectAll(".bubbles").data(I).attr("cx", function (i) {
+        return xScale(x[i]);
       });
-      bubbles.selectAll("g").append("text").attr("transform", function (i) {
-        return "translate(".concat(nodes[i].x, ", ").concat(nodes[i].y, ")");
-      }).attr("class", function (i) {
-        return "all bubbleText_" + i + " _" + group[i];
-      }).attr("text-anchor", "middle").attr("fill", "black").style("font-size", function (i) {
-        return fontSize.slice(0, -2) < nodes[i].r * 0.7 ? fontSize : "0px";
-      });
-      bubbles.selectAll("text").selectAll("tspan").data(function (i) {
-        return bubbleLabel(i);
-      }).join("tspan").attr("x", 0).attr("y", function (_, i) {
-        return "".concat(i * 1.1, "em");
-      }).attr("font-weight", function (_, i) {
-        return i ? null : "bold";
-      }).text(function (d) {
-        return d;
-      });
+      bubbles.selectAll("circle").on("mouseover", showTooltip).on("mouseleave", hideTooltip);
       var chartTitle = svg.append("g");
       chartTitle.call(function (g) {
         return g.append("text").attr("x", marginLeft + (width - marginRight - marginLeft) / 2).attr("y", marginTop / 2).attr("fill", "black").style("font-size", "20px").style("font-weight", 550).attr("text-anchor", "middle").text(chartTitleText);
       });
 
-      if (enableAnimation) {
-        bubbles.select(".bubble_0").attr("r", 0).transition().attr("r", function (i) {
-          return nodes[i].r;
-        }).duration(animationTime);
-        bubbles.select(".bubbleText_0").style("opacity", 0).transition().style("opacity", 1).duration(animationTime);
+      if (enableLegend) {
+        var legend = svg.append("g").style("cursor", "pointer").attr("transform", "translate(".concat(width - marginRight + 25 + 20, ", ").concat(marginTop, ")")).selectAll("legend").data(cUnique);
+        legend.join("circle").attr("cx", 0).attr("cy", function (_, i) {
+          return i * 20 * 1.1;
+        }).attr("r", 10).attr("fill", function (d) {
+          return cScale(d);
+        }).on("mouseover", highlightGroup).on("mouseleave", noHighlight);
+        legend.join("text").attr("x", 20).attr("y", function (_, i) {
+          return i * 20 * 1.1 + 4;
+        }).attr("text-anchor", "start").style("font-size", "12px").style("font-weight", 300).text(function (d) {
+          return d;
+        }).on("mouseover", highlightGroup).on("mouseleave", noHighlight);
+      }
 
-        for (var t = 1; t < nodes.length; t++) {
-          bubbles.select(".bubble_" + t).attr("r", 0).transition().attr("r", function (i) {
-            return nodes[i].r;
-          }).duration(animationTime).delay(animationTime / 10 * t);
-          bubbles.select(".bubbleText_" + t).style("opacity", 0).transition().style("opacity", 1).duration(animationTime).delay(animationTime / 10 * t);
-        }
+      if (enableAnimation) {
+        bubbles.selectAll("circle").data(I).transition().duration(animationTime).attr("r", function (i) {
+          return zScale(z[i]);
+        });
+      } else {
+        bubbles.selectAll("circle").data(I).attr("r", function (i) {
+          return zScale(z[i]);
+        });
       }
 
       var tooltip = svg.append("g").attr("pointer-events", "none");
 
       function showTooltip(_, i) {
         tooltip.style("display", null);
-        tooltip.attr("transform", "translate(".concat(nodes[i].x + marginLeft, ", ").concat(nodes[i].y + marginTop - nodes[i].r - 10, ")"));
-        bubbles.select(".bubbleText_" + i).attr("fill", "none");
-        var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "black").attr("color", "black");
+        if (xType === "scaleBand") tooltip.attr("transform", "translate(".concat(xScale(x[i]) + xScale.bandwidth() / 2, ", ").concat(yScale(y[i]) - zScale(z[i]) - 10, ")"));else if (xType === "scaleLinear") tooltip.attr("transform", "translate(".concat(xScale(x[i]), ", ").concat(yScale(y[i]) - zScale(z[i]) - 10, ")"));
+        var path = tooltip.selectAll("path").data([,]).join("path").attr("fill", "rgba(250, 250, 250, 0.8)").attr("stroke", "rgba(224, 224, 224, 1)").attr("color", "black");
         var text = tooltip.selectAll("text").data([,]).join("text").attr("id", "tooltip-text").style("font-size", fontSize).call(function (text) {
           return text.selectAll("tspan").data("".concat(tooltipTitle(i)).split(/\n/)).join("tspan").attr("x", 0).attr("y", function (_, i) {
             return "".concat(i * 1.1, "em");
@@ -286,48 +328,13 @@ var D3BubbleChart = function () {
         path.attr("d", "M".concat(-textBox.width / 2 - 10, ",5H-5l5,5l5,-5H").concat(textBox.width / 2 + 10, "v").concat(-textBox.height - 20, "h-").concat(textBox.width + 20, "z"));
       }
 
-      function hideTooltip(_, i) {
+      function hideTooltip() {
         tooltip.style("display", "none");
-        bubbles.select(".bubbleText_" + i).attr("fill", "black");
-      }
-
-      function setToolTop() {
-        bubbles.selectAll(".all").on("mouseover.tooltip", showTooltip).on("mouseleave.tooltip", hideTooltip);
-      }
-
-      setToolTop();
-
-      if (enableLegend) {
-        var highlight = function highlight(_, g) {
-          bubbles.selectAll(".all").style("opacity", 0.2);
-          bubbles.selectAll("._" + g).style("opacity", 1);
-        };
-
-        var noHighlight = function noHighlight() {
-          bubbles.selectAll(".all").style("opacity", 1);
-        };
-
-        var legend = svg.append("g").attr("transform", "translate(".concat(width - marginRight + 25 + 20, ", ").concat(marginTop, ")"));
-        legend.selectAll("circle").data(groups).join("circle").style("cursor", "pointer").attr("class", function (g) {
-          return "all legend_" + g;
-        }).attr("cx", 0).attr("cy", function (_, i) {
-          return i * 20 * 1.1;
-        }).attr("r", 10).attr("fill", function (g) {
-          return colorScale(g);
-        });
-        legend.selectAll("text").data(groups).join("text").attr("class", function (g) {
-          return "all legend_" + g;
-        }).attr("x", 20).attr("y", function (_, i) {
-          return i * 20 * 1.1 + 4;
-        }).attr("text-anchor", "start").style("font-size", "12px").style("font-weight", 300).text(function (g) {
-          return g;
-        });
-        setTimeout(function () {
-          legend.selectAll("circle").on("mouseover", highlight).on("mouseleave", noHighlight);
-        }, animationTime);
       }
     }
   }]);
 
-  return D3BubbleChart;
+  return D3BubblePlot;
 }();
+
+;
