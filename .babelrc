@@ -1,5 +1,13 @@
 {
-  "presets": ["@babel/env", "@babel/preset-react"],
+  "presets": [
+    "@babel/env",
+    "@babel/preset-react",
+    ["minify", {
+      "builtIns": false,
+      "evaluate": false,
+      "mangle": false
+    }]
+  ],
   "comments": false,
   "plugins": [
     "@babel/plugin-proposal-class-properties","transform-remove-debugger"
