@@ -11,3 +11,4 @@ export {ScatterPlot} from "./ScatterPlot/ScatterPlot";
 export {ScatterPlotGroup} from "./ScatterPlotGroup/ScatterPlotGroup";
 export {DonutChart} from "./DonutChart/DonutChart";
 export {BubbleChart} from "./BubbleChart/BubbleChart";
+export {CalendarHeatmap} from "./CalendarHeatmap/CalendarHeatmap";
