@@ -33,7 +33,7 @@ class PieChart extends Component {
     format: PropTypes.string, // value format
     /** give function to show tip of pieces of pie */
     tooltipTitle: PropTypes.func,
-    /** font size of this chart */
+    /** font size of this chart (em) */
     textSize: PropTypes.number,
     /** margin top */
     marginTop: PropTypes.number,
@@ -80,7 +80,7 @@ class PieChart extends Component {
     tooltipTitle: undefined,
     textSize: undefined,
     marginTop: 40,
-    marginRight: 0,
+    marginRight: 60,
     marginBottom: 40,
     marginLeft: 0,
     innerRadius: 0,
@@ -171,8 +171,8 @@ class D3PieChart {
       .filter((i) => !isNaN(value[i]) && nameDomain.has(name[i]));
 
     let fontSize = new String();
-    if (textSize === undefined) fontSize = (width + height) / 70 + "px";
-    else fontSize = textSize + "px";
+    if (textSize === undefined) fontSize = (width + height) / 1000 + "em";
+    else fontSize = textSize + "em";
 
     // title function.
     if (tooltipTitle === undefined) {
@@ -191,10 +191,13 @@ class D3PieChart {
 
     // Chose a default color scheme based on cardinality.
     if (color === undefined)
-      color = d3.quantize(
-        (t) => d3.interpolateSpectral(t * 0.8 + 0.1),
-        name.length
-      );
+      /*
+        color = d3.quantize(
+          (t) => d3.interpolateSpectral(t * 0.8 + 0.1),
+          name.length
+        );
+      */
+      color = d3.schemeSet2;
     const colorScale = d3.scaleOrdinal(name, color);
 
     // d3.arc().innerRadius().outerRadius();
@@ -408,10 +411,7 @@ class D3PieChart {
     if (enableLegend) {
       const legend = svg
         .append("g")
-        .attr(
-          "transform",
-          `translate(${width - marginRight + 25 + 20}, ${marginTop})`
-        )
+        .attr("transform", `translate(${width - marginRight}, ${marginTop})`)
         .style("cursor", "pointer");
       legend
         .selectAll("circle")
@@ -484,7 +484,7 @@ class D3PieChart {
             (((angle.startAngle + (angle.endAngle - angle.startAngle) / 2) *
               180) /
               Math.PI),
-          newFontSize = Number(fontSize.slice(0, -2)) * scale + "px";
+          newFontSize = Number(fontSize.slice(0, -2)) * scale + "em";
 
         pie
           .selectAll(".all")
