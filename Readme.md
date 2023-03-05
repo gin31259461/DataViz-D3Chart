@@ -1,4 +1,4 @@
-# IQS 前端圖表Component
+# 前端圖表 Component
 
 [Docs & Demo](http://react_component.gitlabpage.wke.csie.ncnu.edu.tw/Chart_Component/)
 
@@ -16,7 +16,7 @@
 
 ## Usage example
 
-``` jsx
+``` tsx
 import React from "react";
 import { render } from "react-dom";
 import { LineChart } from "chart-component";
@@ -24,7 +24,7 @@ import { LineChart } from "chart-component";
 const root = document.getElementById("root");
 
 render(
-  <Linechart 
+  <Linechart
     data={data}
     width={700}
   ></Linechart>,

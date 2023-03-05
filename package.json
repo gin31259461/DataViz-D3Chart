@@ -4,23 +4,26 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "babel": "babel src  --out-dir dist",
+    "babel": "babel src  --out-dir dist --extensions .ts,.tsx",
     "push": "npm run babel && npm run styleguide:build ",
-    "styleguide": "styleguidist server",
+    "styleguide": "styleguidist server --port 3030",
     "styleguide:build": "styleguidist build"
   },
   "keywords": [],
-  "author": "Gago",
+  "author": "Abner",
   "private": true,
   "license": "ISC",
   "dependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
     "babel-loader": "^8.1.0",
     "d3": "^7.6.1",
     "d3-cloud": "^1.2.5",
     "prop-types": "^15.6.1",
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "typescript": "^4.9.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -29,8 +32,15 @@
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-react": "^7.9.4",
     "@babel/preset-stage-0": "^7.8.3",
+    "@babel/preset-typescript": "^7.21.0",
+    "@types/prop-types": "^15.7.5",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "@typescript-eslint/parser": "^5.54.0",
     "babel-plugin-transform-remove-debugger": "^6.9.4",
     "babel-preset-minify": "^0.5.2",
+    "eslint": "^8.35.0",
+    "eslint-plugin-react": "^7.32.2",
+    "react-docgen-typescript": "^2.2.2",
     "react-styleguidist": "^11.0.6",
     "webpack": "^4.43.0"
   }
