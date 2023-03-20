@@ -2,6 +2,7 @@ import React from "react";
 import * as d3 from "d3";
 import PropTypes from "prop-types";
 import { ChartStyle } from "@/chart-style";
+import { schemeBlues } from "d3";
 
 interface MapFunctionProps {
   getX: any;
@@ -31,7 +32,7 @@ export default function CalendarHeatmap(props: CalendarHeatmapProps) {
 
   React.useEffect(() => {
     handleLoad();
-  }, []);
+  }, [props]);
 
   return <svg ref={svgRef} />;
 }
@@ -147,11 +148,19 @@ function CreateCalendarHeatmap(element: any, props: CalendarHeatmapProps) {
     fontSize = (width + height) / 100,
     years = d3.groups(I, (i) => x[i].getFullYear()).reverse();
 
-  if (colors === undefined) colors = d3.interpolateBrBG;
+  let colorScale: d3.ScaleSequential<unknown, string>
 
-  const max = d3.quantile(y, 0.9975, Math.abs) as number,
-    colorScale = d3.scaleSequential([-max, max], colors).unknown("none"),
-    formatMonth = d3.utcFormat(monthParse);
+  const max = d3.quantile(y, 0.9975, Math.abs) as number;
+  const formatMonth = d3.utcFormat(monthParse);
+
+  if (colors === undefined) {
+    colorScale = d3.scaleSequential([-max, max], d3.interpolateBrBG).unknown("none");
+  }
+  else {
+    const interpolator  = d3.interpolate(colors[0], colors[1]);
+    colorScale = d3.scaleSequential([-max, max], interpolator).unknown("none");
+  }
+
 
   const svg = d3
     .select(element)
