@@ -2,7 +2,6 @@ import React from "react";
 import * as d3 from "d3";
 import PropTypes from "prop-types";
 import { ChartStyle } from "@/chart-style";
-import { schemeBlues } from "d3";
 
 interface MapFunctionProps {
   getX: any;
@@ -11,7 +10,7 @@ interface MapFunctionProps {
 }
 
 interface CalendarHeatmapProps extends ChartStyle {
-  data: any;
+  data: Array<object>;
   mapFunction: MapFunctionProps;
   cellSize: number;
   utcParse: string;
@@ -46,7 +45,7 @@ CalendarHeatmap.propTypes = {
   title: PropTypes.string,
   /** chart width */
   width: PropTypes.number,
-  /** cell colors */
+  /** cell colors interpolator : ['', ''] */
   colors: PropTypes.any,
   /** set chart margins */
   margin: PropTypes.objectOf(PropTypes.number),
@@ -125,6 +124,8 @@ function CreateCalendarHeatmap(element: any, props: CalendarHeatmapProps) {
     legend,
   } = props;
 
+  if (data.length === 0) return;
+
   const x = d3.map(d3.map(data, mapFunction.getX) as [], (d: string) => d3.utcParse(utcParse)(d)) as Date[],
     y = d3.map(d3.map(data, mapFunction.getY), (d) => Number(d)),
     I = d3.range(x.length);
@@ -146,7 +147,7 @@ function CreateCalendarHeatmap(element: any, props: CalendarHeatmapProps) {
     weekDays = weekday === "weekday" ? 5 : 7,
     height = cellSize * (weekDays + 2),
     fontSize = (width + height) / 100,
-    years = d3.groups(I, (i) => x[i].getFullYear()).reverse();
+    years = d3.groups(I, (i: number) => x[i].getFullYear()).reverse();
 
   let colorScale: d3.ScaleSequential<unknown, string>
 
