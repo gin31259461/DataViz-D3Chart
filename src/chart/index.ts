@@ -13,6 +13,54 @@ import ScatterChart from "./scatter/ScatterChart";
 import CalendarHeatmap from "./time/CalendarHeatmap";
 import WordCloud from "./word/WordCloud";
 
+export type D3_CHART_PROPS =
+  | "AreaSingle"
+  | "AreaGroup"
+  | "AreaStacked"
+  | "BarSingle"
+  | "BarGroup"
+  | "BarStacked"
+  | "BubbleChart"
+  | "BubblePlot"
+  | "Pie"
+  | "Donut"
+  | "LineSingle"
+  | "LineMultiple"
+  | "ScatterSingle"
+  | "ScatterGroup"
+  | "WordCloud";
+
+export const ChartComponentsList = [
+  "AreaSingle",
+  "AreaGroup",
+  "AreaStacked",
+  "BarSingle",
+  "BarGroup",
+  "BarStacked",
+  "BubbleChart",
+  "BubblePlot",
+  "Pie",
+  "Donut",
+  "LineSingle",
+  "LineMultiple",
+  "ScatterSingle",
+  "ScatterGroup",
+  "WordCloud",
+];
+
+export const D3_CHART = {
+  AreaChart,
+  AreaStacked,
+  BarGroup,
+  BarStacked,
+  BubbleChart,
+  Pie,
+  Donut,
+  LineChart,
+  ScatterChart,
+  WordCloud,
+};
+
 export {
   AreaChart,
   AreaStacked,

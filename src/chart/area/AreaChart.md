@@ -58,11 +58,10 @@ let data = [
 
 <AreaChart
   data={data}
-  getX={(d) => d.date}
-  keysOfGroups={["M", "F", "X"]}
-  chartTitleText={"AreaChart"}
-  xAxisText={"x"}
-  yAxisText={"y"}
-  enableLineNode={false}
+  map={{
+    getX: (d) => d.date,
+    keys: ['M', 'F', 'X'],
+  }}
+  title={"AreaChart"}
 ></AreaChart>;
 ```

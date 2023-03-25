@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "dev": "styleguidist server --port 3030",
     "babel": "babel src  --out-dir dist --extensions .ts,.tsx",
     "push": "npm run babel && npm run styleguide:build ",
-    "styleguide": "styleguidist server --port 3030",
-    "styleguide:build": "styleguidist build"
+    "build": "styleguidist build"
   },
   "keywords": [],
   "author": "Abner",
@@ -29,19 +29,20 @@
     "@babel/preset-react": "^7.9.4",
     "@babel/preset-stage-0": "^7.8.3",
     "@babel/preset-typescript": "^7.21.0",
-    "@types/prop-types": "^15.7.5",
-    "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@types/d3": "^7.4.0",
+    "@types/prop-types": "^15.7.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
     "@typescript-eslint/parser": "^5.54.0",
     "babel-plugin-transform-remove-debugger": "^6.9.4",
+    "babel-plugin-tsconfig-paths": "^1.0.3",
     "babel-preset-minify": "^0.5.2",
-    "typescript": "^4.9.5",
     "eslint": "^8.35.0",
     "eslint-plugin-react": "^7.32.2",
     "react-docgen-typescript": "^2.2.2",
     "react-styleguidist": "^11.0.6",
-    "webpack": "^4.43.0"
+    "typescript": "^4.9.5",
+    "webpack": "^4.46.0"
   }
 }

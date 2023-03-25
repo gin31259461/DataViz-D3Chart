@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
   title: `Chart Component v${pkg.version}`,
-  components: 'src/*/*.tsx',
+  components: ['./src/chart/**/*.tsx'],
   getComponentPathLine(componentPath) {
     const name = path.basename(componentPath, '.tsx');
     return `import { ${name} } from '${pkg.name}';`;
@@ -17,6 +17,9 @@ module.exports = {
           loader: 'babel-loader'
         }
       ]
+    },
+    resolve: {
+      extensions: ['.tsx', '.ts', 'js']
     }
   },
 };

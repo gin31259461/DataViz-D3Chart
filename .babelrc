@@ -11,6 +11,6 @@
   ],
   "comments": false,
   "plugins": [
-    "@babel/plugin-proposal-class-properties","transform-remove-debugger"
+    "@babel/plugin-proposal-class-properties","transform-remove-debugger", "babel-plugin-tsconfig-paths"
   ]
 }
