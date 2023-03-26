@@ -5,12 +5,12 @@ export function createLegend(
   keys: string[],
   colorScale: any,
   props: ChartStyle,
-  onHover: (this: d3.BaseType, event: any, d: unknown) => void,
-  noHover: (this: d3.BaseType, event: any, d: unknown) => void
+  onHover: (this: d3.BaseType, event: unknown, d: unknown) => void,
+  noHover: (this: d3.BaseType, event: unknown, d: unknown) => void
 ) {
   const legend = svg
     .append('g')
-    .attr('transform', `translate(${props.width - props.margin.right + 20}, ${props.margin.top})`)
+    .attr('transform', `translate(${props.base.width - props.margin.right + 20}, ${props.margin.top})`)
   legend
     .selectAll('circle')
     .data(keys)

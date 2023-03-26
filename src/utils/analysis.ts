@@ -1,15 +1,16 @@
 import { MapDataProps } from '@/chart/chart-style';
-import { map } from 'd3';
+import * as d3 from 'd3';
 
-export function groupData(keys: string[], data: object[], xData: any[]) {
-  return  keys.map((k) => {
+export function groupData(keys: string[], data: object[], xData: number[] | string[]) {
+  return  keys.map((k: string) => {
     const newData: MapDataProps[] = [];
-    map(data, (d: {[key: string]: any}, i) => {
+    d3.map(data, (d, i) => {
+      const keyValue = (d as {[k: string]: number})[k];
       newData.push({
         x: xData[i],
-        y: d[k],
-        group: k,
-        defined: !isNaN(xData[i]) && !isNaN(d[k]),
+        y: keyValue,
+        key: k,
+        defined: (typeof xData === 'number') ? !isNaN(xData[i]) && !isNaN(keyValue): !isNaN(keyValue)
       });
     });
     return { group: k, value: newData };
