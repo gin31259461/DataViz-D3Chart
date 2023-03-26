@@ -62,6 +62,6 @@ let data = [
     getX: (d) => d.date,
     keys: ['M', 'F', 'X'],
   }}
-  title={"AreaChart"}
+  base={{title: "AreaChart", width: undefined, height: 300}}
 ></AreaChart>;
 ```

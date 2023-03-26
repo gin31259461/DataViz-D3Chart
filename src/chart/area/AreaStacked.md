@@ -58,11 +58,10 @@ let data = [
 
 <AreaStacked
   data={data}
-  xkey={"date"}
-  keysOfGroups={["M", "F", "X"]}
-  chartTitleText={"AreaChartStacked"}
-  xAxisText={"x"}
-  yAxisText={"y"}
-  enableLineNode={false}
+  map={{
+    getX: (d) => d.date,
+    keys: ['M', 'F', 'X'],
+  }}
+  base={{title: "AreaStacked", width: undefined, height: 300}}
 ></AreaStacked>;
 ```
