@@ -5,6 +5,7 @@ import { ChartStyle, MapDataProps } from '../chart-style';
 import { createTooltip } from '@/utils/tooltip';
 import { createLegend } from '@/utils/legend';
 import { groupData } from '@/utils/analysis';
+import { getElementWidth } from '@/utils/dom';
 
 export default function AreaChart(props: ChartStyle) {
   const svgRef = React.useRef(null);
@@ -18,7 +19,7 @@ export default function AreaChart(props: ChartStyle) {
     handleLoad();
   }, [props]);
 
-  return <svg ref={svgRef} />;
+  return <svg id='svg-area' width={'100%'} ref={svgRef} fontFamily={'Source Sans Pro, sans-serif'} />;
 }
 
 function RemoveAreaChart(element: React.MutableRefObject<null>) {
@@ -29,9 +30,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
   let {
     data,
     map,
-    width,
-    height,
-    title,
+    base,
     margin,
     xAxis,
     yAxis,
@@ -42,17 +41,22 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
     time,
     tooltip,
     animation,
-    legend
+    legend,
+    font
   } = props;
 
   if (data.length == 0)
     return;
 
+  if (base.width === undefined) {
+    base.width = getElementWidth('svg-area');
+  }
+
   if (xAxis.range === undefined)
-    xAxis.range = [margin.left, width - margin.right];
+    xAxis.range = [margin.left, base.width - margin.right];
 
   if (yAxis.range === undefined)
-    yAxis.range = [height - margin.bottom, margin.top];
+    yAxis.range = [base.height - margin.bottom, margin.top];
 
   let x: any = [];
   if (xAxis.type === d3.scaleTime) x = d3.map(d3.map(data, map.getX), (d) => time.type(parser.time)(d));
@@ -64,20 +68,25 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
 
   if (xAxis.domain === undefined)
     xAxis.domain = d3.extent(x);
-  if (yAxis.domain === undefined)
-    yAxis.domain = ['0', d3.max(newData, (obj) => d3.max(obj.value, (obj) => obj.y))]
+  if (yAxis.domain === undefined) {
+    const domain2 = d3.max(newData, (obj) => d3.max(obj.value, (obj) => obj.y * 1.1));
+    yAxis.domain = ['0', domain2 !== undefined ? domain2.toString() : '0']
+  }
 
 
   const xScale = xAxis.type(xAxis.domain, xAxis.range);
   const yScale = yAxis.type(yAxis.domain, yAxis.range);
-  const fontSize = (width + height) / 1000 + 'em';
+
+  if (font.size === undefined)
+    font.size = Math.min(base.width, base.height) / 25 + 'px';
+
   const xAxisType = d3
     .axisBottom(xScale)
-    .ticks(width / 80)
+    .ticks(base.width / 80)
     .tickSizeOuter(0);
   const yAxisType = d3
     .axisLeft(yScale)
-    .ticks(height / 40);
+    .ticks(base.height / 40);
 
   // d: newData -> value
   const line = d3
@@ -89,12 +98,12 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
     line0 = d3
       .line<MapDataProps>()
       .x((d) => xScale(d.x))
-      .y(height - margin.bottom),
+      .y(base.height - margin.bottom),
     area0 = d3
       .area<MapDataProps>()
       .x((d) => xScale(d.x))
-      .y0(height - margin.bottom)
-      .y(height - margin.bottom),
+      .y0(base.height - margin.bottom)
+      .y(base.height - margin.bottom),
     area = d3
       .area<MapDataProps>()
       .defined((d) => d.defined)
@@ -105,14 +114,14 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
 
   if (tooltip.map === undefined)
     tooltip.map = (d: MapDataProps) => {
-      return `group: ${d.group}\nx: ${d3.timeFormat('%Y-%m-%d')(d.x)}\ny: ${d.y}`;
+      return `Group : ${d.key}\nx : ${d3.timeFormat('%Y-%m-%d')(d.x as Date)}\ny : ${d.y}`;
     };
 
   const svg = d3
     .select(element.current)
-    .attr('width', width)
-    .attr('height', height)
-    .attr('viewBox', [0, 0, width, height])
+    .attr('width', base.width)
+    .attr('height', base.height)
+    .attr('viewBox', [0, 0, base.width, base.height])
     .attr('overflow', 'visible');
 
   if (yAxis.enabled) {
@@ -124,7 +133,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
         g
           .selectAll('.tick line')
           .clone()
-          .attr('x2', width - margin.left - margin.right)
+          .attr('x2', base.width - margin.left - margin.right)
           .attr('stroke-opacity', 0.1)
       )
       .call((g) =>
@@ -132,22 +141,23 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
           .append('text')
           .attr('x', 0)
           .attr('y', margin.top - 12)
-          .attr('style', '12px')
-          .attr('text-anchor', 'start')
-          .style('fill', 'currentColor')
+          .attr('font-size', '12px')
+          .attr('text-anchor', 'end')
+          .attr('fill', 'currentColor')
           .text(yAxis.title)
       );
   }
 
   if (xAxis.enabled) {
-    const XAxis = svg.append('g').attr('transform', `translate(0, ${height - margin.bottom})`);
+    const XAxis = svg.append('g').attr('transform', `translate(0, ${base.height - margin.bottom})`);
     XAxis.call(xAxisType).call((g) =>
       g
         .append('text')
-        .attr('x', width - margin.right)
-        .attr('y', 12)
-        .attr('style', '12px')
-        .style('fill', 'currentColor')
+        .attr('x', base.width - margin.right + 12)
+        .attr('y', 0)
+        .attr('font-size', '12px')
+        .attr('text-anchor', 'start')
+        .attr('fill', 'currentColor')
         .text(xAxis.title)
     );
   }
@@ -156,13 +166,13 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
   chartTitle.call((g) =>
     g
       .append('text')
-      .attr('x', margin.left + (width - margin.right - margin.left) / 2)
+      .attr('x', margin.left + (base.width - margin.right - margin.left) / 2)
       .attr('y', margin.top / 2)
-      .attr('fill', 'currentColor')
-      .style('font-size', '20px')
-      .style('font-weight', 550)
       .attr('text-anchor', 'middle')
-      .text(title)
+      .attr('font-size', '20px')
+      .attr('fill', 'currentColor')
+      .attr('font-weight', 550)
+      .text(base.title)
   );
 
   if (fill.color === undefined)
@@ -171,8 +181,8 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
   if (stroke.color === undefined)
     stroke.color = fill.color;
 
-  const areaColorScale = d3.scaleOrdinal(rowKeys, fill.color),
-    strokeColorScale = d3.scaleOrdinal(rowKeys, stroke.color);
+  const areaColorScale = d3.scaleOrdinal(rowKeys, fill.color);
+  const strokeColorScale = d3.scaleOrdinal(rowKeys, stroke.color);
 
   const areaPath = svg.append('g'),
     linePath = svg.append('g'),
@@ -186,7 +196,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
       .attr('class', (d) => 'all _' + d.group)
       .attr('fill', 'none')
       .attr('stroke', (d) => strokeColorScale(d.group))
-      .attr('stroke-width', stroke.width)
+      .attr('stroke-base.width', stroke.width)
       .attr('stroke-linecap', stroke.linecap)
       .attr('stroke-linejoin', stroke.linejoin)
       .attr('stroke-opacity', stroke.opacity)
@@ -214,14 +224,14 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
         .attr('r', node.radius)
         .attr('fill', strokeColorScale(d.group))
         .attr('stroke', strokeColorScale(d.group))
-        .attr('stroke-width', stroke.width);
+        .attr('stroke-base.width', stroke.width);
     });
   }
 
-  const {showTooltip, hideTooltip} = createTooltip(svg, xScale, yScale, 0, 0, 0, -3, {nodeRadius: node.radius, tooltipTitle: tooltip.map, fontSize: fontSize});
+  const {showTooltip, moveTooltip, hideTooltip} = createTooltip(svg, props);
 
   if (tooltip.enabled) {
-    lineNode.selectAll('circle').on('mouseover', showTooltip).on('mouseleave', hideTooltip);
+    lineNode.selectAll('circle').on('mouseover', showTooltip).on('mousemove', moveTooltip).on('mouseleave', hideTooltip);
   }
 
   // animation
@@ -242,13 +252,13 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
         .selectAll('path')
         .nodes()
         .map((node) => {
-          node === null ? 0 : (node as SVGGeometryElement).getTotalLength();
+          return node === null ? 0 : (node as SVGGeometryElement).getTotalLength();
         });
       linePath
         .selectAll('path')
         .data(pathLength)
         .attr('stroke-dasharray', (d) => d + ' ' + d)
-        .attr('stroke-dashoffset', (_, d) => d)
+        .attr('stroke-dashoffset', (d) => d)
         .transition()
         .ease(d3.easeLinear)
         .attr('stroke-dashoffset', 0)
@@ -267,7 +277,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
     }
   }
 
-  function onHover(_: any, d: any) {
+  const onHover = (_: any, d: any) => {
     linePath.selectAll('.all').style('opacity', 0.1);
     lineNode.selectAll('.all').style('opacity', 0.1);
     areaPath.selectAll('.all').style('opacity', 0.1);
@@ -275,7 +285,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
     lineNode.selectAll('._' + d).style('opacity', stroke.opacity);
     areaPath.selectAll('._' + d).style('opacity', fill.opacity);
   }
-  function noHover() {
+  const noHover = () => {
     linePath.selectAll('.all').style('opacity', stroke.opacity);
     lineNode.selectAll('.all').style('opacity', stroke.opacity);
     areaPath.selectAll('.all').style('opacity', fill.opacity);
@@ -290,9 +300,7 @@ function CreateAreaChart(element: React.MutableRefObject<null>, props: ChartStyl
 AreaChart.propTypes = {
   data: PropTypes.arrayOf(PropTypes.object).isRequired,
   map: PropTypes.objectOf(PropTypes.any),
-  width: PropTypes.number,
-  height: PropTypes.number,
-  title: PropTypes.string,
+  base: PropTypes.objectOf(PropTypes.any),
   margin: PropTypes.objectOf(PropTypes.number),
   xAxis: PropTypes.objectOf(PropTypes.any),
   yAxis: PropTypes.objectOf(PropTypes.any),
@@ -311,22 +319,24 @@ AreaChart.defaultProps = {
     getX: (d: any) => d.x,
     keys: ['y']
   },
+  base: {
+    width: undefined,
+    height: 300,
+    title: ''
+  },
   tooltip: {
     map: undefined,
     enabled: true,
   },
-  width: 800,
-  height: 300,
-  title: '',
   xAxis: {
-    title: '',
+    title: 'x',
     type: d3.scaleTime,
     domain: undefined,
     range: undefined,
     enabled: true,
   },
   yAxis: {
-    title: '',
+    title: 'y',
     type: d3.scaleLinear,
     domain: undefined,
     range: undefined,
@@ -368,5 +378,8 @@ AreaChart.defaultProps = {
   },
   legend: {
     enabled: true,
+  },
+  font: {
+    size: undefined,
   }
 };
