@@ -1,8 +1,14 @@
 import { CurveFactory, CurveFactoryLineOnly } from "d3";
 
-export type MapDataProps = {x: any, y: any, group: string, defined: any};
+export type MapDataProps = {x: string | number | Date, y: number, key: string, defined: any};
 
 type D3Function = (value: any, index: number, iterable: Iterable<any>) => any[];
+
+type BaseType = {
+  width: number;
+  height: number;
+  title: string;
+};
 
 type MapProps = {
   getX: D3Function;
@@ -76,12 +82,14 @@ type TimeProps = {
   type: Function;
 };
 
+type FontProps = {
+  size: string;
+}
+
 export interface ChartStyle {
   data: Array<object>;
+  base: BaseType;
   map: MapProps;
-  title: string;
-  width: number;
-  height: number;
   margin: MarginProps;
   colors: any;
   animation: AnimationProps;
@@ -94,4 +102,5 @@ export interface ChartStyle {
   fill: FillProps;
   tooltip: TooltipProps;
   time: TimeProps;
+  font: FontProps;
 }
