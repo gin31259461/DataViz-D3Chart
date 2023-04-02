@@ -1,6 +1,10 @@
 {
   "presets": [
-    "@babel/env",
+    ["@babel/preset-env", {
+      "useBuiltIns": "usage",
+      "modules": false,
+      "corejs": 3.6
+    }],
     "@babel/preset-react",
     "@babel/preset-typescript",
     ["minify", {
@@ -11,7 +15,8 @@
   ],
   "comments": false,
   "plugins": [
-    "@babel/plugin-proposal-class-properties","transform-remove-debugger",
+    "@babel/plugin-proposal-class-properties",
+    "transform-remove-debugger",
     ["babel-plugin-module-resolver", {
       "root": ["./src"],
       "alias": {

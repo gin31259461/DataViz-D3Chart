@@ -1,1 +1,1 @@
-"use strict";var _d=require("d3");Object.defineProperty(exports,"__esModule",{value:!0}),exports.RemoveChart=RemoveChart;function RemoveChart(element){(0,_d.select)(element.current).selectAll("g").remove()}
+import{select}from"d3";export function RemoveChart(element){select(element.current).selectAll("g").remove()}

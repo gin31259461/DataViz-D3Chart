@@ -20,6 +20,7 @@ specifiers:
   babel-plugin-transform-remove-debugger: ^6.9.4
   babel-plugin-tsconfig-paths: ^1.0.3
   babel-preset-minify: ^0.5.2
+  core-js: '3'
   d3: ^7.6.1
   d3-cloud: ^1.2.5
   d3-ease: ^3.0.1
@@ -35,6 +36,7 @@ specifiers:
 
 dependencies:
   babel-loader: 8.3.0_idmflsbzmivcz6fnnmcaipezqe
+  core-js: 3.29.0
   d3: 7.8.2
   d3-cloud: 1.2.5
   d3-ease: 3.0.1
@@ -3252,7 +3254,6 @@ packages:
   /core-js/3.29.0:
     resolution: {integrity: sha512-VG23vuEisJNkGl6XQmFJd3rEG/so/CNatqeE+7uZAwTSwFeB/qaO0be8xZYUNWprJ/GIwL8aMt9cj1kvbpTZhg==}
     requiresBuild: true
-    dev: true
 
   /core-util-is/1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
