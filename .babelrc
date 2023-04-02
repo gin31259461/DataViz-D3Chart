@@ -11,6 +11,13 @@
   ],
   "comments": false,
   "plugins": [
-    "@babel/plugin-proposal-class-properties","transform-remove-debugger", "babel-plugin-tsconfig-paths"
+    "@babel/plugin-proposal-class-properties","transform-remove-debugger",
+    ["babel-plugin-module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "@": "./src"
+      }
+    }],
+    "babel-plugin-tsconfig-paths"
   ]
 }
