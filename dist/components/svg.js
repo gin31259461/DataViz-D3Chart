@@ -1,0 +1,1 @@
+"use strict";var _d=require("d3");Object.defineProperty(exports,"__esModule",{value:!0}),exports.createSVG=createSVG;function createSVG(element,width,height){var svg=(0,_d.select)(element.current).attr("width",width).attr("height",height).attr("viewBox",[0,0,width,height]).attr("font-family","Source Sans Pro, sans-serif").attr("overflow","visible");return svg}

@@ -1,32 +1,52 @@
 ```tsx
 let data = [
   {
-    count: 2167,
-    text: "A",
-    detail: "A detail",
+    "product": "Crest",
+    "price": 23.9
   },
   {
-    count: 3267,
-    text: "B",
-    detail: "B detail",
+    "product": "Colgate",
+    "price": 15.5
   },
   {
-    count: 3167,
-    text: "C",
-    detail: "C detail",
+    "product": "Sensodyne",
+    "price": 13.7
   },
   {
-    count: 5167,
-    text: "D",
-    detail: "D detail",
+    "product": "Tom's of Maine",
+    "price": 10.4
   },
+  {
+    "product": "Arm & Hammer",
+    "price": 2.9
+  },
+  {
+    "product": "Marvis",
+    "price": 2.5
+  },
+  {
+    "product": "TheraBreath",
+    "price": 1.6
+  },
+  {
+    "product": "Aquafresh",
+    "price": 1.4
+  },
+  {
+    "product": "Other",
+    "price": 28.2
+  }
 ];
 
 <Pie
   data={data}
-  getX={(d) => d.text}
-  keysOfGroups={["count"]}
-  getDetail={(d) => d.detail}
-  chartTitleText={"Pie"}
-></Pie>;
+  mapper={{
+    getX: (d) => d.product,
+    getY: (d) => d.price
+  }}
+  base={{
+    title: 'PieChart',
+    height: 500
+  }}
+></Pie>
 ```

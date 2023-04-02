@@ -1,434 +1,202 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import * as d3 from "d3";
+import React, { RefObject, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import * as d3 from 'd3';
+import { ChartStyle } from '../style';
+import { RemoveChart } from '@/components/chart';
+import { getElementHeight, getElementWidth } from '@/utils/dom';
+import { NumberValue } from 'd3';
+import { createSVG } from '@/components/svg';
+import { createXAxis, createYAxis } from '@/components/axis';
+import { createTooltip } from '@/components/tooltip';
+import { createTitle } from '@/components/text';
+import { createLegend } from '@/components/legend';
 
-export default class BubbleChart extends Component {
-  constructor(props) {
-    super(props);
-  }
+export default function BubbleChart(props: ChartStyle) {
+	const svgRef = React.useRef<SVGSVGElement>(null);
 
-  static propTypes = {
-    /** data for chart */
-    data: PropTypes.array.isRequired,
-    /** function to fetch x-axis data */
-    getX: PropTypes.func, // function to fetch x-axis data
-    /** function to fetch y-axis data */
-    getY: PropTypes.func, // function to fetch y-axis data
-    /** function to fetch bubble radius data */
-    getZ: PropTypes.func, // function to fetch bubbles scale data
-    /** function to fetch bubble group data */
-    getGroup: PropTypes.func,
-    /** function to fetch tooltip text data */
-    getTipText: PropTypes.func,
-    /** width of chart */
-    width: PropTypes.number,
-    /** height of chart */
-    height: PropTypes.number,
-    /** title of chart */
-    chartTitleText: PropTypes.string,
-    /** tip text for chart */
-    tooltipTitle: PropTypes.func,
-    /** x-axis label */
-    xAxisText: PropTypes.string,
-    /** y-axis label */
-    yAxisText: PropTypes.string,
-    /** bubble radius maximum */
-    zMaxRadius: PropTypes.number,
-    /** color array to render bubble group */
-    color: PropTypes.arrayOf(PropTypes.string),
-    /** method if x data map */
-    xType: PropTypes.string,
-    /** margin top */
-    marginTop: PropTypes.number,
-    /** margin right */
-    marginRight: PropTypes.number,
-    /** margin bottom */
-    marginBottom: PropTypes.number,
-    /** margin left */
-    marginLeft: PropTypes.number,
-    /** domain of x data [start, end] */
-    xDomain: PropTypes.arrayOf(PropTypes.number),
-    /** domain of y data [start, end] */
-    yDomain: PropTypes.arrayOf(PropTypes.number),
-    /** domain of z data [start, end] */
-    zDomain: PropTypes.arrayOf(PropTypes.number),
-    /** scale for x-domain */
-    xDomainScale: PropTypes.number,
-    /** scale for z-domain */
-    zDomainScale: PropTypes.number,
-    /** domain of x scale range [start, end] */
-    xRange: PropTypes.arrayOf(PropTypes.number),
-    /** domain of y scale range [start, end] */
-    yRange: PropTypes.arrayOf(PropTypes.number),
-    /** domain of z scale range [start, end] */
-    zRange: PropTypes.arrayOf(PropTypes.number),
-    /** chart animation time (ms) */
-    animationTime: PropTypes.number, // ms
-    /** enable chart animation */
-    enableAnimation: PropTypes.bool,
-    /** enable legend of chart */
-    enableLegend: PropTypes.bool,
-    /** enable x-axis */
-    enableXAxis: PropTypes.bool,
-    /** enable y-axis */
-    enableYAxis: PropTypes.bool,
-    enableTooltip: PropTypes.bool,
-  };
+	const handleLoad = () => {
+		RemoveChart(svgRef);
+		CreateBubbleChart(svgRef, props);
+	};
 
-  static defaultProps = {
-    getX: (d) => d.x,
-    getY: (d) => d.y,
-    getZ: (d) => d.z,
-    getGroup: (d) => d.color,
-    getTipText: (d) => d.tip,
-    width: 500,
-    height: 300,
-    chartTitleText: "",
-    tooltipTitle: undefined,
-    xAxisText: "",
-    yAxisText: "",
-    zMaxRadius: 30,
-    color: undefined,
-    xType: "scaleLinear",
-    marginTop: 40,
-    marginRight: 60,
-    marginBottom: 60,
-    marginLeft: 60,
-    xDomain: undefined,
-    yDomain: undefined,
-    zDomain: undefined,
-    xDomainScale: 1,
-    zDomainScale: 1,
-    xRange: undefined,
-    yRange: undefined,
-    zRange: undefined,
-    animationTime: 2000,
-    enableAnimation: true,
-    enableLegend: true,
-    enableXAxis: true,
-    enableYAxis: true,
-    enableTooltip: true,
-  };
+	useEffect(() => {
+		handleLoad();
+	}, [props]);
 
-  componentDidMount() {
-    const { data, ...attr } = this.props;
-    const element = this.element,
-      bubble = new D3BubblePlot(element);
-    bubble.render(data, attr);
-  }
-
-  componentDidUpdate() {
-    const { data, ...attr } = this.props;
-    const element = this.element,
-      bubble = new D3BubblePlot(element);
-    bubble.render(data, attr);
-  }
-
-  render() {
-    return <svg ref={(element) => (this.element = element)} />;
-  }
+	return <svg width={'100%'} ref={svgRef} />;
 }
 
-class D3BubblePlot {
-  constructor(element) {
-    d3.select(element).selectAll("g").remove();
-    this.svg = d3.select(element);
-  }
+function CreateBubbleChart(element: RefObject<SVGElement>, props: ChartStyle) {
+	let { data, mapper, base, margin, xAxis, yAxis, zAxis, tooltip, animation, legend, font } = props;
 
-  render(data, attr) {
-    let {
-      getX,
-      getY,
-      getZ,
-      getGroup,
-      getTipText,
-      width,
-      height,
-      chartTitleText,
-      tooltipTitle,
-      xAxisText,
-      yAxisText,
-      zMaxRadius,
-      color,
-      xType,
-      marginTop,
-      marginRight,
-      marginBottom,
-      marginLeft,
-      xDomain,
-      yDomain,
-      zDomain,
-      xDomainScale,
-      zDomainScale,
-      xRange,
-      yRange,
-      zRange,
-      animationTime,
-      enableAnimation,
-      enableLegend,
-      enableXAxis,
-      enableYAxis,
-      enableTooltip,
-    } = attr;
+	if (data.length === 0) return;
+	if (base.width === undefined) base.width = getElementWidth(element);
+	if (base.height === undefined) base.height = getElementHeight(element);
+	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
+	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
+	if (zAxis.range === undefined) zAxis.range = [5, zAxis.zMax];
+	if (xAxis.type === undefined) xAxis.type = d3.scaleLinear;
+	if (yAxis.type === undefined) yAxis.type = d3.scaleLinear;
 
-    if (xRange === undefined) xRange = [marginLeft, width - marginRight];
-    if (yRange === undefined) yRange = [height - marginBottom, marginTop];
-    if (zRange === undefined) zRange = [5, zMaxRadius];
+	const x = d3.map(data, mapper.getX);
+	const y = d3.map(data, mapper.getY);
+	const r = d3.map(data, mapper.getR);
+	const I = d3.range(x.length);
 
-    const x = d3.map(data, getX),
-      y = d3.map(data, getY),
-      z = d3.map(d3.map(data, getZ), (d) => Number(d)),
-      c = d3.map(data, getGroup),
-      t = d3.map(data, getTipText),
-      cUnique = new d3.InternSet(c),
-      I = d3.range(x.length);
+	let des: any[];
+	if (mapper.getDes !== undefined) des = d3.map(data, mapper.getDes);
 
-    if (xDomain === undefined)
-      if (xType === "scaleBand") xDomain = x;
-      else if (xType === "scaleLinear") xDomain = [0, d3.max(x) * xDomainScale];
+	const group = d3.map(data, mapper.getGroup);
+	const distinctGroup = new d3.InternSet<string>(group);
 
-    if (yDomain === undefined) yDomain = [d3.min(y), d3.max(y) * 1.2];
-    if (zDomain === undefined) zDomain = [0, d3.max(z) * zDomainScale];
+	if (xAxis.domain === undefined) xAxis.domain = [d3.min(x) * 0.9, d3.max(x) * 1.1];
+	if (yAxis.domain === undefined) yAxis.domain = [d3.min(y) * 0.9, d3.max(y) * 1.1];
+	if (zAxis.domain === undefined) zAxis.domain = [0, d3.max(r)];
 
-    let xScale = undefined;
+	const xScale = d3.scaleLinear(xAxis.domain as Iterable<NumberValue>, xAxis.range);
+	const yScale = d3.scaleLinear(yAxis.domain as Iterable<NumberValue>, yAxis.range);
+	const rScale = d3.scaleLinear(zAxis.domain as Iterable<NumberValue>, zAxis.range);
 
-    if (xType === "scaleBand") xScale = d3.scaleBand(xDomain, xRange);
-    else if (xType === "scaleLinear") xScale = d3.scaleLinear(xDomain, xRange);
+	if (font.size === undefined) font.size = Math.min(base.width, base.height) / 25 + 'px';
+	if (base.color === undefined) base.color = d3.schemeAccent as Iterable<string>;
 
-    const yScale = d3.scaleLinear(yDomain, yRange),
-      zScale = d3.scaleLinear(zDomain, zRange),
-      fontSize = (width + height) / 1000 + "em";
+	const colorScale = d3.scaleOrdinal(group, base.color);
 
-    if (color === undefined) color = d3.schemeSet2;
-    /*
-      color = d3.quantize(
-        (t) => d3.interpolateSpectral(t * 0.8 + 0.1),
-        cUnique.size
-      );
-      */
-    const cScale = d3.scaleOrdinal().domain(cUnique).range(color);
+	if (tooltip.mapper === undefined)
+		tooltip.mapper = (i: number) => {
+			return `Title : ${des[i]}\nGroup : ${group[i]}\nx : ${x[i]}\ny : ${y[i]}\nr : ${r[i]}`;
+		};
 
-    if (tooltipTitle === undefined)
-      tooltipTitle = (i) =>
-        `${t[i]}\n${xAxisText}:${x[i]}\n${yAxisText}:${y[i]}\nscale:${z[i]}`;
+	const svg = createSVG(element, base.width, base.height);
+	createTitle(svg, props);
 
-    // create svg
-    const svg = this.svg
-      .attr("width", width)
-      .attr("height", height)
-      .attr("overflow", "visible")
-      .attr("viewBox", [0, 0, width, height]);
+	if (xAxis.enabled) {
+		createXAxis(svg, d3.axisBottom(xScale).tickSizeOuter(0), props, true);
+	}
 
-    // highlight group
-    const highlightGroup = (_, d) => {
-      bubbles.selectAll(".bubbles").style("opacity", 0.2);
-      bubbles.selectAll("._" + d).style("opacity", 1);
-    };
-    const noHighlight = (_, d) => {
-      bubbles.selectAll(".bubbles").style("opacity", 1);
-    };
+	if (yAxis.enabled) {
+		const yAxisGenerator = d3
+			.axisLeft(yScale)
+			.ticks(base.height / 40)
+			.tickSizeOuter(0);
+		createYAxis(svg, yAxisGenerator, props);
+	}
 
-    // x axis
-    if (enableXAxis) {
-      const xAxis = svg
-        .append("g")
-        .attr(
-          "transform",
-          `translate(0, ${height - marginBottom + zMaxRadius})`
-        );
-      xAxis.call(d3.axisBottom(xScale).tickSizeOuter(0)).call((g) =>
-        g
-          .append("text")
-          .attr("x", width - marginRight)
-          .attr("y", 12)
-          .attr("fill", "black")
-          .attr("style", "12px")
-          .text(xAxisText)
-      );
-    }
+	// z circle
+	const bubbles = svg.append('g');
+	bubbles
+		.selectAll('circle')
+		.data(I)
+		.join('circle')
+		.attr('class', (i) => 'bubbles bubble_' + Array.from(distinctGroup).indexOf(group[i]))
+		.attr('fill', (i) => colorScale(group[i]) + 'B3')
+		.attr('stroke', 'black')
+		.attr('stroke-width', '0.5px')
+		.attr('cx', (i) => xScale(x[i]))
+		.attr('cy', (i) => yScale(y[i]))
+		.attr('r', (i) => rScale(r[i]));
 
-    // y axis
-    if (enableYAxis) {
-      const yAxis = svg
-        .append("g")
-        .attr("transform", `translate(${marginLeft}, 0)`);
-      yAxis
-        .call(
-          d3
-            .axisLeft(yScale)
-            .ticks(height / 40)
-            .tickSizeOuter(0)
-        )
-        .call((g) => g.selectAll(".domain").remove())
-        .call((g) =>
-          g
-            .selectAll(".tick line")
-            .clone()
-            .attr("x2", width - marginLeft - marginRight)
-            .attr("stroke-opacity", 0.1)
-        )
-        .call((g) =>
-          g
-            .append("text")
-            .attr("x", 0)
-            .attr("y", marginTop - 12)
-            .attr("fill", "black")
-            .attr("style", "12px")
-            .attr("text-anchor", "start")
-            .text(yAxisText)
-        );
-    }
+	// animation
+	if (animation.enabled) {
+		bubbles
+			.selectAll('circle')
+			.data(I)
+			.attr('r', 0)
+			.transition()
+			.attr('r', (i) => rScale(r[i]))
+			.duration(animation.duration)
+			.ease(d3.easeExpInOut);
+	}
 
-    // z circle
-    const bubbles = svg.append("g");
-    bubbles
-      .selectAll("circle")
-      .data(I)
-      .join("circle")
-      .attr("class", (i) => "bubbles _" + c[i] + " bubble_" + x[i])
-      .attr("fill", (i) => cScale(c[i]))
-      .attr("stroke", "black")
-      .attr("stroke-width", "0.5px")
-      .attr("cx", (i) => xScale(x[i]))
-      .attr("cy", (i) => yScale(y[i]))
-      .attr("r", 0);
+	// highlight group
+	const onHover = (_: unknown, i: number) => {
+		bubbles.selectAll('.bubbles').style('opacity', 0.1);
+		bubbles.selectAll('.bubble_' + i).style('opacity', 1);
+	};
+	const noHover = () => {
+		bubbles.selectAll('.bubbles').style('opacity', 1);
+	};
 
-    if (xType === "scaleBand")
-      bubbles
-        .selectAll(".bubbles")
-        .data(I)
-        .attr("cx", (i) => xScale(x[i]) + xScale.bandwidth() / 2);
-    else if (xType === "scaleLinear")
-      bubbles
-        .selectAll(".bubbles")
-        .data(I)
-        .attr("cx", (i) => xScale(x[i]));
+	if (legend.enabled) {
+		createLegend(svg, Array.from(distinctGroup), colorScale, props, onHover, noHover);
+	}
 
-    if (enableTooltip) {
-      bubbles
-        .selectAll("circle")
-        .on("mouseover", showTooltip)
-        .on("mouseleave", hideTooltip);
-    }
-
-    const chartTitle = svg.append("g");
-    chartTitle.call((g) =>
-      g
-        .append("text")
-        .attr("x", marginLeft + (width - marginRight - marginLeft) / 2)
-        .attr("y", marginTop / 2)
-        .attr("fill", "black")
-        .style("font-size", "20px")
-        .style("font-weight", 550)
-        .attr("text-anchor", "middle")
-        .text(chartTitleText)
-    );
-
-    // legend
-    if (enableLegend) {
-      const legend = svg
-        .append("g")
-        .style("cursor", "pointer")
-        .attr(
-          "transform",
-          `translate(${width - marginRight + 20}, ${marginTop})`
-        )
-        .selectAll("legend")
-        .data(cUnique);
-      legend
-        .join("circle")
-        .attr("cx", 0)
-        .attr("cy", (_, i) => i * 20 * 1.1)
-        .attr("r", 10)
-        .attr("fill", (d) => cScale(d))
-        .on("mouseover", highlightGroup)
-        .on("mouseleave", noHighlight);
-      legend
-        .join("text")
-        .attr("x", 20)
-        .attr("y", (_, i) => i * 20 * 1.1 + 4)
-        .attr("text-anchor", "start")
-        .style("font-size", "12px")
-        .style("font-weight", 300)
-        .text((d) => d)
-        .on("mouseover", highlightGroup)
-        .on("mouseleave", noHighlight);
-    }
-
-    // animation
-    if (enableAnimation) {
-      bubbles
-        .selectAll("circle")
-        .data(I)
-        .transition()
-        .duration(animationTime)
-        .attr("r", (i) => zScale(z[i]));
-    } else {
-      bubbles
-        .selectAll("circle")
-        .data(I)
-        .attr("r", (i) => zScale(z[i]));
-    }
-
-    // tooltip
-    const tooltip = svg.append("g").attr("pointer-events", "none");
-
-    function showTooltip(_, i) {
-      tooltip.style("display", null);
-
-      if (xType === "scaleBand")
-        tooltip.attr(
-          "transform",
-          `translate(${xScale(x[i]) + xScale.bandwidth() / 2}, ${
-            yScale(y[i]) - zScale(z[i]) - 10
-          })`
-        );
-      else if (xType === "scaleLinear")
-        tooltip.attr(
-          "transform",
-          `translate(${xScale(x[i])}, ${yScale(y[i]) - zScale(z[i]) - 10})`
-        );
-
-      const path = tooltip
-        .selectAll("path")
-        .data([,])
-        .join("path")
-        .attr("fill", "rgba(250, 250, 250, 0.8)")
-        .attr("stroke", "black")
-        //.attr("stroke", "rgba(224, 224, 224, 1)")
-        .attr("color", "black");
-
-      const text = tooltip
-        .selectAll("text")
-        .data([,])
-        .join("text")
-        .attr("id", "tooltip-text")
-        .style("font-size", fontSize)
-        .call((text) =>
-          text
-            .selectAll("tspan")
-            .data(`${tooltipTitle(i)}`.split(/\n/))
-            .join("tspan")
-            .attr("x", 0)
-            .attr("y", (_, i) => `${i * 1.1}em`)
-            .attr("font-weight", (_, i) => (i ? null : "bold"))
-            .text((d) => d)
-        );
-
-      const textBox = text.node().getBBox();
-      text.attr(
-        "transform",
-        `translate(${-textBox.width / 2}, ${-textBox.height + 5})`
-      );
-      path.attr(
-        "d",
-        `M${-textBox.width / 2 - 10},5H-5l5,5l5,-5H${textBox.width / 2 + 10}v${
-          -textBox.height - 20
-        }h-${textBox.width + 20}z`
-      );
-    }
-    function hideTooltip() {
-      tooltip.style("display", "none");
-    }
-  }
+	if (tooltip.enabled) {
+		const { showTooltip, moveTooltip, hideTooltip } = createTooltip(svg, props);
+		bubbles
+			.selectAll('.bubbles')
+			.on('mouseover', showTooltip)
+			.on('mousemove', moveTooltip)
+			.on('mouseleave', hideTooltip);
+	}
 }
+
+BubbleChart.propTypes = {
+	data: PropTypes.arrayOf(PropTypes.object).isRequired,
+	map: PropTypes.objectOf(PropTypes.any),
+	base: PropTypes.objectOf(PropTypes.any),
+	margin: PropTypes.objectOf(PropTypes.number),
+	xAxis: PropTypes.objectOf(PropTypes.any),
+	yAxis: PropTypes.objectOf(PropTypes.any),
+	tooltip: PropTypes.objectOf(PropTypes.any),
+	animation: PropTypes.objectOf(PropTypes.any),
+	legend: PropTypes.objectOf(PropTypes.any),
+	font: PropTypes.objectOf(PropTypes.any),
+};
+
+BubbleChart.defaultProps = {
+	mapper: {
+		getX: (d: any) => d.x,
+		getY: (d: any) => d.y,
+		getR: (d: any) => d.z,
+		getGroup: (d: any) => d.group,
+	},
+	base: {
+		width: undefined,
+		height: 300,
+		title: '',
+		color: undefined,
+	},
+	tooltip: {
+		mapper: undefined,
+		enabled: true,
+	},
+	xAxis: {
+		title: 'x',
+		type: d3.scaleTime,
+		domain: undefined,
+		range: undefined,
+		padding: 0,
+		tickRotation: undefined,
+		tickOffset: undefined,
+		enabled: true,
+	},
+	yAxis: {
+		title: 'y',
+		type: d3.scaleLinear,
+		domain: undefined,
+		range: undefined,
+		enabled: true,
+	},
+	zAxis: {
+		domain: undefined,
+		range: undefined,
+		zMax: 30,
+	},
+	margin: {
+		top: 40,
+		right: 100,
+		bottom: 60,
+		left: 60,
+	},
+	animation: {
+		duration: 1000,
+		enabled: true,
+	},
+	legend: {
+		enabled: true,
+	},
+	font: {
+		size: '12px',
+	},
+};

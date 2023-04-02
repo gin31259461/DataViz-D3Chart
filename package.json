@@ -1,12 +1,12 @@
 {
   "name": "chart-component",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "dev": "styleguidist server --port 3030",
     "babel": "babel src  --out-dir dist --extensions .ts,.tsx",
-    "push": "npm run babel && npm run styleguide:build ",
+    "push": "pnpm run babel && pnpm run build",
     "build": "styleguidist build"
   },
   "keywords": [],
@@ -31,6 +31,7 @@
     "@babel/preset-stage-0": "^7.8.3",
     "@babel/preset-typescript": "^7.21.0",
     "@types/d3": "^7.4.0",
+    "@types/d3-cloud": "^1.2.5",
     "@types/prop-types": "^15.7.5",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",

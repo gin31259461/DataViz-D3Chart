@@ -1,1 +1,0 @@
-"use strict";var _react=_interopRequireDefault(require("react"));Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=HistogramStacked;function _interopRequireDefault(obj){return obj&&obj.__esModule?obj:{default:obj}}function HistogramStacked(){return _react["default"].createElement("h1",null,"Building...")}

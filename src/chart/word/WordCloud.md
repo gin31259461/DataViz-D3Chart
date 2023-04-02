@@ -1,5 +1,5 @@
-``` jsx
-const texts = `
+```jsx
+const data = `
 How the Word Cloud Generator Works
 
 The layout algorithm for positioning words without overlap is available on GitHub under an open source license as d3-cloud. Note that this is the only the layout algorithm and any code for converting text into words and rendering the final output requires additional development.
@@ -19,18 +19,11 @@ There isn’t a way to retrieve precise glyph shapes via the DOM, except perhaps
 Retrieving the pixel data separately for each word is expensive, so we draw as many words as possible and then retrieve their pixels in a batch operation.
 `;
 
-const data = texts.split(/[\s.]+/g)
-  .map(w => w.replace(/^[“‘"\-—()\[\]{}]+/g, ""))
-  .map(w => w.replace(/[;:.!?()\[\]{},"'’”\-—]+$/g, ""))
-  .map(w => w.replace(/['’]s$/g, ""))
-  .map(w => w.substring(0, 30))
-  .map(w => w.toLowerCase())
-
-const wordsData = data.map(t => { return {text: t} });
-
-<WordCloud 
-  data={wordsData}
-  width={900}
-  height={500}
+<WordCloud
+  wordData={data}
+  base={{
+    width: 900,
+    height: 500
+  }}
 ></WordCloud>
 ```

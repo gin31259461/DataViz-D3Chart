@@ -9,6 +9,7 @@ specifiers:
   '@babel/preset-stage-0': ^7.8.3
   '@babel/preset-typescript': ^7.21.0
   '@types/d3': ^7.4.0
+  '@types/d3-cloud': ^1.2.5
   '@types/prop-types': ^15.7.5
   '@types/react': ^18.0.28
   '@types/react-dom': ^18.0.11
@@ -49,6 +50,7 @@ devDependencies:
   '@babel/preset-stage-0': 7.8.3
   '@babel/preset-typescript': 7.21.0_@babel+core@7.21.0
   '@types/d3': 7.4.0
+  '@types/d3-cloud': 1.2.5
   '@types/prop-types': 15.7.5
   '@types/react': 18.0.28
   '@types/react-dom': 18.0.11
@@ -1502,6 +1504,12 @@ packages:
     resolution: {integrity: sha512-abT/iLHD3sGZwqMTX1TYCMEulr+wBd0SzyOQnjYNLp7sngdOHYtNkMRI5v3w5thoN+BWtlHVDx2Osvq6fxhZWw==}
     dev: true
 
+  /@types/d3-cloud/1.2.5:
+    resolution: {integrity: sha512-vEIER9DsEBUOdpRiwCh3n1qE+cV6h4e1LhxhY2sLt+m8LPNAIkOOhTlqk0JDiBwD+ZPM8ynFAOU3AuPuVYBFBA==}
+    dependencies:
+      '@types/d3': 3.5.47
+    dev: true
+
   /@types/d3-color/3.1.0:
     resolution: {integrity: sha512-HKuicPHJuvPgCD+np6Se9MQvS6OCbJmOjGvylzMJRlDwUXjKTTXs6Pwgk79O09Vj/ho3u1ofXnhFOaEWWPrlwA==}
     dev: true
@@ -1624,6 +1632,10 @@ packages:
     dependencies:
       '@types/d3-interpolate': 3.0.1
       '@types/d3-selection': 3.0.4
+    dev: true
+
+  /@types/d3/3.5.47:
+    resolution: {integrity: sha512-VkWIQoZXLFdcBGe5pdBKJmTU3fmpXvo/KV6ixvTzOMl1yJ2hbTXpfvsziag0kcaerPDwas2T0vxojwQG3YwivQ==}
     dev: true
 
   /@types/d3/7.4.0:

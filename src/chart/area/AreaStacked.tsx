@@ -1,385 +1,359 @@
 import React from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { ChartStyle, MapDataProps } from '../chart-style';
-import { createTooltip } from '@/utils/tooltip';
-import { createLegend } from '@/utils/legend';
-import { getElementWidth } from '@/utils/dom';
+import { ChartStyle } from '../style';
+import { createTooltip } from '@/components/tooltip';
+import { createLegend } from '@/components/legend';
+import { getElementHeight, getElementWidth } from '@/utils/dom';
+import { easeExpInOut } from 'd3';
+import { RemoveChart } from '@/components/chart';
 
 export default function AreaStacked(props: ChartStyle) {
-  const svgRef = React.useRef(null);
+	const svgRef = React.useRef<SVGSVGElement>(null);
 
-  const handleLoad = () => {
-    RemoveAreaStacked(svgRef);
-    CreateAreaStacked(svgRef, props);
-  };
+	const handleLoad = () => {
+		RemoveChart(svgRef);
+		CreateAreaStacked(svgRef, props);
+	};
 
-  React.useEffect(() => {
-    handleLoad();
-  }, [props]);
+	React.useEffect(() => {
+		handleLoad();
+	}, [props]);
 
-  return <svg id='svg-area-stacked' width={'100%'} ref={svgRef} fontFamily={'Source Sans Pro, sans-serif'} />;
+	return <svg width={'100%'} ref={svgRef} />;
 }
 
-function RemoveAreaStacked(element: React.MutableRefObject<null>) {
-  d3.select(element.current).selectAll('g').remove();
-}
+function CreateAreaStacked(element: React.RefObject<SVGElement>, props: ChartStyle) {
+	let { data, mapper, base, margin, xAxis, yAxis, stroke, node, parser, fill, time, tooltip, animation, legend, font } =
+		props;
 
-function CreateAreaStacked(element: React.MutableRefObject<null>, props: ChartStyle) {
-  let {
-    data,
-    map,
-    base,
-    margin,
-    xAxis,
-    yAxis,
-    stroke,
-    node,
-    parser,
-    fill,
-    time,
-    tooltip,
-    animation,
-    legend,
-    font
-  } = props;
+	if (data.length == 0) return;
 
-  if (data.length == 0)
-    return;
+	if (base.width === undefined) base.width = getElementWidth(element);
+	if (base.height === undefined) base.height = getElementHeight(element);
 
-  if (base.width === undefined) {
-    base.width = getElementWidth('svg-area-stacked');
-  }
+	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
+	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
 
-  if (xAxis.range === undefined)
-    xAxis.range = [margin.left, base.width - margin.right];
+	let x: any = [];
+	if (xAxis.type === d3.scaleTime) x = d3.map(d3.map(data, mapper.getX), (d) => time.type(parser.time)(d));
 
-  if (yAxis.range === undefined)
-    yAxis.range = [base.height - margin.bottom, margin.top];
+	let rowKeys: string[] = [];
+	mapper.keys.forEach((key) => rowKeys.push(key));
 
-  let x: any = [];
-  if (xAxis.type === d3.scaleTime) x = d3.map(d3.map(data, map.getX), (d) => time.type(parser.time)(d));
+	const y = d3
+		.stack()
+		.keys(rowKeys)
+		.value((obj, key) => Number(obj[key]))(data as Iterable<{ [key: string]: number }>);
 
-  let rowKeys: string[] = [];
-  map.keys.forEach((key) => rowKeys.push(key));
+	if (xAxis.domain === undefined) xAxis.domain = d3.extent(x);
+	if (yAxis.domain === undefined) {
+		const domain2 = d3.max(y, (d) => d3.max(d, (d) => d[1] * 1.1));
+		yAxis.domain = ['0', domain2 !== undefined ? domain2.toString() : '0'];
+	}
 
-  const y = d3
-    .stack()
-    .keys(rowKeys)
-    .value((obj, key) => Number(obj[key]))(data as Iterable<{[key: string]: number}>);
+	const xScale = xAxis.type(xAxis.domain, xAxis.range);
+	const yScale = yAxis.type(yAxis.domain, yAxis.range);
 
-  if (xAxis.domain === undefined)
-    xAxis.domain = d3.extent(x);
-  if (yAxis.domain === undefined) {
-    const domain2 = d3.max(y, (d) => d3.max(d, (d) => d[1] * 1.1));
-    yAxis.domain = ['0', domain2 !== undefined ? domain2.toString() : '0']
-  }
+	if (font.size === undefined) font.size = Math.min(base.width, base.height) / 25 + 'px';
 
-  const xScale = xAxis.type(xAxis.domain, xAxis.range);
-  const yScale = yAxis.type(yAxis.domain, yAxis.range);
+	const xAxisType = d3
+		.axisBottom(xScale)
+		.ticks(base.width / 80)
+		.tickSizeOuter(0);
+	const yAxisType = d3.axisLeft(yScale).ticks(base.height / 40);
 
-  if (font.size === undefined)
-    font.size = Math.min(base.width, base.height) / 25 + 'px';
+	const line = d3
+			.line<Array<number | object>>()
+			.defined((d, i) => !isNaN(x[i]) && !isNaN(d[1] as number))
+			.curve(stroke.type)
+			.x((_, i) => xScale(x[i]))
+			.y((d) => yScale(d[1])),
+		area0 = d3
+			.area<Array<number | object>>()
+			.x((_, i) => xScale(x[i]))
+			.y0(base.height - margin.bottom)
+			.y(base.height - margin.bottom),
+		area = d3
+			.area<Array<number | object>>()
+			.defined((d, i) => !isNaN(x[i]) && !isNaN(d[1] as number))
+			.curve(fill.type)
+			.x((d, i) => xScale(x[i]))
+			.y1((d) => yScale(d[1]))
+			.y0((d) => yScale(d[0]));
 
-  const xAxisType = d3
-    .axisBottom(xScale)
-    .ticks(base.width / 80)
-    .tickSizeOuter(0);
-  const yAxisType = d3
-    .axisLeft(yScale)
-    .ticks(base.height / 40);
+	if (tooltip.mapper === undefined)
+		tooltip.mapper = (d: any) => {
+			return `x : ${d.data.date}\ny : ${d[1] - d[0]}\nstacked : ${d[1]}`;
+		};
 
-  const line0 = d3
-      .line()
-      .x((_, i) => xScale(x[i]))
-      .y(base.height - margin.bottom),
-    line = d3
-      .line<Array<number | object>>()
-      .defined((d, i) => !isNaN(x[i]) && !isNaN(d[1] as number))
-      .curve(stroke.type)
-      .x((_, i) => xScale(x[i]))
-      .y((d) => yScale(d[1])),
-    area0 = d3
-      .area<Array<number | object>>()
-      .x((_, i) => xScale(x[i]))
-      .y0(base.height - margin.bottom)
-      .y(base.height - margin.bottom),
-    area = d3
-      .area<Array<number | object>>()
-      .defined((d, i) => !isNaN(x[i]) && !isNaN(d[1] as number))
-      .curve(fill.type)
-      .x((d, i) => xScale(x[i]))
-      .y1((d) => yScale(d[1]))
-      .y0((d) => yScale(d[0]));
+	const svg = d3
+		.select(element.current)
+		.attr('width', base.width)
+		.attr('height', base.height)
+		.attr('viewBox', [0, 0, base.width, base.height])
+		.attr('font-family', 'Source Sans Pro, sans-serif')
+		.attr('overflow', 'visible');
 
-  if (tooltip.map === undefined)
-    tooltip.map = (d: any) => {
-      return `x : ${d.data.date}\ny : ${d[1] - d[0]}\nstacked : ${d[1]}`;
-    };
+	if (yAxis.enabled) {
+		const YAxis = svg.append('g').attr('transform', `translate(${margin.left}, 0)`);
+		YAxis.call(yAxisType)
+			.call((g) => g.select('.domain').remove())
+			.call((g) =>
+				g
+					.selectAll('.tick line')
+					.clone()
+					.attr('x2', base.width - margin.left - margin.right)
+					.attr('stroke-opacity', 0.1)
+			)
+			.call((g) =>
+				g
+					.append('text')
+					.attr('x', 0)
+					.attr('y', margin.top - 12)
+					.attr('font-size', '12px')
+					.attr('text-anchor', 'end')
+					.attr('fill', 'currentColor')
+					.text(yAxis.title)
+			);
+	}
 
-  const svg = d3
-    .select(element.current)
-    .attr('width', base.width)
-    .attr('height', base.height)
-    .attr('viewBox', [0, 0, base.width, base.height])
-    .attr('overflow', 'visible');
+	if (xAxis.enabled) {
+		const XAxis = svg.append('g').attr('transform', `translate(0, ${base.height - margin.bottom})`);
+		XAxis.call(xAxisType).call((g) =>
+			g
+				.append('text')
+				.attr('x', base.width - margin.right + 12)
+				.attr('y', 0)
+				.attr('font-size', '12px')
+				.attr('text-anchor', 'start')
+				.attr('fill', 'currentColor')
+				.text(xAxis.title)
+		);
+	}
 
-  if (yAxis.enabled) {
-    const YAxis = svg.append('g').attr('transform', `translate(${margin.left}, 0)`);
-    YAxis
-      .call(yAxisType)
-      .call((g) => g.select('.domain').remove())
-      .call((g) =>
-        g
-          .selectAll('.tick line')
-          .clone()
-          .attr('x2', base.width - margin.left - margin.right)
-          .attr('stroke-opacity', 0.1)
-      )
-      .call((g) =>
-        g
-          .append('text')
-          .attr('x', 0)
-          .attr('y', margin.top - 12)
-          .attr('font-size', '12px')
-          .attr('text-anchor', 'end')
-          .attr('fill', 'currentColor')
-          .text(yAxis.title)
-      );
-  }
+	const chartTitle = svg.append('g');
+	chartTitle.call((g) =>
+		g
+			.append('text')
+			.attr('x', margin.left + (base.width - margin.right - margin.left) / 2)
+			.attr('y', margin.top / 2)
+			.attr('text-anchor', 'middle')
+			.attr('font-size', '20px')
+			.attr('fill', 'currentColor')
+			.attr('font-weight', 550)
+			.text(base.title)
+	);
 
-  if (xAxis.enabled) {
-    const XAxis = svg.append('g').attr('transform', `translate(0, ${base.height - margin.bottom})`);
-    XAxis.call(xAxisType).call((g) =>
-      g
-        .append('text')
-        .attr('x', base.width - margin.right + 12)
-        .attr('y', 0)
-        .attr('font-size', '12px')
-        .attr('text-anchor', 'start')
-        .attr('fill', 'currentColor')
-        .text(xAxis.title)
-    );
-  }
+	if (fill.color === undefined) fill.color = d3.schemeAccent as Iterable<string>;
+	//areaColor = d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1) , rowKeys.length);
+	if (stroke.color === undefined) stroke.color = fill.color;
 
-  const chartTitle = svg.append('g');
-  chartTitle.call((g) =>
-    g
-      .append('text')
-      .attr('x', margin.left + (base.width - margin.right - margin.left) / 2)
-      .attr('y', margin.top / 2)
-      .attr('text-anchor', 'middle')
-      .attr('font-size', '20px')
-      .attr('fill', 'currentColor')
-      .attr('font-weight', 550)
-      .text(base.title)
-  );
+	const areaColorScale = d3.scaleOrdinal(rowKeys, fill.color);
+	const strokeColorScale = d3.scaleOrdinal(rowKeys, stroke.color);
 
-  if (fill.color === undefined)
-    fill.color = d3.schemeAccent as Iterable<string>;
-  //areaColor = d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1) , rowKeys.length);
-  if (stroke.color === undefined)
-    stroke.color = fill.color;
+	const areaPath = svg.append('g'),
+		linePath = svg.append('g'),
+		lineNode = svg.append('g');
 
-  const areaColorScale = d3.scaleOrdinal(rowKeys, fill.color);
-  const strokeColorScale = d3.scaleOrdinal(rowKeys, stroke.color);
+	if (stroke.enabled) {
+		linePath
+			.selectAll('path')
+			.data(y)
+			.join('path')
+			.attr('class', (_, i) => 'svg-line line_' + i)
+			.attr('fill', 'none')
+			.attr('stroke', (d) => strokeColorScale(d.key))
+			.attr('stroke-base.width', stroke.width)
+			.attr('stroke-linecap', stroke.linecap)
+			.attr('stroke-linejoin', stroke.linejoin)
+			.attr('stroke-opacity', stroke.opacity)
+			.attr('d', (d) => line(d));
+	}
 
-  const areaPath = svg.append('g'),
-    linePath = svg.append('g'),
-    lineNode = svg.append('g');
+	areaPath
+		.selectAll('path')
+		.data(y)
+		.join('path')
+		.attr('class', (_, i) => 'svg-area area_' + i)
+		.attr('fill', (d) => areaColorScale(d.key))
+		.attr('opacity', fill.opacity)
+		.attr('d', (d) => area(d));
 
-  if (stroke.enabled) {
-    linePath
-      .selectAll('path')
-      .data(y)
-      .join('path')
-      .attr('class', (d) => 'all _' + d.key)
-      .attr('fill', 'none')
-      .attr('stroke', (d) => strokeColorScale(d.key))
-      .attr('stroke-base.width', stroke.width)
-      .attr('stroke-linecap', stroke.linecap)
-      .attr('stroke-linejoin', stroke.linejoin)
-      .attr('stroke-opacity', stroke.opacity)
-      .attr('d', (d) => line(d));
-  }
+	if (node.enabled) {
+		const createNode = lineNode.selectAll('circle');
+		y.map((d, i) => {
+			createNode
+				.data(d)
+				.join('circle')
+				.attr('class', 'svg-node node_' + i)
+				.attr('cx', (_, i) => xScale(x[i]))
+				.attr('cy', (d) => yScale(d[1]))
+				.attr('r', node.radius)
+				.attr('fill', strokeColorScale(d.key))
+				.attr('stroke', strokeColorScale(d.key))
+				.attr('stroke-base.width', stroke.width);
+		});
+	}
 
-  areaPath
-    .selectAll('path')
-    .data(y)
-    .join('path')
-    .attr('class', (d) => 'all _' + d.key)
-    .attr('fill', (d) => areaColorScale(d.key))
-    .attr('opacity', fill.opacity)
-    .attr('d', (d) => area(d));
+	if (animation.enabled) {
+		areaPath
+			.selectAll('path')
+			.data(y)
+			.attr('fill', 'rgba(0, 0, 0, 0)')
+			.attr('d', (d) => area0(d))
+			.transition()
+			.attr('fill', (d) => areaColorScale(d.key))
+			.attr('opacity', fill.opacity)
+			.attr('d', (d) => area(d))
+			.duration(animation.duration)
+			.ease(easeExpInOut);
 
-  if (node.enabled) {
-    const createNode = lineNode.selectAll('circle');
-    y.map((d, i) => {
-      createNode
-        .data(d)
-        .join('circle')
-        .attr('class', 'all _' + d.key)
-        .attr('cx', (_, i) => xScale(x[i]))
-        .attr('cy', (d) => yScale(d[1]))
-        .attr('r', node.radius)
-        .attr('fill', strokeColorScale(d.key))
-        .attr('stroke', strokeColorScale(d.key))
-        .attr('stroke-base.width', stroke.width);
-    });
-  }
+		if (stroke.enabled) {
+			const pathLength = linePath
+				.selectAll('path')
+				.nodes()
+				.map((node) => {
+					return node === null ? 0 : (node as SVGGeometryElement).getTotalLength();
+				});
+			linePath
+				.selectAll('path')
+				.data(pathLength)
+				.attr('stroke-dasharray', (d) => d + ' ' + d)
+				.attr('stroke-dashoffset', (d) => d)
+				.transition()
+				.ease(d3.easeLinear)
+				.attr('stroke-dashoffset', 0)
+				.duration(animation.duration)
+				.ease(easeExpInOut)
+				.delay(animation.duration);
+		}
+		if (node.enabled) {
+			lineNode
+				.selectAll('circle')
+				.style('opacity', 0)
+				.transition()
+				.ease(d3.easeLinear)
+				.style('opacity', 1)
+				.duration(animation.duration)
+				.ease(easeExpInOut)
+				.delay(animation.duration);
+		}
+	}
 
-  const {showTooltip, moveTooltip, hideTooltip} = createTooltip(svg, props);
+	const onHover = (_: unknown, i: number) => {
+		linePath.selectAll('.svg-line').style('opacity', 0.1);
+		lineNode.selectAll('.svg-node').style('opacity', 0.1);
+		areaPath.selectAll('.svg-area').style('opacity', 0.1);
+		linePath.selectAll('.line_' + i).style('opacity', stroke.opacity);
+		lineNode.selectAll('.node_' + i).style('opacity', stroke.opacity);
+		areaPath.selectAll('.area_' + i).style('opacity', fill.opacity);
+	};
+	const noHover = () => {
+		linePath.selectAll('.svg-line').style('opacity', stroke.opacity);
+		lineNode.selectAll('.svg-node').style('opacity', stroke.opacity);
+		areaPath.selectAll('.svg-area').style('opacity', fill.opacity);
+	};
 
-  if (tooltip.enabled) {
-    lineNode.selectAll('circle').on('mouseover', showTooltip).on('mousemove', moveTooltip).on('mouseleave', hideTooltip);
-  }
+	// legend
+	if (legend.enabled) {
+		createLegend(svg, rowKeys, areaColorScale, props, onHover, noHover);
+	}
 
-  // animation
-  if (animation.enabled) {
-    areaPath
-      .selectAll('path')
-      .data(y)
-      .attr('fill', 'rgba(0, 0, 0, 0)')
-      .attr('d', (d) => area0(d))
-      .transition()
-      .attr('fill', (d) => areaColorScale(d.key))
-      .attr('opacity', fill.opacity)
-      .attr('d', (d) => area(d))
-      .duration(animation.duration);
-
-    if (stroke.enabled) {
-      const pathLength = linePath
-        .selectAll('path')
-        .nodes()
-        .map((node) => {
-          return node === null ? 0 : (node as SVGGeometryElement).getTotalLength();
-        });
-      linePath
-        .selectAll('path')
-        .data(pathLength)
-        .attr('stroke-dasharray', (d) => d + ' ' + d)
-        .attr('stroke-dashoffset', (d) => d)
-        .transition()
-        .ease(d3.easeLinear)
-        .attr('stroke-dashoffset', 0)
-        .duration(animation.duration)
-        .delay(animation.duration);
-    }
-    if (node.enabled) {
-      lineNode
-        .selectAll('circle')
-        .style('opacity', 0)
-        .transition()
-        .ease(d3.easeLinear)
-        .style('opacity', 1)
-        .duration(animation.duration)
-        .delay(animation.duration);
-    }
-  }
-
-  const onHover = (_: any, d: any) => {
-    linePath.selectAll('.all').style('opacity', 0.1);
-    lineNode.selectAll('.all').style('opacity', 0.1);
-    areaPath.selectAll('.all').style('opacity', 0.1);
-    linePath.selectAll('._' + d).style('opacity', stroke.opacity);
-    lineNode.selectAll('._' + d).style('opacity', stroke.opacity);
-    areaPath.selectAll('._' + d).style('opacity', fill.opacity);
-  }
-  const noHover = () => {
-    linePath.selectAll('.all').style('opacity', stroke.opacity);
-    lineNode.selectAll('.all').style('opacity', stroke.opacity);
-    areaPath.selectAll('.all').style('opacity', fill.opacity);
-  }
-
-  // legend
-  if (legend.enabled) {
-    createLegend(svg, rowKeys, areaColorScale, props, onHover, noHover);
-  }
+	if (tooltip.enabled) {
+		const { showTooltip, moveTooltip, hideTooltip } = createTooltip(svg, props);
+		lineNode
+			.selectAll('circle')
+			.on('mouseover', showTooltip)
+			.on('mousemove', moveTooltip)
+			.on('mouseleave', hideTooltip);
+	}
 }
 
 AreaStacked.propTypes = {
-  data: PropTypes.arrayOf(PropTypes.object).isRequired,
-  map: PropTypes.objectOf(PropTypes.any),
-  base: PropTypes.objectOf(PropTypes.any),
-  margin: PropTypes.objectOf(PropTypes.number),
-  xAxis: PropTypes.objectOf(PropTypes.any),
-  yAxis: PropTypes.objectOf(PropTypes.any),
-  stroke: PropTypes.objectOf(PropTypes.any),
-  node: PropTypes.objectOf(PropTypes.any),
-  parser: PropTypes.objectOf(PropTypes.any),
-  fill: PropTypes.objectOf(PropTypes.any),
-  time: PropTypes.objectOf(PropTypes.any),
-  tooltip: PropTypes.objectOf(PropTypes.any),
-  animation: PropTypes.objectOf(PropTypes.any),
-  legend: PropTypes.objectOf(PropTypes.any)
+	data: PropTypes.arrayOf(PropTypes.object).isRequired,
+	mapper: PropTypes.objectOf(PropTypes.any),
+	base: PropTypes.objectOf(PropTypes.any),
+	margin: PropTypes.objectOf(PropTypes.number),
+	xAxis: PropTypes.objectOf(PropTypes.any),
+	yAxis: PropTypes.objectOf(PropTypes.any),
+	stroke: PropTypes.objectOf(PropTypes.any),
+	node: PropTypes.objectOf(PropTypes.any),
+	parser: PropTypes.objectOf(PropTypes.any),
+	fill: PropTypes.objectOf(PropTypes.any),
+	time: PropTypes.objectOf(PropTypes.any),
+	tooltip: PropTypes.objectOf(PropTypes.any),
+	animation: PropTypes.objectOf(PropTypes.any),
+	font: PropTypes.objectOf(PropTypes.any),
+	legend: PropTypes.objectOf(PropTypes.any),
 };
 
 AreaStacked.defaultProps = {
-  map: {
-    getX: (d: any) => d.x,
-    keys: ['y']
-  },
-  base: {
-    width: undefined,
-    height: 300,
-    title: ''
-  },
-  tooltip: {
-    map: undefined,
-    enabled: true,
-  },
-  xAxis: {
-    title: 'x',
-    type: d3.scaleTime,
-    domain: undefined,
-    range: undefined,
-    enabled: true,
-  },
-  yAxis: {
-    title: 'y',
-    type: d3.scaleLinear,
-    domain: undefined,
-    range: undefined,
-    enabled: true,
-  },
-  parser: {
-    time: '%Y-%m-%d',
-  },
-  time: {
-    type: d3.timeParse
-  },
-  stroke: {
-    color: undefined,
-    type: d3.curveLinear,
-    linecap: 'round',
-    linejoin: 'round',
-    width: 1.5,
-    opacity: 1,
-    enabled: true
-  },
-  margin: {
-    top: 40,
-    right: 60,
-    bottom: 60,
-    left: 60
-  },
-  node: {
-    radius: 5,
-    enabled: true
-  },
-  fill: {
-    color: undefined,
-    opacity: 0.3,
-    type: d3.curveLinear
-  },
-  animation: {
-    duration: 1000,
-    enabled: true
-  },
-  legend: {
-    enabled: true,
-  },
-  font: {
-    size: undefined,
-  }
+	mapper: {
+		getX: (d: any) => d.x,
+		keys: ['y'],
+	},
+	base: {
+		width: undefined,
+		height: 300,
+		title: '',
+	},
+	tooltip: {
+		mapper: undefined,
+		enabled: true,
+	},
+	xAxis: {
+		title: 'x',
+		type: d3.scaleTime,
+		domain: undefined,
+		range: undefined,
+		enabled: true,
+	},
+	yAxis: {
+		title: 'y',
+		type: d3.scaleLinear,
+		domain: undefined,
+		range: undefined,
+		enabled: true,
+	},
+	parser: {
+		time: '%Y-%m-%d',
+	},
+	time: {
+		type: d3.timeParse,
+	},
+	stroke: {
+		color: undefined,
+		type: d3.curveMonotoneX,
+		linecap: 'round',
+		linejoin: 'round',
+		width: 1.5,
+		opacity: 1,
+		enabled: true,
+	},
+	margin: {
+		top: 40,
+		right: 80,
+		bottom: 60,
+		left: 60,
+	},
+	node: {
+		radius: 5,
+		enabled: true,
+	},
+	fill: {
+		color: undefined,
+		opacity: 0.3,
+		type: d3.curveMonotoneX,
+	},
+	animation: {
+		duration: 1000,
+		enabled: true,
+	},
+	legend: {
+		enabled: true,
+	},
+	font: {
+		size: '12px',
+	},
 };

@@ -1,162 +1,150 @@
-import React from "react";
-import Proptypes from "prop-types";
-import * as d3 from "d3";
-import cloud from "d3-cloud";
+import React from 'react';
+import PropTypes from 'prop-types';
+import * as d3 from 'd3';
+import cloud from 'd3-cloud';
+import { ChartStyle, WordProps } from '../style';
+import { RemoveChart } from '@/components/chart';
+import { createSVG } from '@/components/svg';
+import { getElementHeight, getElementWidth } from '@/utils/dom';
 
-export default function WordCloud(props) {
-  const svgRef = React.useRef(null);
-  const handleLoad = () => {
-    const { data, ...attr } = props;
-    D3WordCloud(svgRef.current, data, attr);
-  };
-  React.useEffect(() => {
-    handleLoad();
-  }, [props]);
-  return <svg ref={svgRef} />;
+export default function WordCloud(props: ChartStyle & WordProps) {
+	const svgRef = React.useRef<SVGSVGElement>(null);
+
+	const handleLoad = () => {
+		RemoveChart(svgRef);
+		createWordCloud(svgRef, props);
+	};
+	React.useEffect(() => {
+		handleLoad();
+	}, [props]);
+
+	return <svg ref={svgRef} />;
+}
+
+function createWordCloud(element: React.RefObject<SVGElement>, props: ChartStyle & WordProps) {
+	let { wordData, margin, base, animation, word } = props;
+
+	if (wordData.length === 0) return;
+	if (base.width === undefined) base.width = getElementWidth(element);
+	if (base.height === undefined) base.height = getElementHeight(element);
+
+	const wordList = wordData
+		.split(/[\s.]+/g)
+		.map((w) => w.replace(/^[“‘"\-—()\[\]{}]+/g, ''))
+		.map((w) => w.replace(/[;:.!?()\[\]{},"'’”\-—]+$/g, ''))
+		.map((w) => w.replace(/['’]s$/g, ''))
+		.map((w) => w.substring(0, 30))
+		.map((w) => w.toLowerCase());
+
+	const contentWidth = base.width - margin.left - margin.right;
+	const contentHeight = base.height - margin.top - margin.bottom;
+
+	const svg = createSVG(element, base.width, base.height);
+
+	let wordMap = new Map<string, number>();
+	wordList.forEach((d) => {
+		if (wordMap.get(d) === undefined) wordMap.set(d, 1);
+		else wordMap.set(d, (wordMap.get(d) as number) + 1);
+	});
+
+	let data: { text: string; size: number }[] = [];
+	wordMap.forEach((v, k) => {
+		data.push({
+			text: k,
+			size: v,
+		});
+	});
+
+	if (word.size.range === undefined) word.size.range = [15, 75];
+	if (word.size.domain === undefined) word.size.domain = [0, d3.max(data, (d) => d.size) as number];
+	if (word.color.range === undefined) word.color.range = ['#ace', '#0f0'];
+	if (word.color.domain === undefined) word.color.domain = [0, 100];
+
+	const interpolator = d3.interpolate(word.color.range[0], word.color.range[1]);
+	const wordScale = d3.scaleLinear().range(word.size.range).domain(word.size.domain);
+	const colorScale = d3.scaleSequential().interpolator(interpolator).domain(word.color.domain);
+
+	svg.append('g').attr(
+		'transform',
+		`translate(
+      ${margin.left + contentWidth / 2},
+      ${margin.top + contentHeight / 2})`
+	);
+
+	const render = (word: cloud.Word[]) => {
+		svg
+			.select('g')
+			.append('g')
+			.selectAll('text')
+			.data(word)
+			.join('text')
+			.attr('font-size', (d) => d.size as number)
+			.attr('fill', (d) => colorScale(d.size as number))
+			.attr('text-anchor', 'middle')
+			.attr('transform', (d) => `translate(${d.x}, ${d.y}) rotate(${d.rotate})`)
+			.text((d) => d.text as string);
+	};
+
+	const wordLayout = cloud()
+		.size([base.width, base.height])
+		.words(data)
+		.rotate(word.mapper.rotation)
+		.padding(word.padding)
+		.fontSize((d) => wordScale(d.size as number))
+		.on('end', render);
+
+	const wordRender = Promise.resolve(wordLayout.start());
+
+	if (animation.enabled) {
+		wordRender.then(() => {
+			svg
+				.selectAll('text')
+				.attr('opacity', 0)
+				.transition()
+				.attr('opacity', 1)
+				.duration(animation.duration)
+				.ease(d3.easeExpInOut);
+		});
+	} else wordRender;
 }
 
 WordCloud.propTypes = {
-  /** data for wordcloud */
-  data: Proptypes.array.isRequired,
-  /** function to fetch words data */
-  getWord: Proptypes.func,
-  /** function to fetch size data */
-  getSize: Proptypes.func,
-  /** svg width */
-  width: Proptypes.number,
-  /** svg height */
-  height: Proptypes.number,
-  /** svg left margin */
-  marginLeft: Proptypes.number,
-  /** svg right margin */
-  marginRight: Proptypes.number,
-  /** svg top margin */
-  marginTop: Proptypes.number,
-  /** svg bottom margin */
-  marginBottom: Proptypes.number,
-  /** word size range */
-  wordSizeRange: Proptypes.arrayOf(Proptypes.number),
-  /** words size domain */
-  wordSizeDomain: Proptypes.arrayOf(Proptypes.number),
-  /** words color range */
-  wordColorRange: Proptypes.arrayOf(Proptypes.string),
-  /** words color domain */
-  wordColorDomain: Proptypes.arrayOf(Proptypes.number),
-  /** words rotate value or function */
-  rotate: Proptypes.oneOfType([Proptypes.number, Proptypes.func]),
-  /** words padding value or function */
-  padding: Proptypes.oneOfType([Proptypes.number, Proptypes.func]),
-  /** animation time (ms) */
-  animationTime: Proptypes.number,
-  /** enable animation */
-  enableAnimation: Proptypes.bool,
+	wordData: PropTypes.string.isRequired,
+	base: PropTypes.objectOf(PropTypes.any),
+	margin: PropTypes.objectOf(PropTypes.any),
+	word: PropTypes.objectOf(PropTypes.any),
+	animation: PropTypes.objectOf(PropTypes.any),
 };
 
 WordCloud.defaultProps = {
-  getWord: (d) => d.text,
-  getSize: (d) => 0.3 + Math.random(),
-  width: 600,
-  height: 300,
-  marginTop: 50,
-  marginBottom: 30,
-  marginRight: 50,
-  marginLeft: 40,
-  wordSizeRange: [15, 75],
-  wordSizeDomain: [0.5, 2],
-  wordColorRange: ["#ace", "#0f0"],
-  wordColorDomain: [15, 75],
-  rotate: () => (~~(Math.random() * 6) - 3) * 30,
-  padding: 3,
-  animationTime: 1000,
-  enableAnimation: true,
+	base: {
+		width: undefined,
+		height: undefined,
+	},
+	margin: {
+		top: 50,
+		bottom: 50,
+		right: 50,
+		left: 50,
+	},
+	word: {
+		mapper: {
+			getWord: (d: any) => d.text,
+			getSize: () => 0.3 + Math.random(),
+			rotation: () => (~~(Math.random() * 6) - 3) * 30,
+		},
+		size: {
+			range: undefined,
+			domain: undefined,
+		},
+		color: {
+			range: undefined,
+			domain: undefined,
+		},
+		padding: 3,
+	},
+	animation: {
+		duration: 3000,
+		enabled: true,
+	},
 };
-
-function D3WordCloud(
-  element,
-  data,
-  {
-    getWord,
-    getSize,
-    width,
-    height,
-    marginTop,
-    marginBottom,
-    marginRight,
-    marginLeft,
-    wordSizeRange,
-    wordSizeDomain,
-    wordColorRange,
-    wordColorDomain,
-    rotate,
-    padding,
-    animationTime,
-    enableAnimation,
-  }
-) {
-  const conTentWidth = width - marginLeft - marginRight;
-  const conTentHeight = height - marginTop - marginBottom;
-  d3.select(element).selectAll("g").remove();
-  const svg = d3.select(element);
-  svg
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewbox", [0, 0, width, height])
-    .attr("overflow", "visible")
-    .append("g")
-    .attr(
-      "transform",
-      `translate(
-      ${marginLeft + conTentWidth / 2},
-      ${marginTop + conTentHeight / 2})`
-    );
-  const wordsData = data.map((d) => {
-    return {
-      text: getWord(d),
-      size: getSize(d),
-    };
-  });
-  const wordScale = d3
-    .scaleLinear()
-    .range(wordSizeRange)
-    .domain(wordSizeDomain);
-  const colorScale = d3
-    .scaleLinear()
-    .range(wordColorRange)
-    .domain(wordColorDomain);
-  const layout = cloud()
-    .size([width, height])
-    .words(wordsData)
-    .rotate(rotate)
-    .padding(padding)
-    .fontSize((d) => wordScale(d.size))
-    .on("end", render);
-  layout.start();
-
-  if (enableAnimation) {
-    animate();
-  }
-
-  function render(words) {
-    svg
-      .select("g")
-      .append("g")
-      .selectAll("text")
-      .data(words)
-      .join("text")
-      .attr("font-size", (d) => d.size)
-      .style("font-family", "Impact")
-      .attr("fill", (d) => colorScale(d.size))
-      .attr("text-anchor", "middle")
-      .attr("transform", (d) => `translate(${d.x}, ${d.y}) rotate(${d.rotate})`)
-      .text((d) => d.text);
-  }
-
-  function animate() {
-    svg
-      .selectAll("text")
-      .attr("opacity", 0)
-      .transition()
-      .attr("opacity", 1)
-      .duration(animationTime);
-  }
-}
