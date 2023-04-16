@@ -86,8 +86,17 @@ type ParserProps = {
 
 type FillProps = {
 	color: Iterable<string>;
+	nullColor: string;
 	opacity: number;
 	type: CurveFactory;
+	value: {
+		color: string;
+		enabled: boolean;
+	};
+	radius: {
+		x: number;
+		y: number;
+	};
 };
 
 type TooltipProps = {
@@ -103,19 +112,6 @@ type FontProps = {
 	family: string;
 	size: string;
 };
-
-export interface BarProps {
-	bar: {
-		value: {
-			color: string;
-			enabled: boolean;
-		};
-		radius: {
-			x: number;
-			y: number;
-		};
-	};
-}
 
 export interface PieProps {
 	pie: {
@@ -166,6 +162,10 @@ export type WordProps = {
 	};
 };
 
+type EventHandler = {
+	onClick: (event: Event) => void;
+};
+
 export interface ChartStyle {
 	data: Array<object>;
 	base: BaseType;
@@ -184,4 +184,5 @@ export interface ChartStyle {
 	tooltip: TooltipProps;
 	time: TimeProps;
 	font: FontProps;
+	event: EventHandler;
 }

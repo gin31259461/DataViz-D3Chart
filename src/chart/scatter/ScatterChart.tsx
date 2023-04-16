@@ -31,10 +31,10 @@ function createScatterChart(element: React.RefObject<SVGElement>, props: ChartSt
 	if (data.length == 0) return;
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
-	if (xAxis.type === undefined) xAxis.type = d3.scaleLinear;
-	if (yAxis.type === undefined) yAxis.type = d3.scaleLinear;
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.type = d3.scaleLinear;
+	yAxis.type = d3.scaleLinear;
 	if (font.size === undefined) font.size = Math.min(base.width, base.height) / 25 + 'px';
 	if (node.color === undefined) base.color = d3.schemeAccent as Iterable<string>;
 
@@ -77,9 +77,10 @@ function createScatterChart(element: React.RefObject<SVGElement>, props: ChartSt
 		.data(I)
 		.join('circle')
 		.attr('class', (i) => 'dot dot_' + Array.from(distinctGroup).indexOf(group[i]))
-		.attr('stroke', 'black')
-		.attr('stroke-width', '0.5px')
-		.attr('fill', (i) => colorScale(group[i]) + 'B3')
+		.attr('stroke', (i) => colorScale(group[i]))
+		.attr('stroke-width', '1px')
+		.attr('fill', (i) => colorScale(group[i]))
+		.attr('fill-opacity', 0.4)
 		.attr('cx', (i) => xScale(x[i]))
 		.attr('cy', (i) => yScale(y[i]))
 		.attr('r', node.radius);

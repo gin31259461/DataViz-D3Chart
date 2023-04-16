@@ -14,6 +14,7 @@ export default function WordCloud(props: ChartStyle & WordProps) {
 		RemoveChart(svgRef);
 		createWordCloud(svgRef, props);
 	};
+
 	React.useEffect(() => {
 		handleLoad();
 	}, [props]);

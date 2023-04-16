@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { BarProps, ChartStyle, MapDataProps } from '../style';
+import { ChartStyle, MapDataProps } from '../style';
 import { RemoveChart } from '@/components/chart';
 import { getElementHeight, getElementWidth } from '@/utils/dom';
 import { groupData } from '@/utils/data';
@@ -12,7 +12,7 @@ import { createSVG } from '@/components/svg';
 import { createXAxis, createYAxis } from '@/components/axis';
 import { createTitle } from '@/components/text';
 
-export default function BarGroup(props: ChartStyle & BarProps) {
+export default function BarGroup(props: ChartStyle) {
 	const svgRef = React.useRef<SVGSVGElement>(null);
 
 	const handleLoad = () => {
@@ -27,8 +27,8 @@ export default function BarGroup(props: ChartStyle & BarProps) {
 	return <svg width={'100%'} ref={svgRef} />;
 }
 
-function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle & BarProps) {
-	let { data, mapper, base, margin, xAxis, yAxis, tooltip, animation, legend, font, bar } = props;
+function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle) {
+	let { data, mapper, base, margin, xAxis, yAxis, tooltip, animation, legend, font, fill } = props;
 
 	if (data.length === 0) return;
 
@@ -42,8 +42,8 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 
 	const svg = createSVG(element, base.width, base.height);
 
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
 	if (xAxis.domain === undefined) xAxis.domain = x.filter((d) => d !== '');
 	if (yAxis.domain === undefined) {
 		const domain2 = d3.max(newData, (obj) => d3.max(obj.value, (obj) => obj.y * 1.1));
@@ -68,7 +68,7 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 			return `Group : ${d.key}\nx : ${d.x}\ny : ${d.y}`;
 		};
 
-	const barGap = 2;
+	const barGap = 3;
 	const barWidth = xScale.bandwidth() / 3 - (rowKeys.length - 1) * barGap;
 
 	if (font.size === undefined) font.size = Math.min(base.width, base.height) / barWidth + 'px';
@@ -96,9 +96,12 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 			.join('rect')
 			.attr('class', 'bar_' + i)
 			.attr('fill', (d) => colorScale(d.key))
-				.attr('rx', bar.radius.x)
+			.attr('stroke', (d) => colorScale(d.key))
+			.attr('stroke-width', '1px')
+			.attr('fill-opacity', fill.opacity)
+			.attr('rx', fill.radius.x)
 			.attr('width', barWidth < 0 ? barWidth * -1 : barWidth)
-			.attr('height', (d) => yScale(0) - yScale(d.y))
+			.attr('height', (d) => Math.abs(yScale(0) - yScale(d.y)))
 			.attr('x', (d) => {
 				const x = xScale(d.x.toString());
 				return (x !== undefined ? x : 0) + xScale.bandwidth() / 6 + i * barWidth + i * barGap;
@@ -111,7 +114,7 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 	const barValue = svg.append('g');
 	const createBarValue = barValue.selectAll('text');
 
-	if (bar.value.enabled) {
+	if (fill.value.enabled) {
 		newData.forEach((d, i) => {
 			createBarValue
 				.data(d.value)
@@ -119,7 +122,7 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 				.text((d) => d.y)
 				.attr('class', 'barValue_' + i)
 				.attr('font-size', font.size)
-				.attr('fill', bar.value.color)
+				.attr('fill', fill.value.color)
 				.attr('font-weight', 600)
 				.attr('text-anchor', 'middle')
 				.attr('x', (d) => {
@@ -139,12 +142,12 @@ function CreateBarGroup(element: React.RefObject<SVGElement>, props: ChartStyle 
 				.attr('fill', 'rgba(0, 0, 0, 0)')
 				.transition()
 				.attr('y', (d) => yScale(d.y))
-				.attr('height', (d) => yScale(0) - yScale(d.y))
+				.attr('height', (d) => Math.abs(yScale(0) - yScale(d.y)))
 				.attr('fill', (d) => colorScale(d.key))
 				.duration(animation.duration)
 				.ease(easeExpInOut);
 
-			if (bar.value.enabled) {
+			if (fill.value.enabled) {
 				barValue
 					.selectAll('.barValue_' + i)
 					.data(d.value)
@@ -272,7 +275,7 @@ BarGroup.propTypes = {
 	animation: PropTypes.objectOf(PropTypes.any),
 	legend: PropTypes.objectOf(PropTypes.any),
 	font: PropTypes.objectOf(PropTypes.any),
-	bar: PropTypes.objectOf(PropTypes.any),
+	fill: PropTypes.objectOf(PropTypes.any),
 };
 
 BarGroup.defaultProps = {
@@ -323,13 +326,15 @@ BarGroup.defaultProps = {
 	font: {
 		size: '12px',
 	},
-	bar: {
+	fill: {
+		opacity: 0.4,
 		value: {
-			color: '#f2f0f0',
+			// color: '#f2f0f0',
+			color: 'currentColor',
 			enabled: true,
 		},
 		radius: {
-			x: 8,
+			x: 3,
 			y: 0,
 		},
 	},

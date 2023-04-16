@@ -31,11 +31,12 @@ function CreateLineChart(element: React.RefObject<SVGElement>, props: ChartStyle
 	if (data.length == 0) return;
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.type = d3.scaleTime;
+	yAxis.type = d3.scaleLinear;
 
-	let x: any = [];
-	if (xAxis.type === d3.scaleTime) x = d3.map(d3.map(data, mapper.getX), (d) => time.type(parser.time)(d));
+	const x = d3.map(d3.map(data, mapper.getX), (d) => time.type(parser.time)(d));
 
 	let rowKeys: string[] = [];
 	mapper.keys.forEach((key) => rowKeys.push(key));
@@ -173,8 +174,7 @@ function CreateLineChart(element: React.RefObject<SVGElement>, props: ChartStyle
 				.ease(d3.easeLinear)
 				.attr('stroke-dashoffset', 0)
 				.duration(animation.duration)
-				.ease(d3.easeExpInOut)
-				.delay(animation.duration);
+				.ease(d3.easeExpInOut);
 		}
 		if (node.enabled) {
 			lineNode
@@ -184,8 +184,7 @@ function CreateLineChart(element: React.RefObject<SVGElement>, props: ChartStyle
 				.ease(d3.easeLinear)
 				.style('opacity', 1)
 				.duration(animation.duration)
-				.ease(d3.easeExpInOut)
-				.delay(animation.duration);
+				.ease(d3.easeExpInOut);
 		}
 	}
 

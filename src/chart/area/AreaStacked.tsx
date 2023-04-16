@@ -32,11 +32,12 @@ function CreateAreaStacked(element: React.RefObject<SVGElement>, props: ChartSty
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
 
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.type = d3.scaleTime;
+	yAxis.type = d3.scaleLinear;
 
-	let x: any = [];
-	if (xAxis.type === d3.scaleTime) x = d3.map(d3.map(data, mapper.getX), (d) => time.type(parser.time)(d));
+	const x = d3.map(d3.map(data, mapper.getX), (d) => time.type(parser.time)(d));
 
 	let rowKeys: string[] = [];
 	mapper.keys.forEach((key) => rowKeys.push(key));
@@ -177,7 +178,7 @@ function CreateAreaStacked(element: React.RefObject<SVGElement>, props: ChartSty
 		.join('path')
 		.attr('class', (_, i) => 'svg-area area_' + i)
 		.attr('fill', (d) => areaColorScale(d.key))
-		.attr('opacity', fill.opacity)
+		.attr('fill-opacity', fill.opacity)
 		.attr('d', (d) => area(d));
 
 	if (node.enabled) {
@@ -343,7 +344,7 @@ AreaStacked.defaultProps = {
 	},
 	fill: {
 		color: undefined,
-		opacity: 0.3,
+		opacity: 0.4,
 		type: d3.curveMonotoneX,
 	},
 	animation: {

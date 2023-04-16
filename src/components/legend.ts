@@ -91,7 +91,7 @@ export function createSequentialLegend(
 				.append('text')
 				.attr('x', 0)
 				.attr('y', -16)
-				.attr('fill', 'black')
+				.attr('fill', 'currentColor')
 				.attr('text-anchor', 'start')
 				.attr('font-weight', 'bold')
 				.text(props.legend.title)

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import PropTypes from 'prop-types';
-import { BarProps, ChartStyle, MapDataProps } from '../style';
+import { ChartStyle, MapDataProps } from '../style';
 import { RemoveChart } from '@/components/chart';
 import { getElementHeight, getElementWidth } from '@/utils/dom';
 import { groupData } from '@/utils/data';
@@ -9,10 +9,10 @@ import { easeExpInOut, easeExpOut, NumberValue } from 'd3';
 import { createTooltip } from '@/components/tooltip';
 import { createLegend } from '@/components/legend';
 import { createSVG } from '@/components/svg';
-import { createXAxis, createYAxis, YAxisType } from '@/components/axis';
+import { YAxisType, createXAxis, createYAxis } from '@/components/axis';
 import { createTitle } from '@/components/text';
 
-export default function BarStacked(props: ChartStyle & BarProps) {
+export default function BarStacked(props: ChartStyle) {
 	const svgRef = React.useRef<SVGSVGElement>(null);
 
 	const handleLoad = () => {
@@ -27,15 +27,15 @@ export default function BarStacked(props: ChartStyle & BarProps) {
 	return <svg width={'100%'} ref={svgRef} />;
 }
 
-function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyle & BarProps) {
-	let { data, mapper, base, margin, xAxis, yAxis, tooltip, animation, legend, font, bar } = props;
+function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyle) {
+	let { data, mapper, base, margin, xAxis, yAxis, tooltip, animation, legend, font, fill } = props;
 
 	if (data.length === 0) return;
 
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
 
 	const x = d3.map<object, string>(data, mapper.getX);
 
@@ -97,9 +97,12 @@ function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyl
 			.join('rect')
 			.attr('class', 'bar_' + i)
 			.attr('fill', (d) => colorScale(d.key))
-			.attr('rx', bar.radius.x)
+			.attr('fill-opacity', fill.opacity)
+			.attr('stroke', (d) => colorScale(d.key))
+			.attr('stroke-width', '1px')
+			.attr('rx', fill.radius.x)
 			.attr('width', barWidth < 0 ? barWidth * -1 : barWidth)
-			.attr('height', (d) => yScale(0) - yScale(d.y))
+			.attr('height', (d) => Math.abs(yScale(0) - yScale(d.y)))
 			.attr('x', (d) => {
 				const x = xScale(d.x.toString());
 				return (x !== undefined ? x : 0) + barWidth / 2;
@@ -112,7 +115,7 @@ function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyl
 	const barValue = svg.append('g'),
 		createBarValue = barValue.selectAll('text');
 
-	if (bar.value.enabled) {
+	if (fill.value.enabled) {
 		newData.forEach((d, i) => {
 			createBarValue
 				.data(d.value)
@@ -120,7 +123,7 @@ function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyl
 				.text((d) => d.y)
 				.attr('class', 'barValue_' + i)
 				.attr('font-size', font.size)
-				.attr('fill', bar.value.color)
+				.attr('fill', fill.value.color)
 				.attr('font-weight', 600)
 				.attr('text-anchor', 'middle')
 				.attr('x', (d) => {
@@ -140,12 +143,12 @@ function CreateBarStacked(element: React.RefObject<SVGElement>, props: ChartStyl
 				.attr('fill', 'rgba(0, 0, 0, 0)')
 				.transition()
 				.attr('y', (d) => yScale(d.stackedY))
-				.attr('height', (d) => yScale(0) - yScale(d.y))
+				.attr('height', (d) => Math.abs(yScale(0) - yScale(d.y)))
 				.attr('fill', (d) => colorScale(d.key))
 				.duration(animation.duration)
 				.ease(easeExpInOut);
 
-			if (bar.value.enabled) {
+			if (fill.value.enabled) {
 				barValue
 					.selectAll('.barValue_' + i)
 					.data(d.value)
@@ -279,7 +282,7 @@ BarStacked.propTypes = {
 	animation: PropTypes.objectOf(PropTypes.any),
 	legend: PropTypes.objectOf(PropTypes.any),
 	font: PropTypes.objectOf(PropTypes.any),
-	bar: PropTypes.objectOf(PropTypes.any),
+	fill: PropTypes.objectOf(PropTypes.any),
 };
 
 BarStacked.defaultProps = {
@@ -330,13 +333,15 @@ BarStacked.defaultProps = {
 	font: {
 		size: '12px',
 	},
-	bar: {
+	fill: {
+		opacity: 0.4,
 		value: {
-			color: '#f2f0f0',
+			// color: '#f2f0f0',
+			color: 'currentColor',
 			enabled: true,
 		},
 		radius: {
-			x: 8,
+			x: 3,
 			y: 0,
 		},
 	},

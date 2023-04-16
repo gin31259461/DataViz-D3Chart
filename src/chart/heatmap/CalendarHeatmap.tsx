@@ -25,14 +25,14 @@ export default function CalendarHeatmap(props: ChartStyle & HeatmapProps) {
 }
 
 function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: ChartStyle & HeatmapProps) {
-	let { data, mapper, base, margin, animation, legend, heatmap, tooltip, font } = props;
+	let { data, mapper, base, margin, animation, heatmap, tooltip, fill, font, event, legend } = props;
 
 	if (data.length === 0) return;
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
 
 	const x = d3.map(d3.map(data, mapper.getX) as [], (d: string) => d3.utcParse(heatmap.utcParse)(d)) as Date[],
-		y = d3.map(d3.map(data, mapper.getY), (d) => Number(d)),
+		y = d3.map(data, mapper.getY),
 		I = d3.range(x.length);
 
 	/**
@@ -48,7 +48,6 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 
 	if (font.size === undefined) font.size = Math.min(base.width, base.height) / 25 + 'px';
 
-	let yearSets: string[];
 	const // if sun position no change, mon (weekday also) position fix eg. Mon = 1 => 0
 		countDay = heatmap.weekday === 'sunday' ? (i: number) => i : (i: number) => (i + 6) % 7,
 		timeWeek = heatmap.weekday === 'sunday' ? d3.utcSunday : d3.utcMonday,
@@ -61,10 +60,10 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 	const max = d3.quantile(y, 0.9975, Math.abs) as number;
 	const formatMonth = d3.utcFormat(heatmap.monthParse);
 
-	if (base.color === undefined) {
+	if (fill.color === undefined) {
 		colorScale = d3.scaleSequential([-max, max], d3.interpolateBuGn).unknown('none');
 	} else {
-		const interpolator = d3.interpolate((base.color as string[])[0], (base.color as string[])[1]);
+		const interpolator = d3.interpolate((fill.color as string[])[0], (fill.color as string[])[1]);
 		colorScale = d3.scaleSequential([-max, max], interpolator).unknown('none');
 	}
 
@@ -85,6 +84,7 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 		.attr('font-size', font.size)
 		.attr('font-weight', 'bold')
 		.attr('text-anchor', 'end')
+		.attr('fill', 'currentColor')
 		.text(([key]) => key);
 
 	// year group month
@@ -98,6 +98,7 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 		.attr('x', -5)
 		.attr('y', (i) => (countDay(i) + 0.5) * cellSize)
 		.attr('dy', '0.31em')
+		.attr('fill', 'currentColor')
 		.text(heatmap.formatDay);
 
 	// year group cell
@@ -110,13 +111,20 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 				: ([, I]) => I
 		)
 		.join('rect')
-		.attr('class', (i) => 'cell_' + x[i].getFullYear())
+		.attr(
+			'class',
+			(i) => 'cell_' + x[i].getFullYear() + ' ' + x[i].getFullYear() + '-' + x[i].getMonth() + '-' + x[i].getDate()
+		)
 		.attr('width', cellSize - 1)
 		.attr('height', cellSize - 1)
 		.attr('x', (i) => timeWeek.count(d3.utcYear(x[i]), x[i]) * cellSize + 0.5)
 		.attr('y', (i) => countDay(x[i].getUTCDay()) * cellSize + 0.5)
 		.attr('rx', 3)
-		.attr('fill', (i: number) => colorScale(y[i]) as string);
+		.attr('fill', (i: number) => (y[i] !== null ? (colorScale(y[i]) as string) : fill.nullColor))
+		.on('click', event.onClick);
+	// .on('click', (e: MouseEvent, I) => {
+	// 	console.log((e.target as HTMLElement).classList[1])
+	// });
 
 	// divide each month
 	function pathMonth(t: Date) {
@@ -143,7 +151,7 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 		.filter((d, i) => i as any)
 		.append('path')
 		.attr('fill', 'none')
-		.attr('stroke', 'white')
+		.attr('stroke', 'currentColor')
 		.attr('stroke-width', 3)
 		.attr('d', pathMonth);
 
@@ -153,6 +161,7 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 		.attr('x', (d) => timeWeek.count(d3.utcYear(d), timeWeek.ceil(d)) * cellSize + 2)
 		.attr('y', -5)
 		.attr('font-size', font.size)
+		.attr('fill', 'currentColor')
 		.text(formatMonth);
 
 	createTitle(svg, props);
@@ -168,13 +177,13 @@ function CreateCalendarHeatmap(element: React.RefObject<SVGElement>, props: Char
 				.attr('width', 0)
 				.transition()
 				.attr('width', cellSize - 1)
-				.attr('fill', (i: number) => colorScale(y[i]) as string)
+				.attr('fill', (i: number) => (y[i] !== null ? (colorScale(y[i]) as string) : fill.nullColor))
 				.duration(animation.duration)
 				.ease(d3.easeExpInOut);
 		}
 	}
 
-	createSequentialLegend(svg, colorScale, props);
+	if (legend.enabled) createSequentialLegend(svg, colorScale, props);
 
 	if (tooltip.enabled) {
 		years.forEach((y, i) => {
@@ -202,6 +211,7 @@ CalendarHeatmap.propTypes = {
 	animation: PropTypes.objectOf(PropTypes.any),
 	legend: PropTypes.objectOf(PropTypes.any),
 	font: PropTypes.objectOf(PropTypes.any),
+	fill: PropTypes.objectOf(PropTypes.any),
 	heatmap: PropTypes.objectOf(PropTypes.any),
 };
 
@@ -213,7 +223,10 @@ CalendarHeatmap.defaultProps = {
 	base: {
 		title: 'CalendarHeatmap',
 		width: undefined,
+	},
+	fill: {
 		colors: undefined,
+		nullColor: '#808080',
 	},
 	tooltip: {
 		mapper: undefined,
@@ -243,5 +256,8 @@ CalendarHeatmap.defaultProps = {
 		formatDay: (i: number) => 'SMTWTFS'[i],
 		formatTick: undefined,
 		weekday: 'sunday',
+	},
+	event: {
+		onClick: undefined,
 	},
 };

@@ -16,7 +16,7 @@ export function createXAxis(
 			props.xAxis.tickRotation = 90;
 			props.xAxis.tickXOffset = 6;
 			props.xAxis.tickYOffset = -3;
-		} else if (textWidthSum > ticksWidthLimit) {
+		} else if (textWidthSum > ticksWidthLimit * 10) {
 			props.xAxis.tickRotation = 45;
 			props.xAxis.tickXOffset = 6;
 			props.xAxis.tickYOffset = 6;
@@ -80,19 +80,18 @@ export function createYAxis(
 				.text(props.yAxis.title)
 		);
 
-	function YAxis() {}
-
-	YAxis.element = yAxis;
-	YAxis.recreate = (generator: Axis<NumberValue>) => reCreateYAxis(yAxis, generator, props);
+	const YAxis = {
+		element: yAxis,
+		recreate: (generator: Axis<NumberValue>) => reCreateYAxis(yAxis, generator, props),
+	};
 
 	return YAxis;
 }
 
-export interface YAxisType {
-	(): void;
+export type YAxisType = {
 	element: Selection<SVGGElement, unknown, null, undefined>;
 	recreate: (generator: Axis<NumberValue>) => void;
-}
+};
 
 function reCreateYAxis(
 	yAxis: d3.Selection<SVGGElement, unknown, null, undefined>,

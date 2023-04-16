@@ -101,55 +101,57 @@ function createDoughnut(element: React.RefObject<SVGElement>, props: ChartStyle 
 		.attr('fill', (d) => colorScale(label[d.data]))
 		.attr('d', (d) => arcs(d));
 
-	// label lines
-	pieLabel
-		.selectAll('polyline')
-		.data(divData)
-		.join('polyline')
-		.transition()
-		.attr('stroke', 'currentColor')
-		.attr('fill', 'none')
-		.attr('stroke-width', stroke.width)
-		.attr('points', (d) => {
-			if (d.endAngle - d.startAngle < (Number(font.size.slice(0, -2)) * 4) / 100) return '';
-			const p1 = arcsOuterTimes.centroid(d);
-			const p2 = arcLabel.centroid(d);
-			let p3 = arcLabel.centroid(d);
-			p3[0] = arcLabelTimes.centroid(d)[0];
-			return [p1, p2, p3].join(',');
-		});
+	if (pie.enableLabel) {
+		// label lines
+		pieLabel
+			.selectAll('polyline')
+			.data(divData)
+			.join('polyline')
+			.transition()
+			.attr('stroke', 'currentColor')
+			.attr('fill', 'none')
+			.attr('stroke-width', stroke.width)
+			.attr('points', (d) => {
+				if (d.endAngle - d.startAngle < (Number(font.size.slice(0, -2)) * 4) / 100) return '';
+				const p1 = arcsOuterTimes.centroid(d);
+				const p2 = arcLabel.centroid(d);
+				let p3 = arcLabel.centroid(d);
+				p3[0] = arcLabelTimes.centroid(d)[0];
+				return [p1, p2, p3].join(',');
+			});
 
-	// label
-	pieLabel
-		.selectAll('text')
-		.data(divData)
-		.join('text')
-		.style('font-size', font.size)
-		.style('fill', 'currentColor')
-		.attr('text-anchor', (d) => {
-			const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-			return midAngle < Math.PI ? 'start' : 'end';
-		})
-		.attr('transform', (d) => {
-			let p = arcLabel.centroid(d);
-			const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
-			p[0] = arcLabelTimes.centroid(d)[0] + (midAngle < Math.PI ? 1 : -1) * 5;
-			return `translate(${p})`;
-		});
+		// label
+		pieLabel
+			.selectAll('text')
+			.data(divData)
+			.join('text')
+			.style('font-size', font.size)
+			.style('fill', 'currentColor')
+			.attr('text-anchor', (d) => {
+				const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+				return midAngle < Math.PI ? 'start' : 'end';
+			})
+			.attr('transform', (d) => {
+				let p = arcLabel.centroid(d);
+				const midAngle = d.startAngle + (d.endAngle - d.startAngle) / 2;
+				p[0] = arcLabelTimes.centroid(d)[0] + (midAngle < Math.PI ? 1 : -1) * 5;
+				return `translate(${p})`;
+			});
 
-	pieLabel
-		.selectAll('text')
-		.data(divData)
-		.selectAll('tspan')
-		.data((d) => {
-			const lines = `${label[d.data]}`.split(/\n/);
-			return d.endAngle - d.startAngle > (Number(font.size.slice(0, -2)) * 4) / 100 ? lines : lines.slice(0, 0);
-		})
-		.join('tspan')
-		.attr('x', 0)
-		.attr('y', (_, i) => `${i * 1.1}em`)
-		.attr('font-weight', (_, i) => (i ? null : 'bold'))
-		.text((d) => d);
+		pieLabel
+			.selectAll('text')
+			.data(divData)
+			.selectAll('tspan')
+			.data((d) => {
+				const lines = `${label[d.data]}`.split(/\n/);
+				return d.endAngle - d.startAngle > (Number(font.size.slice(0, -2)) * 4) / 100 ? lines : lines.slice(0, 0);
+			})
+			.join('tspan')
+			.attr('x', 0)
+			.attr('y', (_, i) => `${i * 1.1}em`)
+			.attr('font-weight', (_, i) => (i ? null : 'bold'))
+			.text((d) => d);
+	}
 
 	if (pie.value.enabled) {
 		pieValue

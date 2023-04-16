@@ -32,9 +32,9 @@ function CreateBubbleChart(element: RefObject<SVGElement>, props: ChartStyle) {
 	if (data.length === 0) return;
 	if (base.width === undefined) base.width = getElementWidth(element);
 	if (base.height === undefined) base.height = getElementHeight(element);
-	if (xAxis.range === undefined) xAxis.range = [margin.left, base.width - margin.right];
-	if (yAxis.range === undefined) yAxis.range = [base.height - margin.bottom, margin.top];
-	if (zAxis.range === undefined) zAxis.range = [5, zAxis.zMax];
+	xAxis.range = [margin.left, base.width - margin.right];
+	yAxis.range = [base.height - margin.bottom, margin.top];
+	zAxis.range = [5, zAxis.zMax];
 	if (xAxis.type === undefined) xAxis.type = d3.scaleLinear;
 	if (yAxis.type === undefined) yAxis.type = d3.scaleLinear;
 
@@ -89,9 +89,10 @@ function CreateBubbleChart(element: RefObject<SVGElement>, props: ChartStyle) {
 		.data(I)
 		.join('circle')
 		.attr('class', (i) => 'bubbles bubble_' + Array.from(distinctGroup).indexOf(group[i]))
-		.attr('fill', (i) => colorScale(group[i]) + 'B3')
-		.attr('stroke', 'black')
-		.attr('stroke-width', '0.5px')
+		.attr('fill', (i) => colorScale(group[i]))
+		.attr('fill-opacity', 0.4)
+		.attr('stroke', (i) => colorScale(group[i]))
+		.attr('stroke-width', '1px')
 		.attr('cx', (i) => xScale(x[i]))
 		.attr('cy', (i) => yScale(y[i]))
 		.attr('r', (i) => rScale(r[i]));
