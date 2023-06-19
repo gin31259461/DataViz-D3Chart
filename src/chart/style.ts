@@ -1,7 +1,13 @@
-import { CurveFactory, CurveFactoryLineOnly, NumberValue } from 'd3';
-import { Word } from 'd3-cloud';
+import { CurveFactory, CurveFactoryLineOnly, NumberValue } from "d3";
+import { Word } from "d3-cloud";
 
-export type MapDataProps = { x: string | number | Date; y: number; key: string; stackedY: number; defined: any };
+export type MapDataProps = {
+	x: string | number | Date;
+	y: number;
+	key: string;
+	stackedY: number;
+	defined: any;
+};
 
 type D3Function = (value: any, index: number, iterable: Iterable<any>) => any;
 
@@ -40,7 +46,12 @@ type LegendProps = {
 
 type XAxisProps = {
 	title: string;
-	domain: [undefined, undefined] | [string, string] | string[] | Iterable<string> | [number, number];
+	domain:
+		| [undefined, undefined]
+		| [string, string]
+		| string[]
+		| Iterable<string>
+		| [number, number];
 	range: Array<number>;
 	type: any;
 	enabled: boolean;
@@ -52,14 +63,22 @@ type XAxisProps = {
 
 type YAxisProps = {
 	title: string;
-	domain: [undefined, undefined] | [string, string] | [number, number] | Iterable<NumberValue>;
+	domain:
+		| [undefined, undefined]
+		| [string, string]
+		| [number, number]
+		| Iterable<NumberValue>;
 	range: Array<number>;
 	type: any;
 	enabled: boolean;
 };
 
 type ZAxisProps = {
-	domain: [undefined, undefined] | [string, string] | [number, number] | Iterable<NumberValue>;
+	domain:
+		| [undefined, undefined]
+		| [string, string]
+		| [number, number]
+		| Iterable<NumberValue>;
 	range: Array<number>;
 	zMax: number;
 };
@@ -185,4 +204,5 @@ export interface ChartStyle {
 	time: TimeProps;
 	font: FontProps;
 	event: EventHandler;
+	ref?: React.MutableRefObject<SVGSVGElement | null>;
 }
